@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mxfile host="drawio" version="26.0.0">
+  <diagram name="Roadmap-产品视角时间线">
+    <mxGraphModel>
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+
+        <mxCell id="title" value="大数据平台 Roadmap（产品视角）" style="text;html=1;align=center;verticalAlign=middle;resizable=0;strokeColor=none;fillColor=none;fontSize=20;fontStyle=1;fontColor=#0F172A;" vertex="1" parent="1">
+          <mxGeometry x="60" y="20" width="1360" height="36" as="geometry" />
+        </mxCell>
+        <mxCell id="subtitle" value="重点呈现：业务承诺 -> 产品能力 -> 客户价值 -> 商业结果" style="text;html=1;align=center;verticalAlign=middle;resizable=0;strokeColor=none;fillColor=none;fontSize=12;fontColor=#475569;" vertex="1" parent="1">
+          <mxGeometry x="60" y="52" width="1360" height="24" as="geometry" />
+        </mxCell>
+
+        <mxCell id="timeline_bg" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F8FAFC;strokeColor=#CBD5E1;" vertex="1" parent="1">
+          <mxGeometry x="60" y="82" width="1360" height="78" as="geometry" />
+        </mxCell>
+
+        <mxCell id="stage_i1" value="2026 Q2-Q3&#xa;I1 基础闭环" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontColor=#166534;fontSize=12;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="90" y="95" width="280" height="52" as="geometry" />
+        </mxCell>
+        <mxCell id="stage_i2" value="2026 Q4-2027 Q1&#xa;I2 生产就绪" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontColor=#1E3A8A;fontSize=12;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="410" y="95" width="280" height="52" as="geometry" />
+        </mxCell>
+        <mxCell id="stage_i3" value="2027 Q2-Q3&#xa;I3 能力增强" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontColor=#92400E;fontSize=12;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="730" y="95" width="280" height="52" as="geometry" />
+        </mxCell>
+        <mxCell id="stage_i4" value="2027 Q4+&#xa;I4 完整对标" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontColor=#991B1B;fontSize=12;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="1050" y="95" width="280" height="52" as="geometry" />
+        </mxCell>
+
+        <mxCell id="arr1" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#94A3B8;strokeWidth=2;endArrow=block;endFill=1;" edge="1" parent="1" source="stage_i1" target="stage_i2">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="arr2" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#94A3B8;strokeWidth=2;endArrow=block;endFill=1;" edge="1" parent="1" source="stage_i2" target="stage_i3">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="arr3" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#94A3B8;strokeWidth=2;endArrow=block;endFill=1;" edge="1" parent="1" source="stage_i3" target="stage_i4">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="row_customer" value="客户价值" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E2E8F0;strokeColor=#94A3B8;fontColor=#0F172A;fontSize=12;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="60" y="190" width="150" height="48" as="geometry" />
+        </mxCell>
+        <mxCell id="c_i1" value="关键业务链路可交付，&#xa;问题可追责" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F0FDF4;strokeColor=#86EFAC;fontColor=#166534;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="230" y="190" width="280" height="48" as="geometry" />
+        </mxCell>
+        <mxCell id="c_i2" value="交付自动化，&#xa;业务按 SLA 使用数据" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#EFF6FF;strokeColor=#93C5FD;fontColor=#1E3A8A;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="530" y="190" width="280" height="48" as="geometry" />
+        </mxCell>
+        <mxCell id="c_i3" value="多团队并发协作，&#xa;变更影响可预判" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFF7ED;strokeColor=#FDBA74;fontColor=#92400E;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="830" y="190" width="280" height="48" as="geometry" />
+        </mxCell>
+        <mxCell id="c_i4" value="AI 辅助自优化，&#xa;复杂场景可规模化复制" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FEF2F2;strokeColor=#FCA5A5;fontColor=#991B1B;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="1130" y="190" width="280" height="48" as="geometry" />
+        </mxCell>
+
+        <mxCell id="row_business" value="业务结果" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E2E8F0;strokeColor=#94A3B8;fontColor=#0F172A;fontSize=12;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="60" y="252" width="150" height="48" as="geometry" />
+        </mxCell>
+        <mxCell id="b_i1" value="形成首个可复制样板，&#xa;支撑核心主题域" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F8FAFC;strokeColor=#CBD5E1;fontColor=#334155;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="230" y="252" width="280" height="48" as="geometry" />
+        </mxCell>
+        <mxCell id="b_i2" value="人工干预下降，&#xa;交付周期更可预测" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F8FAFC;strokeColor=#CBD5E1;fontColor=#334155;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="530" y="252" width="280" height="48" as="geometry" />
+        </mxCell>
+        <mxCell id="b_i3" value="返工率下降，&#xa;跨团队协作效率提升" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F8FAFC;strokeColor=#CBD5E1;fontColor=#334155;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="830" y="252" width="280" height="48" as="geometry" />
+        </mxCell>
+        <mxCell id="b_i4" value="单位交付成本下降，&#xa;创新需求承载能力增强" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F8FAFC;strokeColor=#CBD5E1;fontColor=#334155;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="1130" y="252" width="280" height="48" as="geometry" />
+        </mxCell>
+
+        <mxCell id="row_metric" value="管理关注指标" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E2E8F0;strokeColor=#94A3B8;fontColor=#0F172A;fontSize=12;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="60" y="314" width="150" height="48" as="geometry" />
+        </mxCell>
+        <mxCell id="m_i1" value="首条链路上线率、&#xa;质量门禁通过率" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F8FAFC;strokeColor=#CBD5E1;fontColor=#334155;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="230" y="314" width="280" height="48" as="geometry" />
+        </mxCell>
+        <mxCell id="m_i2" value="SLA 达成率、&#xa;失败恢复时间（MTTR）" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F8FAFC;strokeColor=#CBD5E1;fontColor=#334155;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="530" y="314" width="280" height="48" as="geometry" />
+        </mxCell>
+        <mxCell id="m_i3" value="并发项目数、&#xa;血缘覆盖率、返工率" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F8FAFC;strokeColor=#CBD5E1;fontColor=#334155;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="830" y="314" width="280" height="48" as="geometry" />
+        </mxCell>
+        <mxCell id="m_i4" value="单位产出成本、&#xa;AI 提效占比" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F8FAFC;strokeColor=#CBD5E1;fontColor=#334155;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="1130" y="314" width="280" height="48" as="geometry" />
+        </mxCell>
+
+        <mxCell id="ms_bg" value="关键里程碑" style="swimlane;startSize=28;fillColor=#F8FAFC;strokeColor=#CBD5E1;fontColor=#0F172A;fontStyle=1;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="60" y="390" width="1360" height="110" as="geometry" />
+        </mxCell>
+        <mxCell id="ms1" value="EOS P0 上线&#xa;2026 Q2" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F5F3FF;strokeColor=#7C3AED;fontColor=#4C1D95;fontSize=11;fontStyle=1;" vertex="1" parent="ms_bg">
+          <mxGeometry x="12" y="36" width="170" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="ms2" value="I1 完成&#xa;全链路端到端可追踪&#xa;2026 Q3" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontColor=#166534;fontSize=11;fontStyle=1;" vertex="1" parent="ms_bg">
+          <mxGeometry x="206" y="36" width="240" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="ms3" value="I2 完成&#xa;自动化调度成为主流程&#xa;2027 Q1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontColor=#1E3A8A;fontSize=11;fontStyle=1;" vertex="1" parent="ms_bg">
+          <mxGeometry x="470" y="36" width="270" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="ms4" value="I3 完成&#xa;字段级血缘 + 流批一体 + Backfill&#xa;2027 Q3" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontColor=#92400E;fontSize=11;fontStyle=1;" vertex="1" parent="ms_bg">
+          <mxGeometry x="764" y="36" width="300" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="ms5" value="I4 完成&#xa;AI 全面接入&#xa;2028+" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontColor=#991B1B;fontSize=11;fontStyle=1;" vertex="1" parent="ms_bg">
+          <mxGeometry x="1088" y="36" width="250" height="60" as="geometry" />
+        </mxCell>
+
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

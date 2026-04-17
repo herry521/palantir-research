@@ -1,0 +1,226 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mxfile host="drawio" version="26.0.0">
+  <diagram name="迭代规划路线图">
+    <mxGraphModel>
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+
+        <!-- 标题 -->
+        <mxCell id="title" value="大数据平台迭代规划路线图" style="text;html=1;align=center;verticalAlign=middle;resizable=0;strokeColor=none;fillColor=none;fontSize=18;fontStyle=1;fontColor=#1E3A8A;" vertex="1" parent="1">
+          <mxGeometry x="60" y="20" width="1140" height="40" as="geometry" />
+        </mxCell>
+
+        <!-- ===== 时间轴 ===== -->
+        <mxCell id="timeline_bg" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F8FAFC;strokeColor=#CBD5E1;" vertex="1" parent="1">
+          <mxGeometry x="60" y="76" width="1140" height="60" as="geometry" />
+        </mxCell>
+
+        <mxCell id="t_now" value="现在&#xa;EOS P0 收尾" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F5F3FF;strokeColor=#7C3AED;fontColor=#4C1D95;fontSize=11;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="70" y="83" width="110" height="46" as="geometry" />
+        </mxCell>
+
+        <mxCell id="t_i1" value="2026 Q2-Q3&#xa;I1 基础闭环" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontColor=#166534;fontSize=11;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="300" y="83" width="130" height="46" as="geometry" />
+        </mxCell>
+
+        <mxCell id="t_i2" value="2026 Q4-2027 Q1&#xa;I2 生产就绪" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontColor=#1E3A8A;fontSize=11;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="560" y="83" width="140" height="46" as="geometry" />
+        </mxCell>
+
+        <mxCell id="t_i3" value="2027 Q2-Q3&#xa;I3 能力增强" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontColor=#92400E;fontSize=11;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="840" y="83" width="130" height="46" as="geometry" />
+        </mxCell>
+
+        <mxCell id="t_i4" value="2027 Q4+&#xa;I4 完整对标" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontColor=#991B1B;fontSize=11;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="1080" y="83" width="110" height="46" as="geometry" />
+        </mxCell>
+
+        <!-- 时间轴箭头 -->
+        <mxCell id="arr1" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#94A3B8;strokeWidth=2;" edge="1" parent="1" source="t_now" target="t_i1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="arr2" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#94A3B8;strokeWidth=2;" edge="1" parent="1" source="t_i1" target="t_i2">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="arr3" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#94A3B8;strokeWidth=2;" edge="1" parent="1" source="t_i2" target="t_i3">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="arr4" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#94A3B8;strokeWidth=2;" edge="1" parent="1" source="t_i3" target="t_i4">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- ===== 行标签列 ===== -->
+        <mxCell id="row_m2" value="数据集&#xa;（核心基础）" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontColor=#4C1D95;fontSize=11;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="60" y="168" width="120" height="54" as="geometry" />
+        </mxCell>
+        <mxCell id="row_m1" value="数据接入" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontColor=#4C1D95;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="60" y="242" width="120" height="46" as="geometry" />
+        </mxCell>
+        <mxCell id="row_m5m6" value="数据转换&#xa;构建调度" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontColor=#92400E;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="60" y="308" width="120" height="54" as="geometry" />
+        </mxCell>
+        <mxCell id="row_m13m14" value="流式链路&#xa;增量计算" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontColor=#991B1B;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="60" y="382" width="120" height="54" as="geometry" />
+        </mxCell>
+        <mxCell id="row_m3" value="对象集&#xa;用户变更" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontColor=#4C1D95;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="60" y="456" width="120" height="54" as="geometry" />
+        </mxCell>
+        <mxCell id="row_m4" value="在线开发" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontColor=#92400E;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="60" y="530" width="120" height="46" as="geometry" />
+        </mxCell>
+        <mxCell id="row_gov" value="数据质量&#xa;血缘追踪&#xa;治理" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontColor=#1E3A8A;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="60" y="596" width="120" height="62" as="geometry" />
+        </mxCell>
+        <mxCell id="row_obs" value="数据目录&#xa;监控告警&#xa;健康大盘" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontColor=#166534;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="60" y="678" width="120" height="62" as="geometry" />
+        </mxCell>
+        <mxCell id="row_env" value="测试&#xa;环境/资源管理" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F8FAFC;strokeColor=#94A3B8;fontColor=#475569;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="60" y="760" width="120" height="54" as="geometry" />
+        </mxCell>
+
+        <!-- ===== I1 列 ===== -->
+        <mxCell id="i1_m2" value="P0 版本/分支/WAP/静态血缘/RBAC" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F0FDF4;strokeColor=#86EFAC;fontColor=#166534;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="210" y="168" width="250" height="54" as="geometry" />
+        </mxCell>
+        <mxCell id="i1_m1" value="JDBC 全量接入；手动触发" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F0FDF4;strokeColor=#86EFAC;fontColor=#166534;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="210" y="242" width="250" height="46" as="geometry" />
+        </mxCell>
+        <mxCell id="i1_m5m6" value="Spark SQL / PySpark 全量 Pipeline；手动触发构建" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F0FDF4;strokeColor=#86EFAC;fontColor=#166534;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="210" y="308" width="250" height="54" as="geometry" />
+        </mxCell>
+        <mxCell id="i1_m13m14" value="Kafka Source；Stream Dataset 基础写入；APPEND 增量读" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F0FDF4;strokeColor=#86EFAC;fontColor=#166534;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="210" y="382" width="250" height="54" as="geometry" />
+        </mxCell>
+        <mxCell id="i1_m3" value="Object Type 定义；Object Set Writer；基础查询 API" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F0FDF4;strokeColor=#86EFAC;fontColor=#166534;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="210" y="456" width="250" height="54" as="geometry" />
+        </mxCell>
+        <mxCell id="i1_m4" value="JupyterHub 部署；平台 SDK 预装" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F0FDF4;strokeColor=#86EFAC;fontColor=#166534;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="210" y="530" width="250" height="46" as="geometry" />
+        </mxCell>
+        <mxCell id="i1_gov" value="Schema 校验；空值率质量门控；静态血缘；基础 RBAC" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F0FDF4;strokeColor=#86EFAC;fontColor=#166534;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="210" y="596" width="250" height="62" as="geometry" />
+        </mxCell>
+        <mxCell id="i1_obs" value="Dataset 列表搜索；构建失败告警；单 Dataset 健康状态" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F0FDF4;strokeColor=#86EFAC;fontColor=#166534;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="210" y="678" width="250" height="62" as="geometry" />
+        </mxCell>
+        <mxCell id="i1_env" value="dev/prod 环境定义；基础资源规格；Transform 断言测试" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F0FDF4;strokeColor=#86EFAC;fontColor=#166534;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="210" y="760" width="250" height="54" as="geometry" />
+        </mxCell>
+
+        <!-- ===== I2 列 ===== -->
+        <mxCell id="i2_m2" value="P1 动态血缘/Schema Diff/增量读/SQL Console" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#EFF6FF;strokeColor=#93C5FD;fontColor=#1E3A8A;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="490" y="168" width="260" height="54" as="geometry" />
+        </mxCell>
+        <mxCell id="i2_m1" value="CDC 增量同步；定时调度；Schema 推断；Kafka 接入" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#EFF6FF;strokeColor=#93C5FD;fontColor=#1E3A8A;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="490" y="242" width="260" height="46" as="geometry" />
+        </mxCell>
+        <mxCell id="i2_m5m6" value="低代码 Pipeline Builder；事件触发调度；依赖图自动推导" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#EFF6FF;strokeColor=#93C5FD;fontColor=#1E3A8A;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="490" y="308" width="260" height="54" as="geometry" />
+        </mxCell>
+        <mxCell id="i2_m13m14" value="hot/cold 双层存储；流式 Object Set（&lt;15s）；UPDATE Upsert" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#EFF6FF;strokeColor=#93C5FD;fontColor=#1E3A8A;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="490" y="382" width="260" height="54" as="geometry" />
+        </mxCell>
+        <mxCell id="i2_m3" value="增量写入；对象版本管理；变更校验与冲突检测" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#EFF6FF;strokeColor=#93C5FD;fontColor=#1E3A8A;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="490" y="456" width="260" height="54" as="geometry" />
+        </mxCell>
+        <mxCell id="i2_m4" value="大数据沙箱（Spark 集群）；Pipeline Snapshot；WAP 一键发布" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#EFF6FF;strokeColor=#93C5FD;fontColor=#1E3A8A;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="490" y="530" width="260" height="46" as="geometry" />
+        </mxCell>
+        <mxCell id="i2_gov" value="标记传播；数据脱敏；自定义质量规则；Version 级动态血缘" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#EFF6FF;strokeColor=#93C5FD;fontColor=#1E3A8A;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="490" y="596" width="260" height="62" as="geometry" />
+        </mxCell>
+        <mxCell id="i2_obs" value="标签体系；SLA 监控；全平台健康总览；流式 Pipeline 监控" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#EFF6FF;strokeColor=#93C5FD;fontColor=#1E3A8A;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="490" y="678" width="260" height="62" as="geometry" />
+        </mxCell>
+        <mxCell id="i2_env" value="三套环境 dev/staging/prod；资源配额；参数化测试+CI/CD" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#EFF6FF;strokeColor=#93C5FD;fontColor=#1E3A8A;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="490" y="760" width="260" height="54" as="geometry" />
+        </mxCell>
+
+        <!-- ===== I3 列 ===== -->
+        <mxCell id="i3_m2" value="字段级血缘；标记传播；多引擎读写（Flink+Spark）" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFBEB;strokeColor=#FCD34D;fontColor=#92400E;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="780" y="168" width="240" height="54" as="geometry" />
+        </mxCell>
+        <mxCell id="i3_m1" value="对象存储/API 接入；字段级脱敏配置" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFBEB;strokeColor=#FCD34D;fontColor=#92400E;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="780" y="242" width="240" height="46" as="geometry" />
+        </mxCell>
+        <mxCell id="i3_m5m6" value="批流 Join；Backfill 回填；流式 Pipeline 滚动升级" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFBEB;strokeColor=#FCD34D;fontColor=#92400E;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="780" y="308" width="240" height="54" as="geometry" />
+        </mxCell>
+        <mxCell id="i3_m13m14" value="窗口算子；多流 Join；增量 Join；依赖感知增量子图重算" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFBEB;strokeColor=#FCD34D;fontColor=#92400E;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="780" y="382" width="240" height="54" as="geometry" />
+        </mxCell>
+        <mxCell id="i3_m3" value="对象检索与关联查询；变更影响分析；变更回撤" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFBEB;strokeColor=#FCD34D;fontColor=#92400E;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="780" y="456" width="240" height="54" as="geometry" />
+        </mxCell>
+        <mxCell id="i3_m4" value="本地开发工具链；自定义内核环境；Notebook 历史对比" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFBEB;strokeColor=#FCD34D;fontColor=#92400E;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="780" y="530" width="240" height="46" as="geometry" />
+        </mxCell>
+        <mxCell id="i3_gov" value="字段级权限；数据生命周期管理；字段级血缘；合规报告" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFBEB;strokeColor=#FCD34D;fontColor=#92400E;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="780" y="596" width="240" height="62" as="geometry" />
+        </mxCell>
+        <mxCell id="i3_obs" value="血缘可视化；端到端时效监控；Owner 个性化大盘" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFBEB;strokeColor=#FCD34D;fontColor=#92400E;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="780" y="678" width="240" height="62" as="geometry" />
+        </mxCell>
+        <mxCell id="i3_env" value="Feature 环境（多人并发开发）；动态资源调整；数据契约" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFBEB;strokeColor=#FCD34D;fontColor=#92400E;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="780" y="760" width="240" height="54" as="geometry" />
+        </mxCell>
+
+        <!-- ===== I4 列 ===== -->
+        <mxCell id="i4_m2" value="非结构化 Media Set；外部表纳管；AI 辅助 SQL" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FEF2F2;strokeColor=#FCA5A5;fontColor=#991B1B;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="1050" y="168" width="140" height="54" as="geometry" />
+        </mxCell>
+        <mxCell id="i4_m1" value="100+ 连接器；SaaS 接入；AI Schema 映射" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FEF2F2;strokeColor=#FCA5A5;fontColor=#991B1B;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="1050" y="242" width="140" height="46" as="geometry" />
+        </mxCell>
+        <mxCell id="i4_m5m6" value="AI 转换逻辑生成；跨引擎统一调度；成本感知" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FEF2F2;strokeColor=#FCA5A5;fontColor=#991B1B;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="1050" y="308" width="140" height="54" as="geometry" />
+        </mxCell>
+        <mxCell id="i4_m13m14" value="Exactly-once；动态 Schema；流式 ML 推理；AI 增量优化" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FEF2F2;strokeColor=#FCA5A5;fontColor=#991B1B;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="1050" y="382" width="140" height="54" as="geometry" />
+        </mxCell>
+        <mxCell id="i4_m3" value="动态 Object Set；对象图谱；批量变更；AI 冲突解决" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FEF2F2;strokeColor=#FCA5A5;fontColor=#991B1B;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="1050" y="456" width="140" height="54" as="geometry" />
+        </mxCell>
+        <mxCell id="i4_m4" value="AI 代码生成；可视化调试；VS Code 插件" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FEF2F2;strokeColor=#FCA5A5;fontColor=#991B1B;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="1050" y="530" width="140" height="46" as="geometry" />
+        </mxCell>
+        <mxCell id="i4_gov" value="PBAC 完整；隐私计算；AI 辅助质量与血缘修复" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FEF2F2;strokeColor=#FCA5A5;fontColor=#991B1B;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="1050" y="596" width="140" height="62" as="geometry" />
+        </mxCell>
+        <mxCell id="i4_obs" value="AI 数据发现；AI 根因分析；预测性告警；推荐引擎" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FEF2F2;strokeColor=#FCA5A5;fontColor=#991B1B;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="1050" y="678" width="140" height="62" as="geometry" />
+        </mxCell>
+        <mxCell id="i4_env" value="环境蓝绿切换；Spot 实例；AI 资源预测；变异测试" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FEF2F2;strokeColor=#FCA5A5;fontColor=#991B1B;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="1050" y="760" width="140" height="54" as="geometry" />
+        </mxCell>
+
+        <!-- ===== 关键里程碑 ===== -->
+        <mxCell id="ms_bg" value="关键里程碑" style="swimlane;startSize=30;fillColor=#F8FAFC;strokeColor=#CBD5E1;fontColor=#0F172A;fontStyle=1;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="60" y="840" width="1140" height="80" as="geometry" />
+        </mxCell>
+
+        <mxCell id="ms1" value="EOS P0 上线&#xa;2026 Q2" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F5F3FF;strokeColor=#7C3AED;fontColor=#4C1D95;fontSize=11;fontStyle=1;" vertex="1" parent="ms_bg">
+          <mxGeometry x="10" y="34" width="130" height="36" as="geometry" />
+        </mxCell>
+
+        <mxCell id="ms2" value="I1 完成：全链路端到端可追踪&#xa;2026 Q3" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontColor=#166534;fontSize=11;fontStyle=1;" vertex="1" parent="ms_bg">
+          <mxGeometry x="160" y="34" width="230" height="36" as="geometry" />
+        </mxCell>
+
+        <mxCell id="ms3" value="I2 完成：自动化调度，日常生产基于新平台&#xa;2027 Q1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontColor=#1E3A8A;fontSize=11;fontStyle=1;" vertex="1" parent="ms_bg">
+          <mxGeometry x="410" y="34" width="310" height="36" as="geometry" />
+        </mxCell>
+
+        <mxCell id="ms4" value="I3 完成：字段血缘+流批一体+Backfill&#xa;2027 Q3" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontColor=#92400E;fontSize=11;fontStyle=1;" vertex="1" parent="ms_bg">
+          <mxGeometry x="740" y="34" width="270" height="36" as="geometry" />
+        </mxCell>
+
+        <mxCell id="ms5" value="I4 完成：AI 全面接入&#xa;2028+" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontColor=#991B1B;fontSize=11;fontStyle=1;" vertex="1" parent="ms_bg">
+          <mxGeometry x="1030" y="34" width="100" height="36" as="geometry" />
+        </mxCell>
+
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
