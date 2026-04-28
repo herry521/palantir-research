@@ -1,6 +1,6 @@
 # Palantir Foundry Stream 能力深度调研
 
-**调研日期：** 2026-04-28  
+**调研日期：** 2026-04-28（更新：2026-04-28）  
 **调研方向：** Stream 产品能力全景 / 与 Batch 链路差异 / 技术实现架构  
 **可信度标注：** 🟢 事实（官方文档/可验证） 🟡 推断（逻辑推理） 🔴 猜测（无直接证据）
 
@@ -10,14 +10,16 @@
 
 ### 1.1 数据摄入能力
 
-**🟢 事实** — Foundry 提供原生连接器支持以下流数据源：
+**🟢 事实** — Foundry 提供原生连接器支持以下流数据源：  
+证据：[Streaming Overview](https://www.palantir.com/docs/foundry/building-pipelines/streaming-overview/)
 - Apache Kafka（主流，最常见）
 - Amazon Kinesis
 - Google Pub/Sub
 - OSI PI（工业场景）
 - 通过 External Transforms 支持其他自定义流源
 
-**🟢 事实** — Kafka 连接方式：
+**🟢 事实** — Kafka 连接方式：  
+证据：[Set up Streaming Sync](https://www.palantir.com/docs/foundry/data-connection/set-up-streaming-sync/)
 - 支持 Agent-based 连接（推荐方式，改善性能和可用性）
 - Connector 读取原始 bytes 到 `value` 列，不自动解析消息内容
 - Offset 管理由 Flink Checkpoint 机制全自动处理，无需手动配置
@@ -25,19 +27,22 @@
 
 ### 1.2 数据处理能力
 
-**🟢 事实** — 主要开发界面：Pipeline Builder（低代码可视化工具）
+**🟢 事实** — 主要开发界面：Pipeline Builder（低代码可视化工具）  
+证据：[stream-vs-batch feature table](https://www.palantir.com/docs/foundry/building-pipelines/stream-vs-batch/)
 
-**🟢 事实** — Pipeline Builder 内置 Stream 算子：
+**🟢 事实** — Pipeline Builder 内置 Stream 算子：  
+证据：[Pipeline Builder Streaming Joins](https://www.palantir.com/docs/foundry/pipeline-builder/transforms-streaming-joins/)
 - **Filter**：按条件过滤记录
 - **Join**：流与流 Join（Outer Caching Join，需指定匹配条件和缓存时间）
 - **Aggregate over window**：窗口内聚合（支持各类聚合函数，有 trigger 机制）
 - **Project over window**：窗口内投影（每收到新行即触发输出）
 - 标准列操作（重命名、类型转换、计算字段等）
 
-**🟢 事实** — UDF 扩展机制：
+**🟢 事实** — UDF 扩展机制：  
+证据：[stream-vs-batch](https://www.palantir.com/docs/foundry/building-pipelines/stream-vs-batch/)
 - 在 Code Repository 中用 Java 或 Python 定义 UDF
 - UDF 在 Pipeline Builder 中作为节点调用
-- **Python UDF 仅支持部分场景**（不是全量等同于批处理中的 Python Transform）
+- **Python Transform 在流处理中完全不支持**（官方明确列出为差异项）
 
 **🟢 事实** — FoundryTS 时序函数（流场景适用）：
 - `functions.rolling_aggregate`：滑动窗口聚合
@@ -47,7 +52,8 @@
 
 ### 1.3 数据存储模型：Stream vs Dataset
 
-**🟢 事实** — Foundry Stream 内部架构是双层存储：
+**🟢 事实** — Foundry Stream 内部架构是双层存储：  
+证据：[Streams core concepts](https://www.palantir.com/docs/foundry/data-integration/streams/)
 
 ```
 外部数据源（Kafka 等）
@@ -59,37 +65,64 @@
   作为普通 Foundry Dataset 可被批处理访问
 ```
 
+**🟢 事实** — stream-vs-batch 官方 Feature Table 中的差异：  
+证据：[stream-vs-batch](https://www.palantir.com/docs/foundry/building-pipelines/stream-vs-batch/)
+
 | 特性 | Dataset（批） | Stream |
 |---|---|---|
 | 存储格式 | Parquet（主流）+ 其他文件 | Avro（热）+ 文件系统（冷） |
-| 访问延迟 | 分钟~小时级 | 秒级（<15s）|
+| 访问延迟 | 分钟~小时级 | 秒级（<15s 端到端）|
 | 数据结构 | 结构化/非结构化均支持 | 仅结构化（tabular）|
 | 单条记录上限 | 无明确限制 | **1MB**（硬限制）|
-| 属性数量上限 | 无明确限制 | **250 个属性** |
-| Ontology 集成 | 支持 | 支持（streaming object type）|
+| Low latency data access | No | Yes |
+| Python transforms | Yes | **No** |
+| Java transforms | Yes | Yes |
+| Pipeline Builder | Yes | Yes |
 
-**🟢 事实** — Stream 冷存储定期归档后可被非流处理应用访问，实现冷热数据统一。
+**🟢 事实** — Foundry 的 stream-vs-batch 对比页官方明确说明：
+
+> "Generally, streaming is used for workflows that require low end-to-end latency. For use cases that can tolerate more than ten minutes of latency, incremental or standard batch datasets may also be suitable."
+
+**🟢 事实** — 前端工具对流数据的支持情况（官方说明）：  
+证据：[stream-vs-batch # front-end-tools](https://www.palantir.com/docs/foundry/building-pipelines/stream-vs-batch/#front-end-tools)
+- 原生支持流式刷新的工具：**Ontology、Pipeline Builder、Quiver、Dataset Preview、Foundry Rules**
+- 其他应用（如 Contour）消费 Stream 的冷归档 Dataset，每几分钟更新一次
+- Foundry 会自动判断使用哪种模式，用户无需手动区分
 
 ### 1.4 Ontology 集成
 
-**🟢 事实** — 流数据可直接写入 Foundry Ontology，写入延迟 <15s。
+**🟢 事实** — 流数据可直接写入 Foundry Ontology，端到端延迟 <15s。  
+证据：[Streaming Overview](https://www.palantir.com/docs/foundry/building-pipelines/streaming-overview/)
 
-**🟢 事实** — Ontology 集成限制（流处理对比批处理的差异）：
-- **不支持 User Edits**（批处理 Object Type 支持）；变通方案：将用户编辑推入输入 Stream
+> "On average, streaming data can be accessible in the Ontology and available for analysis in time series applications, such as Quiver or Foundry Rules, in under 15 seconds."
+
+**🟢 事实** — User Edits 不支持（详见第二章根因分析）：  
+证据：官方文档明确说明 "Actions are not yet supported on object types with Foundry stream datasources."  
+变通方案：将用户编辑作为数据变更推入输入 Stream，或新建非流 Object Type 承接编辑。
+
+**🟢 事实** — 其他 Ontology 限制：
 - **不支持 Multi-Datasource Objects（MDO）**
-- **不支持监控指标**（如 pipeline latency 监控），批处理有 Monitor 支持
-- 事件乱序风险：采用 "最近更新优先（most recent update wins）" 策略，源端乱序会导致 Ontology 数据错误
+- 事件乱序风险：采用 "most recent update wins" 策略，源端乱序会导致 Ontology 数据错误
 
 **🟡 推断** — Foundry 流处理 Ontology 集成的完整度不及批处理，是产品成熟度差距，预期未来版本会缩小。
 
-### 1.5 性能调优能力
+### 1.5 性能调优与计算模型
+
+**🟢 事实** — 端到端延迟拆解（官方提供的参考数据）：  
+证据：[Streaming Performance Considerations](https://www.palantir.com/docs/foundry/building-pipelines/streaming-performance-considerations/)
+
+> "A standard streaming pipeline can run through the following stages in under 15 seconds:"
+> - Ingestion: ~1-2 seconds
+> - Transformation: ~5s (exactly-once) / ~1s (at-least-once)
+> - Syncing into backing datastore: ~5s (exactly-once) / ~1s (at-least-once)
 
 **🟢 事实** — 可调参数：
 - **Partitions 数量**：增加分区提升并行度和吞吐量
 - **Stream Type**：设为 `HIGH THROUGHPUT` 增大每批次记录数，牺牲延迟换取吞吐（适用于 Total Lag > 0 场景）
 
-**🟢 事实** — 计算资源分配模型：
-- 静态分配（Static Allocation）：资源按峰值需求固定分配，不随数据量弹性伸缩
+**🟢 事实** — 计算资源分配模型：  
+证据：[Streaming Compute Usage](https://www.palantir.com/docs/foundry/building-pipelines/streaming-compute-usage/)
+- **静态分配**：资源按峰值需求固定分配，不随数据量弹性伸缩
 - 分两类计费：Live Processing Compute（运行 Transform）+ Archiving Compute（归档到冷存储）
 - 即使无数据流入，也持续消耗 Compute-Seconds
 
@@ -101,6 +134,8 @@
 
 ### 2.1 三种处理模式对比
 
+证据：[stream-vs-batch](https://www.palantir.com/docs/foundry/building-pipelines/stream-vs-batch/) + [Incremental Pipelines](https://www.palantir.com/docs/foundry/building-pipelines/pipeline-types/#incremental)
+
 | 特性 | Batch Pipeline | Incremental Pipeline | Streaming Pipeline |
 |---|---|---|---|
 | **处理触发** | 上游数据变化时 | 上游有新数据时 | 持续运行 |
@@ -109,34 +144,75 @@
 | **计算成本** | 中等（按需运行）| 低 | 高（持续占用）|
 | **开发复杂度** | 低 | 中（需理解事务机制）| 高 |
 | **维护复杂度** | 低 | 中 | 高 |
-| **数据规模弹性** | 低（全量重算开销随量增长）| 高 | 高 |
-| **主要开发工具** | Pipeline Builder / Code Repository | Code Repository（`@incremental`）| Pipeline Builder + UDF |
-| **支持语言** | Python / Java / SQL / Spark | Python / Java | **Java 为主**，Python 限制较多 |
-| **SQL 支持** | 完整 SQL（Spark SQL）| Spark SQL | **无完整 SQL**，仅 Pipeline Builder 可视化算子 |
+| **主要开发工具** | Pipeline Builder / Code Repository | Code Repository（`@incremental`）| Pipeline Builder + Java UDF |
+| **Python 支持** | 完整 | 完整 | **不支持** |
+| **SQL 支持** | 完整 Spark SQL | Spark SQL | **无完整 SQL**，仅可视化算子 |
 
-### 2.2 能力边界：Streaming 不支持的场景
+### 2.2 User Edits 为何在流处理中不支持：根因分析
 
-**🟢 事实（经官方确认的限制）：**
+这是本次调研的重点问题，以下分层说明：
 
-1. **Python Transform**：流处理不支持纯 Python Transform（与批处理的最大差异之一）
-2. **完整 SQL 语法**：不能直接写 Spark SQL / HiveQL，复杂查询需用 UDF 或 Pipeline Builder 算子组合
-3. **多数据源对象（MDO）**：Ontology 层不支持
-4. **User Edits**：Ontology 对象不支持直接用户编辑
-5. **任意 Schema 演进**：流处理对 Schema 变更敏感，批处理更宽容
-6. **Frontend 自动刷新**：Workshop 外的 Foundry 前端应用不原生支持流数据自动推送（需手动刷新）
-7. **监控指标**：缺乏针对流 Object Type 的 Pipeline Latency 等监控，批处理有完整 Monitor 支持
+#### 2.2.1 官方表述（🟢 事实）
 
-**🟡 推断** — Code Repository 中无法像批处理一样用 `@transform_df` 定义整个流处理 Pipeline；流处理的"代码优先"路径受限，必须经过 Pipeline Builder，灵活性低于批处理。
+官方文档明确说明：
+> "Actions are not yet supported on object types with Foundry stream datasources."
+
+官方给出的变通方案：
+1. 将用户编辑推入输入 Stream（作为数据事件处理）
+2. 新建非流 Object Type，允许用户在该辅助类型上编辑
+
+#### 2.2.2 "most recent update wins" 模型是根因（🟢 事实 + 🟡 推断）
+
+**🟢 事实** — Foundry Streaming 写入 Ontology 的更新策略是 "most recent update wins"：即后到的事件覆盖先到的事件，整个对象的状态由最新一条消息决定。
+
+**🟡 推断（核心根因）** — 这一模型与 Actions（用户编辑）存在本质冲突：
+
+```
+时间轴：
+t1 → 流事件：{temperature: 20}       → Ontology 对象状态：{temperature: 20}
+t2 → 用户 Action：{temperature: 25}  → 状态：{temperature: 25}
+t3 → 流事件：{temperature: 22}       → 状态：{temperature: 22}  ← 用户编辑被覆盖！
+```
+
+流是持续写入的 changelog，用户 Action 产生的编辑会被下一条流事件立即覆盖，导致：
+- 用户看到自己的修改"消失"
+- 无法区分"流数据"和"人工修正"的语义边界
+
+#### 2.2.3 Actions 的技术实现与流不兼容（🟡 推断）
+
+Foundry Actions 的底层机制是：
+1. 用户在前端触发 Action
+2. Action 写入 **Object Storage**，产生一条"覆盖"型写操作
+3. Ontology 呈现最新状态
+
+而 Streaming Object Type 的写路径是：
+1. Flink Job 实时消费 Stream
+2. 每条记录 upsert 到 Object Storage V2（基于 primary key）
+
+两条写路径竞争同一个 Object 状态，且流路径持续以高频写入，Actions 的写入效果会被立即覆盖，产品层面无法保证 Actions 的有效性，因此 Palantir 在产品设计上直接禁止了这一组合。
+
+#### 2.2.4 与批处理的对比（为什么批处理支持）
+
+批处理 Object Type 支持 Actions，因为批处理 Pipeline 是**按触发周期运行**的：
+- 两次 Build 之间有明确的静默期
+- Actions 写入的状态在静默期内稳定保留
+- 下次 Build 时，平台可以在合并逻辑中明确区分"流式数据"和"人工修正"
+
+流处理没有静默期，这是 User Edits 不被支持的本质原因。
 
 ### 2.3 引擎差异
 
-**🟢 事实：**
+**🟢 事实：**  
+证据：[Flink Fundamentals](https://www.palantir.com/docs/foundry/data-integration/flink-streaming/)
 - Batch：Apache Spark（擅长大规模有界数据集的并行处理）
 - Stream：Apache Flink（专为无界流数据设计，低延迟，有状态）
 
+官方引用原文：
+> "Foundry streaming uses Flink as the underlying engine to execute user code and other in-platform streaming applications such as hydrating the Ontology in real time and streaming time series ingestion."
+
 **🟡 推断** — Pipeline Builder 对两套引擎做了统一抽象，但两者底层差异导致：
-- 某些 Spark SQL 特性无法直接在 Flink 上使用
-- 有状态算子（Window、Join）的语义在流处理中更复杂
+- Python Transform 无法在 Flink 上等效运行（官方已确认不支持）
+- 有状态算子（Window、Join）的语义在流处理中更复杂，批处理无需关心 state 增长
 
 ---
 
@@ -144,7 +220,8 @@
 
 ### 3.1 Flink 执行架构
 
-**🟢 事实** — Foundry 流处理基于标准 Apache Flink 架构：
+**🟢 事实** — Foundry 流处理基于标准 Apache Flink 架构：  
+证据：[Flink Fundamentals](https://www.palantir.com/docs/foundry/data-integration/flink-streaming/)
 
 ```
 ┌─────────────────────────────────────────┐
@@ -154,7 +231,7 @@
 │  │  - 任务调度                      │    │
 │  │  - 资源管理（Task Slots）         │    │
 │  │  - Checkpoint 协调               │    │
-│  │  - LogicalGraph → ExecutionGraph │    │
+│  │  - JobGraph → ExecutionGraph     │    │
 │  └──────────────┬──────────────────┘    │
 │                 │                        │
 │    ┌────────────┼────────────┐           │
@@ -166,29 +243,34 @@
 └─────────────────────────────────────────┘
 ```
 
-- **Job Manager**：主节点，负责调度、资源分配、Checkpoint 协调、故障恢复
-- **Task Manager**：工作节点，执行实际计算任务，每个 TM 含多个 Task Slots
-- **Task Slot**：基本资源分配单位，同一 TM 的多个 Slot 共享内存但隔离 CPU
+官方引用：
+> "The Flink Job Manager is responsible for scheduling tasks and allocating resources for tasks, handling finished or failed tasks, coordinating job checkpoints and failure recovery..."
+> "The Flink Task Manager is responsible for the execution of tasks as well as buffering and exchanging data between streams."
 
 **🟢 事实** — Flink 算子图（Operator Graph）：
-- Flink Job 表示为算子的有向无环图（DAG）
-- Job Manager 将逻辑图（JobGraph）转为物理执行图（ExecutionGraph）
-- 算子链（Operator Chaining）：相邻算子尽量合并在同一 Task 中，减少网络传输
+- Flink Job 内部表示为 JobGraph（逻辑图）
+- 执行时转为 physical graph，由 tasks 组成（一个 task = 一个或多个链式算子）
+- **Job Tracker**：Foundry 提供 UI 可查看 Flink Job 的 JobGraph 预览（在 Details 面板）
 
 ### 3.2 有状态处理与 Checkpoint
 
-**🟢 事实** — Flink 支持的 State 原语：
-- `ValueState`：单个值状态
-- `ListState`：列表状态
-- `MapState`：KV 映射状态
-- `ReducingState` / `AggregatingState`：聚合状态
+**🟢 事实** — 有状态操作的例子（官方明确列出）：  
+证据：[Flink Fundamentals # job-state](https://www.palantir.com/docs/foundry/data-integration/flink-streaming/#job-state)
+- **聚合（Aggregations）**：如 5 分钟滚动窗口内事件计数、全局 running average
+- **Join**：需要记住历史事件才能与当前事件做关联
 
-**🟢 事实** — Checkpoint 机制：
-- 基于 Chandy-Lamport 分布式快照算法
-- 定期将算子状态 + 流消费位置（如 Kafka offset）快照到持久存储
-- 故障后从最近 Checkpoint 恢复，保证 Exactly-Once（配合两阶段提交 Sink）
+**🟢 事实** — 有状态 transform 的关键风险（官方提示）：  
+证据：[stream-vs-batch # state-management](https://www.palantir.com/docs/foundry/building-pipelines/stream-vs-batch/#state-management)
 
-**🟢 事实** — Foundry 提供两种一致性配置：
+> "stateful streaming applications may have unbounded state that can grow over time and result in an out of memory error at an unknown point in the future. As an example, performing an aggregation over one or more keys is generally a dangerous operation if the size of the key space is unbounded."
+
+**🟢 事实** — 所有 Pipeline Builder 有状态 transform 使用 **Keyed State**：  
+证据：[Streaming Stateful Transforms](https://www.palantir.com/docs/foundry/building-pipelines/streaming-stateful-transforms/)
+- 用户必须指定 Partition Key（相同 Key 的记录路由到同一算子实例）
+- 不同 Key 的处理并行、隔离
+
+**🟢 事实** — Foundry 提供两种一致性配置：  
+证据：[Streaming Stateful Transforms](https://www.palantir.com/docs/foundry/building-pipelines/streaming-stateful-transforms/)
 - `AT_LEAST_ONCE`：低延迟，可能重复
 - `EXACTLY_ONCE`（默认）：精确一次，有额外开销
 
@@ -199,50 +281,46 @@
 ```
 外部流源（Kafka/Kinesis/Pub-Sub）
         ↓ [Data Connection / Streaming Sync]
-  Foundry Stream（热存储 Hot Buffer + 冷归档）
+  Foundry Stream（Hot Buffer + 冷归档）
         ↓ [Pipeline Builder Streaming Pipeline]
-  Flink Job（算子链 DAG 执行）
+  Flink Job（JobGraph → tasks 并行执行）
         ↓ [输出]
-  ┌──────────────────────────────────┐
-  │  写入 Foundry Ontology（<15s）    │
-  │  写入 Foundry Dataset（冷存储）   │
-  │  写出到外部 Kafka（Streaming Export）│
-  └──────────────────────────────────┘
+  ┌──────────────────────────────────────┐
+  │  写入 Foundry Ontology（<15s）        │
+  │  写入 Foundry Dataset（冷归档）       │
+  │  写出到外部 Kafka（Streaming Export） │
+  └──────────────────────────────────────┘
 ```
 
-**🟡 推断** — Pipeline Builder 内部将低代码配置编译为 Flink JobGraph，然后提交到 Flink 集群执行。这是标准的"低代码平台包裹流处理引擎"模式。
+**🟡 推断** — Pipeline Builder 内部将低代码配置编译为 Flink JobGraph，然后提交到 Flink 集群执行。Flink JobGraph 的预览在 Job Tracker 中可见（官方已确认），印证了这一推断。
 
 ### 3.4 延迟分析
 
-**🟢 事实** — 影响端到端延迟的因素：
+**🟢 事实** — 官方给出的延迟因素和参考数据：  
+证据：[Streaming Performance Considerations](https://www.palantir.com/docs/foundry/building-pipelines/streaming-performance-considerations/)
+
+影响端到端延迟的因素（按官方说明）：
 1. **Source 生产速度**：Foundry 只能以 Source 速度消费
 2. **网络跨边界**：跨网络传输增加延迟
-3. **Pipeline 阶段数**：多个 Repository 或 Pipeline Builder 图链式连接会叠加延迟
-4. **算子复杂度**：有状态算子（窗口/Join）比无状态算子延迟高
-5. **Exactly-Once 开销**：启用精确一次处理增加协调开销
+3. **Pipeline 阶段数**：多个 Repository 或 Builder Pipeline 链式连接会叠加延迟（跨阶段无法 Co-locate 优化）
+4. **一致性模型**：Exactly-Once 比 At-Least-Once 增加约 4s 延迟
+5. **时间窗口**：30s 窗口隐性增加 30s 延迟
 
-**🟢 事实** — Foundry 的优化手段：
-- **Co-location（同节点算子链）**：将多个 Transform 尽量合并在同一硬件，减少网络跳数
-- **Operator Chaining**：Flink 层面的算子融合
+**🟢 事实** — Co-location 优化（官方明确说明）：
+> "Foundry streaming will co-locate pipeline transformations defined in the same Code Repository or Pipeline Builder graph onto the same physical hardware to automatically optimize latencies."
 
 ---
 
 ## 四、能力建设参考建议
 
-> 本节为基于调研的设计建议，属于 🟡 推断 / 🔴 猜测，仅供参考。
+> 本节为基于调研的设计建议，属于 🟡 推断，仅供参考。
 
-### 4.1 如果要构建同等 Stream 能力
+### 4.1 核心技术栈（事实层面已确认）
 
-**核心技术栈（事实层面已经明确）：**
-- 流处理引擎：Apache Flink（Palantir 选型已确认）
-- 接入层：Kafka（标准流消息队列）
+- 流处理引擎：Apache Flink
+- 接入层：Kafka（主流）+ Kinesis / Pub-Sub（可选）
 - 低代码界面：类 Pipeline Builder 的可视化算子连接界面
-- 存储：热存储（如 Kafka-backed buffer）+ 冷存储（Parquet/Avro in 对象存储）
-
-**🟡 推断 — 关键差距点：**
-1. 有状态算子（Window/Join）的低代码化包装复杂度高
-2. 流批一体的 Ontology/语义层集成是难点
-3. Checkpoint 配置、资源分配对用户屏蔽需要大量平台化工作
+- 存储：热存储（Hot Buffer）+ 冷归档（Parquet/Avro in 对象存储）
 
 ### 4.2 流处理 vs 批处理选型判断依据
 
@@ -250,26 +328,25 @@
 |---|---|
 | 端到端延迟需求 >10 分钟 | Batch 或 Incremental |
 | 端到端延迟需求 <1 分钟 | Streaming |
-| 需要复杂 SQL / Python 逻辑 | Batch（更完整的工具支持）|
+| 需要复杂 Python/SQL 逻辑 | Batch（更完整的工具支持）|
 | 需要实时告警/实时触发 | Streaming |
 | 数据量大但时效性低 | Batch（成本更低）|
-| 持续监控/实时大盘 | Streaming |
+| 需要 User Edits（人工修正）| Batch（Streaming 不支持）|
 
 ---
 
-## 五、信息来源说明
+## 五、信息来源
 
-**🟢 事实来源：**
-- Palantir 官方文档（docs.palantir.com，经 web_search 检索）
-- 官方产品描述中的明确功能列表和限制说明
-
-**🟡 推断来源：**
-- 基于 Flink 标准架构推导的 Foundry 内部实现
-- 基于已知限制推导的设计原因
-
-**🔴 猜测：**
-- 本文中未出现明确的 🔴 猜测项，上述推断均有一定逻辑基础
+| 结论类别 | 来源 URL |
+|---|---|
+| Streaming 概述、最佳实践 | [building-pipelines/streaming-overview](https://www.palantir.com/docs/foundry/building-pipelines/streaming-overview/) |
+| Stream vs Batch 特性对比 | [building-pipelines/stream-vs-batch](https://www.palantir.com/docs/foundry/building-pipelines/stream-vs-batch/) |
+| 延迟拆解数据 | [building-pipelines/streaming-performance-considerations](https://www.palantir.com/docs/foundry/building-pipelines/streaming-performance-considerations/) |
+| Flink 架构细节 | [data-integration/flink-streaming](https://www.palantir.com/docs/foundry/data-integration/flink-streaming/) |
+| 有状态 Transform | [building-pipelines/streaming-stateful-transforms](https://www.palantir.com/docs/foundry/building-pipelines/streaming-stateful-transforms/) |
+| 计算资源模型 | [building-pipelines/streaming-compute-usage](https://www.palantir.com/docs/foundry/building-pipelines/streaming-compute-usage/) |
+| Stream 数据模型 | [data-integration/streams](https://www.palantir.com/docs/foundry/data-integration/streams/) |
 
 ---
 
-*文档持续更新，调研日期 2026-04-28*
+*文档最后更新：2026-04-28*
