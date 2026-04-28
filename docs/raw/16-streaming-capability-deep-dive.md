@@ -73,11 +73,15 @@
 | 存储格式 | Parquet（主流）+ 其他文件 | Avro（热）+ 文件系统（冷） |
 | 访问延迟 | 分钟~小时级 | 秒级（<15s 端到端）|
 | 数据结构 | 结构化/非结构化均支持 | 仅结构化（tabular）|
-| 单条记录上限 | 无明确限制 | **1MB**（硬限制）|
+| 单条记录上限 | 无明确限制 | **1MB**（硬限制，证据见下）|
 | Low latency data access | No | Yes |
 | Python transforms | Yes | **No** |
 | Java transforms | Yes | Yes |
 | Pipeline Builder | Yes | Yes |
+
+**🟢 事实** — 1MB 单行限制原文（[streaming-overview # best-practices](https://www.palantir.com/docs/foundry/building-pipelines/streaming-overview/#best-practices)）：
+
+> "Streams operate on a per-row basis and have constraints on the maximum row size to ensure low latency data transfers. The constraint is set to 1mb per individual row."
 
 **🟢 事实** — Foundry 的 stream-vs-batch 对比页官方明确说明：
 
