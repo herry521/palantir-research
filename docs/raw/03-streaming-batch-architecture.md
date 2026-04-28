@@ -149,11 +149,11 @@ Foundry **没有完全统一**的流批编程 API（不同于 Apache Beam 的 PC
 
 ## 关键结论
 
-1. **流处理引擎是 Apache Flink（非 Spark）**：批处理用 Spark，流处理用 Flink，Pipeline Builder 统一界面屏蔽引擎差异；Flink 比 Spark Streaming 更擅长低延迟和有状态计算
-2. **Pipeline Builder 与 Code Repository 是并列关系**：批处理两者均可选，流处理主要用 Pipeline Builder；Code Repository 提供 UDF 补充，不是从属关系
-3. **流批统一的实现层在 Ontology**：不在 API 层，而在数据目的地层——流和批最终都写入同一 Ontology，上层应用无感知
-4. **< 15s 延迟是推荐配置下的典型值，非硬性 SLA**：受数据量、算子复杂度、Compute 规格影响
-5. **Exactly-once 需显式配置，非默认**：默认为 `AT_LEAST_ONCE`，`EXACTLY_ONCE` 有额外延迟开销，需根据业务精度要求权衡
+1. **流处理引擎是 Apache Flink（非 Spark）**：批处理用 Spark，流处理用 Flink，Pipeline Builder 统一界面屏蔽引擎差异；Flink 比 Spark Streaming 更擅长低延迟和有状态计算 [事实]
+2. **Pipeline Builder 与 Code Repository 是并列关系**：批处理两者均可选，流处理主要用 Pipeline Builder；Code Repository 提供 UDF 补充，不是从属关系 [事实]
+3. **流批统一的实现层在 Ontology**：不在 API 层，而在数据目的地层——流和批最终都写入同一 Ontology，上层应用无感知 [推断]
+4. **< 15s 延迟是推荐配置下的典型值，非硬性 SLA**：受数据量、算子复杂度、Compute 规格影响 [事实]
+5. **Exactly-once 需显式配置，非默认**：默认为 `AT_LEAST_ONCE`，`EXACTLY_ONCE` 有额外延迟开销，需根据业务精度要求权衡 [事实]
 
 ---
 

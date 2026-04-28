@@ -178,11 +178,11 @@ def compute(...):
 
 ## 关键结论
 
-1. **测试工具链完整但需手工搭建**：`TransformRunner + InMemoryDatastore + pytest` 体系成熟，但没有开箱即得的 Mock 框架，测试数据需开发者自行准备
-2. **增量 Transform 测试是难点**：需模拟 APPEND 事务的顺序执行，逻辑较批处理测试复杂
-3. **Data Connection 增量同步与 Transform 增量计算是两个独立的增量机制**：前者解决"数据怎么进 Foundry"，后者解决"进来的数据怎么高效处理"，需配合使用
-4. **Schema 演化是接入层最常见痛点**：静态 Schema + 源系统变更 = 接入失败，需在 Pipeline 中增加容错处理
-5. **`semantic_version` 是整数，默认 1**：这个参数设计的本质是"语义版本控制"，强制让开发者在逻辑变更时做出显式声明
+1. **测试工具链完整但需手工搭建**：`TransformRunner + InMemoryDatastore + pytest` 体系成熟，但没有开箱即得的 Mock 框架，测试数据需开发者自行准备 [事实]
+2. **增量 Transform 测试是难点**：需模拟 APPEND 事务的顺序执行，逻辑较批处理测试复杂 [推断]
+3. **Data Connection 增量同步与 Transform 增量计算是两个独立的增量机制**：前者解决"数据怎么进 Foundry"，后者解决"进来的数据怎么高效处理"，需配合使用 [推断]
+4. **Schema 演化是接入层最常见痛点**：静态 Schema + 源系统变更 = 接入失败，需在 Pipeline 中增加容错处理 [推断]
+5. **`semantic_version` 是整数，默认 1**：这个参数设计的本质是"语义版本控制"，强制让开发者在逻辑变更时做出显式声明 [事实]
 
 ---
 

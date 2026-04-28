@@ -181,11 +181,11 @@ Palantir 于 2025 年发布 **Foundry MCP Server**，连接本地 IDE（VS Code 
 
 ## 六、关键结论
 
-1. **Hawk 是 Conda 兼容的，但有 Foundry 专有包**（如 `transforms-api`），无法在纯 Conda 环境中运行 Transform
-2. **Lock File 必须提交**：这是生产稳定性的最低要求，不能依赖 `meta.yaml` 动态解析
-3. **跨 Repo 分支名必须一致**：这是 Foundry 特有的工程约定，与外部 Git 经验不同
-4. **Marketplace 解决了跨环境发布的核心问题**，但参数化配置需要在设计阶段规划好（事后改造成本高）
-5. **Data Quality Check 内嵌 Transform** 比独立检查脚本更可靠，推荐作为工程规范
+1. **Hawk 是 Conda 兼容的，但有 Foundry 专有包**（如 `transforms-api`），无法在纯 Conda 环境中运行 Transform [事实]
+2. **Lock File 必须提交**：这是生产稳定性的最低要求，不能依赖 `meta.yaml` 动态解析 [事实]
+3. **跨 Repo 分支名必须一致**：这是 Foundry 特有的工程约定，与外部 Git 经验不同 [事实]
+4. **Marketplace 解决了跨环境发布的核心问题**，但参数化配置需要在设计阶段规划好（事后改造成本高） [推断]
+5. **Data Quality Check 内嵌 Transform** 比独立检查脚本更可靠，推荐作为工程规范 [推断]
 
 ---
 

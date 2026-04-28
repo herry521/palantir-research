@@ -148,11 +148,11 @@ Writeback Dataset（记录变更）
 
 ## 关键结论
 
-1. **FDS 是血缘的基础设施**：Foundry Dependency Services 统一管理跨 Repository 的 Dataset 依赖，这是全平台血缘图能实现的技术前提
-2. **Dataset Branch 不支持 Merge 是重要限制**：与 Git 类比易产生误解，数据集分支只能读出再写入，不能直接合并，影响多团队协作场景的工作流设计
-3. **Ontology 同步存在分钟级延迟**：Writeback 路径依赖 Build 触发，Pipeline→Ontology 同步不是实时的，这是"数字孪生"的现实约束
-4. **OpenLineage 不兼容是开放性短板**：Foundry 使用私有血缘模型，无法与 Databricks、dbt、Airflow 等主流工具的血缘互通，在多平台企业中存在孤岛风险
-5. **数据治理能力完整但封闭**：Column Masking、数据分类、审计日志均内置且完善，但所有能力仅在 Foundry 生态内有效，难以延伸到外部系统
+1. **FDS 是血缘的基础设施**：Foundry Dependency Services 统一管理跨 Repository 的 Dataset 依赖，这是全平台血缘图能实现的技术前提 [推断]
+2. **Dataset Branch 不支持 Merge 是重要限制**：与 Git 类比易产生误解，数据集分支只能读出再写入，不能直接合并，影响多团队协作场景的工作流设计 [事实]
+3. **Ontology 同步存在分钟级延迟**：Writeback 路径依赖 Build 触发，Pipeline→Ontology 同步不是实时的，这是"数字孪生"的现实约束 [事实]
+4. **OpenLineage 不兼容是开放性短板**：Foundry 使用私有血缘模型，无法与 Databricks、dbt、Airflow 等主流工具的血缘互通，在多平台企业中存在孤岛风险 [事实]
+5. **数据治理能力完整但封闭**：Column Masking、数据分类、审计日志均内置且完善，但所有能力仅在 Foundry 生态内有效，难以延伸到外部系统 [推断]
 
 ---
 

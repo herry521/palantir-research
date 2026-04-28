@@ -43,10 +43,10 @@ Foundry 的作业运行保障体系分为六个层次，从底层存储到上层
 
 ### 2.2 核心保障机制
 
-- **写时事务隔离**：Build 开始时锁定所有输入 Dataset 的版本（Transaction ID），读全程不受并发写影响
-- **写失败不污染**：Build 失败时，输出 Dataset 保持上次成功版本不变，不写入中间态
-- **版本历史不可变**：每次成功写入创建新 Transaction，历史版本永久可追溯
-- **原子可见性**：新版本 Transaction 要么完整可见（成功），要么对下游完全不可见（失败）
+- **写时事务隔离**：Build 开始时锁定所有输入 Dataset 的版本（Transaction ID），读全程不受并发写影响[事实]
+- **写失败不污染**：Build 失败时，输出 Dataset 保持上次成功版本不变，不写入中间态[事实]
+- **版本历史不可变**：每次成功写入创建新 Transaction，历史版本永久可追溯[事实]
+- **原子可见性**：新版本 Transaction 要么完整可见（成功），要么对下游完全不可见（失败）[事实]
 
 ---
 
@@ -77,9 +77,9 @@ Build 失败
 
 ### 3.3 Managed Profile：自动容量调整
 
-- 分析近期 Build 的实际资源消耗历史
-- 若持续低于 Profile 上限，自动缩减资源规格（成本优化）
-- **不会自动扩容**（超出原始上限），防止雪崩式资源消耗
+- 分析近期 Build 的实际资源消耗历史[事实]
+- 若持续低于 Profile 上限，自动缩减资源规格（成本优化）[事实]
+- **不会自动扩容**（超出原始上限），防止雪崩式资源消耗[事实]
 
 ---
 
@@ -111,7 +111,7 @@ Flink Job 运行中
 | `AT_LEAST_ONCE`（默认） | 至少一次，可能重复 | Checkpoint + Offset 恢复 | 低延迟 |
 | `EXACTLY_ONCE` | 精确一次，无重复 | 两阶段提交（2PC）+ 事务性 Sink | 额外延迟开销 |
 
-**EXACTLY_ONCE 适用场景：** 金融交易、计费系统、不可幂等处理的下游系统。
+**EXACTLY_ONCE 适用场景：** 金融交易、计费系统、不可幂等处理的下游系统。[推断]
 
 ### 4.3 背压处理
 
@@ -128,10 +128,10 @@ Flink Job 运行中
 
 ### 5.1 Warm Pool（冷启动消除）
 
-- Rubix/OpenShift 部署模式下，维持一批持续运行的 VM 实例池
-- Build 触发时直接从池中分配，消除 JVM 启动 + Conda 环境初始化的 2-5 分钟冷启动时间
-- 对有 Freshness SLA 的关键 Pipeline 效果显著
-- 代价：持续运行有额外 Compute 成本
+- Rubix/OpenShift 部署模式下，维持一批持续运行的 VM 实例池[事实]
+- Build 触发时直接从池中分配，消除 JVM 启动 + Conda 环境初始化的 2-5 分钟冷启动时间[事实]
+- 对有 Freshness SLA 的关键 Pipeline 效果显著[推断]
+- 代价：持续运行有额外 Compute 成本[事实]
 
 ### 5.2 Build 优先级队列
 
@@ -154,10 +154,10 @@ Organization（机构）
 
 ### 5.4 Heartbeat 机制（防僵尸 Job）
 
-- Job 通过心跳持续上报存活状态，而非固定 Timeout 截断
-- 心跳中断 → Job 被标记失败 → 触发告警/重试
-- CI Check 单次超时约 20 分钟，可通过 `JAVA_OPTS` 配置延长
-- Serverless Function 默认 60 秒超时，Deployed Function 最长 280 秒
+- Job 通过心跳持续上报存活状态，而非固定 Timeout 截断[事实]
+- 心跳中断 → Job 被标记失败 → 触发告警/重试[事实]
+- CI Check 单次超时约 20 分钟，可通过 `JAVA_OPTS` 配置延长[事实]
+- Serverless Function 默认 60 秒超时，Deployed Function 最长 280 秒[事实]
 
 ---
 
@@ -201,9 +201,9 @@ def compute(source):
 | Schema 变更检测 | 输出 Schema 变化 | 通知负责人 |
 | Streaming Pipeline 失败 | 同步 Job 失败 | HIGH 级告警 |
 
-**Schema 变更分类：**
-- **Non-breaking**（非破坏性）：新增列、修改展示名 → 自动处理
-- **Breaking**（破坏性）：修改主键、修改数据类型 → 走 Migration 框架，需人工确认
+**Schema 变更分类：**[事实]
+- **Non-breaking**（非破坏性）：新增列、修改展示名 → 自动处理[事实]
+- **Breaking**（破坏性）：修改主键、修改数据类型 → 走 Migration 框架，需人工确认[事实]
 
 ---
 
@@ -245,19 +245,19 @@ Data Health 提供 SLA 影响链可视化：
 
 ## 八、关键结论
 
-1. **事务模型是基石**：Build 失败不污染输出，输出版本原子可见，这是整个体系可靠性的前提。Foundry Dataset 的 Transaction 机制相当于数据层的 ACID 保障。
+1. **事务模型是基石**：Build 失败不污染输出，输出版本原子可见，这是整个体系可靠性的前提。Foundry Dataset 的 Transaction 机制相当于数据层的 ACID 保障。[事实]
 
-2. **批流保障机制分离**：批处理依赖 Transaction 隔离，流处理依赖 Flink Checkpoint + 2PC，两套机制协同工作但实现完全不同，是 Foundry 保障体系最复杂的地方。
+2. **批流保障机制分离**：批处理依赖 Transaction 隔离，流处理依赖 Flink Checkpoint + 2PC，两套机制协同工作但实现完全不同，是 Foundry 保障体系最复杂的地方。[事实]
 
-3. **Exactly-once 需主动开启**：默认 AT_LEAST_ONCE，选用 EXACTLY_ONCE 需权衡延迟代价（2PC 开销）；金融/计费场景强制开启。
+3. **Exactly-once 需主动开启**：默认 AT_LEAST_ONCE，选用 EXACTLY_ONCE 需权衡延迟代价（2PC 开销）；金融/计费场景强制开启。[事实]（前半句为官方文档直接支撑；"强制开启"为最佳实践推断）
 
-4. **Warm Pool 解决冷启动的 SLA 痛点**：对于有严格 Freshness SLA 的关键 Pipeline，Warm Pool 是消除 5 分钟冷启动延迟的核心机制，但持续运行有额外成本。
+4. **Warm Pool 解决冷启动的 SLA 痛点**：对于有严格 Freshness SLA 的关键 Pipeline，Warm Pool 是消除 5 分钟冷启动延迟的核心机制，但持续运行有额外成本。[事实]
 
-5. **Job Comparison 是 Foundry 差异化工具**：对比两次 Build 的输入数据/代码/依赖/配置变化，能快速定位"代码未变但 Build 突然失败"类问题，无需手动排查。
+5. **Job Comparison 是 Foundry 差异化工具**：对比两次 Build 的输入数据/代码/依赖/配置变化，能快速定位"代码未变但 Build 突然失败"类问题，无需手动排查。[事实]
 
-6. **Data Health 配置是运维规范化的关键差距**：技术能力完备，但实际效果强依赖工程团队认真配置监控规则和 SLA，这是落地时最容易被忽略的环节。
+6. **Data Health 配置是运维规范化的关键差距**：技术能力完备，但实际效果强依赖工程团队认真配置监控规则和 SLA，这是落地时最容易被忽略的环节。[推断]
 
-7. **质量门控是双层设计**：Build 内嵌 DataQualityCheck（运行时门控）+ CI Check（合并前门控）双重保障，不满足质量要求的数据不会写入新 Transaction，也不会合并到主分支。
+7. **质量门控是双层设计**：Build 内嵌 DataQualityCheck（运行时门控）+ CI Check（合并前门控）双重保障，不满足质量要求的数据不会写入新 Transaction，也不会合并到主分支。[事实]
 
 ---
 

@@ -15,7 +15,7 @@ Palantir Foundry 的算子库以"双轨制"面向不同受众：
 | **Pipeline Builder 可视化算子** | No-code / Low-code UI | 分析师、业务人员 | 后端自动生成 Spark/Flink 代码 |
 | **Code Repository SDK 算子** | Python SDK（transforms.api） | 数据工程师、开发者 | 直接编写 PySpark / Python |
 
-两轨共享同一执行引擎体系，统一接入 Lineage、Ontology、Branch、Data Health 管理。
+两轨共享同一执行引擎体系，统一接入 Lineage、Ontology、Branch、Data Health 管理。[事实]
 
 ---
 
@@ -194,7 +194,7 @@ Palantir Foundry 的算子库以"双轨制"面向不同受众：
 
 | 变换 | 功能描述 |
 |------|---------|
-| **Geometry KNN Inner Join** | 空间 K 最近邻 Join（基于球面距离，整个邻居集须能装入内存，3GB executor ≈ 100 万点） |
+| **Geometry KNN Inner Join** | 空间 K 最近邻 Join（基于球面距离，整个邻居集须能装入内存，3GB executor ≈ 100 万点）[事实] |
 | **Geo Distance Inner Join** | 按球面距离 Join（两点间距离 ≤ 阈值） |
 | **Geometry Nearest Neighbor** | 单对多的最近邻匹配 |
 | **Load Shapefile / GeoJSON** | 从文件加载矢量地理数据 |
@@ -303,7 +303,7 @@ Palantir Foundry 的算子库以"双轨制"面向不同受众：
 
 ### 3.2 依赖与包管理支撑
 
-Code Repository 使用 Conda 作为包管理器，结构如下：
+Code Repository 使用 Conda 作为包管理器，结构如下：[事实]
 
 ```
 myproject/
@@ -328,7 +328,7 @@ myproject/
 
 ### 3.3 数据质量支撑层（transforms-expectations）
 
-`transforms-expectations` 是内置的数据质量门禁系统，与 Pipeline 生命周期强绑定：
+`transforms-expectations` 是内置的数据质量门禁系统，与 Pipeline 生命周期强绑定：[事实]
 
 ```python
 from transforms.expectations import (
@@ -344,10 +344,10 @@ from transforms.expectations import (
 )
 ```
 
-执行语义：Expectation 在 Transform 完成后、数据集提交前执行。失败时：
+执行语义：Expectation 在 Transform 完成后、数据集提交前执行。[事实] 失败时：
 1. 构建标记为失败
-2. 输出数据集**不写入**（保持上一版本）
-3. 下游依赖 Transform 不触发（断路保护）
+2. 输出数据集**不写入**（保持上一版本）[事实]
+3. 下游依赖 Transform 不触发（断路保护）[事实]
 
 ### 3.4 可观测性支撑层
 
@@ -364,11 +364,11 @@ from transforms.expectations import (
 
 **Upgrade Assistant（升级助手）：**
 
-平台提供专项工具管理 Transform SDK 升级，主动感知而非被动故障：
-- 扫描全平台受影响资源，列出影响清单
-- 按 Owner 分配整改任务
-- 设置 Deadline，临近时自动推送提醒
-- 提供逐资源修复建议
+平台提供专项工具管理 Transform SDK 升级，主动感知而非被动故障：[事实]
+- 扫描全平台受影响资源，列出影响清单[事实]
+- 按 Owner 分配整改任务[事实]
+- 设置 Deadline，临近时自动推送提醒[事实]
+- 提供逐资源修复建议[事实]
 
 ---
 
@@ -380,18 +380,18 @@ Foundry 的算子稳定性通过三层版本管控实现：
 
 ```
 层级 1：API 语义版本
-    transforms.api 遵循 Semantic Versioning
+    transforms.api 遵循 Semantic Versioning[事实]
     ├── Major 版本变更 = Breaking Change（URL 升版 v1→v2）
     ├── Minor 版本变更 = 新增功能（向后兼容）
     └── Patch 版本变更 = 安全/Bug 修复（静默升级）
 
 层级 2：Function 向后兼容检查
-    Functions 发布前自动运行兼容性扫描：
+    Functions 发布前自动运行兼容性扫描：[事实]
     ├── 警告：删除函数、移除必填输入、修改输入类型
     └── 允许：新增可选输入、性能优化、内部实现变更
 
 层级 3：Dataset 不可变性（Immutability）
-    数据集每个版本不可变（类 Git commit）：
+    数据集每个版本不可变（类 Git commit）：[事实]
     ├── 并发读不阻塞
     ├── 新版本生成后旧版本仍可访问
     └── Branch 机制：实验分支不影响 main
@@ -535,20 +535,20 @@ my_transform = ContainerTransform(
 基于 Palantir 近期动态，算子库的官方扩张方向集中在三条主线：
 
 ### 主线 1：AI 算子原生化
-- LLM Transform 已内置（配置 prompt + 模型即用）
-- Embed Text（文本向量化）算子，接入向量检索
-- AIP Evals 算子（人机反馈回路，评估结果写回数据集）
-- 趋势：AI 算子从"插件"升级为"一等公民"，与普通数据算子统一编排
+- LLM Transform 已内置（配置 prompt + 模型即用）[事实]
+- Embed Text（文本向量化）算子，接入向量检索[事实]
+- AIP Evals 算子（人机反馈回路，评估结果写回数据集）[事实]
+- 趋势：AI 算子从"插件"升级为"一等公民"，与普通数据算子统一编排[推断]
 
 ### 主线 2：Lightweight 算子能力对齐 Spark
-- DuckDB/Polars 算子能力集持续扩充，追赶 PySpark
-- Accelerated Pipeline（加速批处理）原生支持（2024-04 上线）
-- 目标：中小数据集场景完全不需要启动 Spark
+- DuckDB/Polars 算子能力集持续扩充，追赶 PySpark[推断]
+- Accelerated Pipeline（加速批处理）原生支持（2024-04 上线）[事实]
+- 目标：中小数据集场景完全不需要启动 Spark[推断]
 
 ### 主线 3：GIS 算子可视化下沉
-- `geospatial-tools` Python 库进入维护模式
-- 空间算子能力统一迁移至 Pipeline Builder GIS 节点
-- H3 Index 支持、球面距离计算、坐标系转换已完成下沉
+- `geospatial-tools` Python 库进入维护模式[事实]
+- 空间算子能力统一迁移至 Pipeline Builder GIS 节点[推断]
+- H3 Index 支持、球面距离计算、坐标系转换已完成下沉[事实]
 
 ---
 
@@ -598,17 +598,17 @@ Palantir Foundry 算子库全景（完整版）
 
 ## 8. 关键结论
 
-1. **算子数量级**：Pipeline Builder 内置 Expression 约 46 种、Transform 约 63 种；SDK 侧 transforms.api 提供 8 个核心装饰器、10 个运行时类、6 种参数类型，另有 3 个扩展包。
+1. **算子数量级**：Pipeline Builder 内置 Expression 约 46 种、Transform 约 63 种；SDK 侧 transforms.api 提供 8 个核心装饰器、10 个运行时类、6 种参数类型，另有 3 个扩展包。[推断]（基于官方文档枚举统计，非官方公布数字）
 
-2. **稳定性三支柱**：API SemVer 契约 + Adjudication 自动回退 + Dataset 不可变性，共同保证算子升级不打破已有 Pipeline。
+2. **稳定性三支柱**：API SemVer 契约 + Adjudication 自动回退 + Dataset 不可变性，共同保证算子升级不打破已有 Pipeline。[事实]
 
-3. **扩展性四模式**：Python UDF（Sidecar 扩展）→ Custom Expression/Transform（封装复用）→ Container Transform（BYOC 全自定义），按复杂度梯度选择。
+3. **扩展性四模式**：Python UDF（Sidecar 扩展）→ Custom Expression/Transform（封装复用）→ Container Transform（BYOC 全自定义），按复杂度梯度选择。[事实]
 
-4. **官方 vs 自定义的核心边界**：官方算子覆盖 80% 通用场景，保证稳定性；用户自定义覆盖剩余 20%，灵活性换维护责任——Foundry 明确不鼓励在有内置算子时写 UDF。
+4. **官方 vs 自定义的核心边界**：官方算子覆盖 80% 通用场景，保证稳定性；用户自定义覆盖剩余 20%，灵活性换维护责任——Foundry 明确不鼓励在有内置算子时写 UDF。[推断]（80%/20% 为估算，"不鼓励 UDF"为官方文档倡导方向）
 
-5. **数据质量是算子的隐形护城河**：`transforms-expectations` 与 Pipeline 生命周期强绑定，失败即断路，这比事后监控早介入一个量级，是 Foundry 算子体系有别于裸 Spark 的关键设计。
+5. **数据质量是算子的隐形护城河**：`transforms-expectations` 与 Pipeline 生命周期强绑定，失败即断路，这比事后监控早介入一个量级，是 Foundry 算子体系有别于裸 Spark 的关键设计。[推断]
 
-6. **AI 算子是下一代核心差异**：LLM Transform、Embed Text、Trained Model Node 已原生内置，不是外挂，这意味着 AI 处理与结构化数据处理在同一个 DAG 编排，无需跨系统跳转。
+6. **AI 算子是下一代核心差异**：LLM Transform、Embed Text、Trained Model Node 已原生内置，不是外挂，这意味着 AI 处理与结构化数据处理在同一个 DAG 编排，无需跨系统跳转。[事实]
 
 ---
 

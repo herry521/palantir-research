@@ -23,7 +23,7 @@ DAC（自主访问控制）：Role（Viewer/Editor/Manager 等）
     └── 决定"可以做什么"（读/写/管理）
 ```
 
-**核心规则**：用户必须同时满足 MAC 要求（持有所有相关 Marking）**且**持有 DAC 角色，才能访问资源。即便 Owner 角色也无法覆盖 Marking 限制。
+**核心规则**：用户必须同时满足 MAC 要求（持有所有相关 Marking）**且**持有 DAC 角色，才能访问资源。即便 Owner 角色也无法覆盖 Marking 限制。 [事实]
 
 ### 1.2 Marking 的关键特征
 
@@ -106,7 +106,7 @@ TOP SECRET（绝密）
 
 ### 3.1 传播规则
 
-**黄金法则：下游资源的数据分类 ≥ 所有上游资源分类的并集**
+**黄金法则：下游资源的数据分类 ≥ 所有上游资源分类的并集** [事实]
 
 ```
 Dataset A（Marking: PII）
@@ -171,9 +171,9 @@ def compute(raw, output):
 ```
 
 **重要限制**：
-- `stop_propagating` 只能在**受保护分支（Protected Branch）** 上生效；未保护分支执行会导致 Build 失败
-- 执行人必须持有对应 Marking 的 **「Remove Marking」权限**
-- 执行后需重新 Build 该 Dataset 及所有下游 Dataset，新的 Marking 状态才生效
+- `stop_propagating` 只能在**受保护分支（Protected Branch）** 上生效；未保护分支执行会导致 Build 失败 [事实]
+- 执行人必须持有对应 Marking 的 **「Remove Marking」权限** [事实]
+- 执行后需重新 Build 该 Dataset 及所有下游 Dataset，新的 Marking 状态才生效 [事实]
 
 ### 3.4 停止 Organization 继承：`stop_requiring`
 
@@ -415,13 +415,13 @@ Foundry 审计日志会自动记录：
 
 ## 九、关键结论
 
-1. **Marking 是平台级强制控制，无法被角色覆盖**：即便 Dataset Owner，没有 Marking 成员资格也无法访问，这与传统 RBAC 体系有根本不同
-2. **传播机制是双刃剑**：自动传播确保敏感数据无遗漏保护，但也极易意外锁定大量下游用户，**加 Marking 前必须模拟**
-3. **stop_propagating 是唯一的传播中断手段，且受严格保护**：必须经过受保护分支 + Security Review，这本身就是一道合规审批流程
-4. **Marking 与 Ontology 安全策略正交叠加**：Marking 控制"能否进入数据"，Object Security Policy 控制"能看哪些行"，Property Security Policy 控制"能看哪些列"，三层叠加实现细胞级安全
-5. **Classification（CBAC）是 Marking 的政府特化版本**：层级制 + 析取 Compartments，用于机密等级管控，非默认功能
-6. **增量 Transform 与 Marking 变更需要全量重算**：增量 Transform 历史 Transaction 的 Marking 状态已固化，必须触发 SNAPSHOT Build 使变更生效
-7. **管理员与成员分离是安全最佳实践**：Marking 管理员负责管成员列表，不一定自己是成员，避免特权蔓延
+1. **Marking 是平台级强制控制，无法被角色覆盖**：即便 Dataset Owner，没有 Marking 成员资格也无法访问，这与传统 RBAC 体系有根本不同 [事实]
+2. **传播机制是双刃剑**：自动传播确保敏感数据无遗漏保护，但也极易意外锁定大量下游用户，**加 Marking 前必须模拟** [事实]
+3. **stop_propagating 是唯一的传播中断手段，且受严格保护**：必须经过受保护分支 + Security Review，这本身就是一道合规审批流程 [事实]
+4. **Marking 与 Ontology 安全策略正交叠加**：Marking 控制"能否进入数据"，Object Security Policy 控制"能看哪些行"，Property Security Policy 控制"能看哪些列"，三层叠加实现细胞级安全 [事实]
+5. **Classification（CBAC）是 Marking 的政府特化版本**：层级制 + 析取 Compartments，用于机密等级管控，非默认功能 [事实]
+6. **增量 Transform 与 Marking 变更需要全量重算**：增量 Transform 历史 Transaction 的 Marking 状态已固化，必须触发 SNAPSHOT Build 使变更生效 [事实]
+7. **管理员与成员分离是安全最佳实践**：Marking 管理员负责管成员列表，不一定自己是成员，避免特权蔓延 [推断]
 
 ---
 

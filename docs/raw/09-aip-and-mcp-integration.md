@@ -83,10 +83,10 @@ AIP Agent Studio 构建的 Agent 可执行的操作：
 
 ### 3.2 授权与安全约束
 
-**Agent 操作严格受 Foundry 权限体系约束：**
-- Agent 以**发起用户身份**执行操作（不是服务账号），继承该用户的所有 Marking/Role 限制
-- Agent 无法执行用户本人也无权执行的操作
-- 所有 Agent 操作记录在 Foundry 审计日志（包括 LLM 调用的输入/输出）
+**Agent 操作严格受 Foundry 权限体系约束：** [事实]
+- Agent 以**发起用户身份**执行操作（不是服务账号），继承该用户的所有 Marking/Role 限制 [事实]
+- Agent 无法执行用户本人也无权执行的操作 [事实]
+- 所有 Agent 操作记录在 Foundry 审计日志（包括 LLM 调用的输入/输出） [事实]
 
 ### 3.3 回滚机制
 
@@ -171,9 +171,9 @@ Foundry 内部服务（权限验证 → 执行操作）
 
 ### 5.5 安全边界
 
-- MCP 操作**完全受 Foundry 权限体系约束**（继承操作用户的 Marking + Role）
-- 数据不离开 Foundry 环境（只传 Schema/元数据到本地 IDE）
-- Ontology 修改类操作需要在 Foundry 侧进行**人工审批（Proposal Review）**，不允许 AI 直接写入
+- MCP 操作**完全受 Foundry 权限体系约束**（继承操作用户的 Marking + Role） [事实]
+- 数据不离开 Foundry 环境（只传 Schema/元数据到本地 IDE） [事实]
+- Ontology 修改类操作需要在 Foundry 侧进行**人工审批（Proposal Review）**，不允许 AI 直接写入 [事实]
 
 ### 5.6 AI FDE（AI Forward Deployed Engineer，2025 Q4）
 
@@ -186,11 +186,11 @@ AI FDE 是比 MCP Server 更高层的自然语言 Foundry 操作能力：
 
 ## 六、关键结论
 
-1. **AIP 的核心价值是 Grounding，不是模型本身**：Foundry 不靠大模型能力出圈，而是靠将 LLM 与 Ontology 绑定，使 AI 操作有数据根基和权限约束
-2. **AIP Agent 权限不高于操作用户**：这是 Foundry 安全设计的重要保证，Agent 无法通过 AI 手段提权
-3. **MCP Server 是 IDE 与 Foundry 的桥接层**：2025 年发布后，Foundry 开发体验从"必须在浏览器里"转向"本地 IDE + AI 辅助"，工程师体验大幅提升
-4. **两种 MCP 定位不同**：Palantir MCP 面向平台构建者（类比 `git`），Ontology MCP 面向应用消费者（类比 REST API）
-5. **AI FDE 是 Foundry 的长期战略方向**：从"低代码"向"自然语言操作"进化，目标是大幅降低使用门槛
+1. **AIP 的核心价值是 Grounding，不是模型本身**：Foundry 不靠大模型能力出圈，而是靠将 LLM 与 Ontology 绑定，使 AI 操作有数据根基和权限约束 [推断]
+2. **AIP Agent 权限不高于操作用户**：这是 Foundry 安全设计的重要保证，Agent 无法通过 AI 手段提权 [事实]
+3. **MCP Server 是 IDE 与 Foundry 的桥接层**：2025 年发布后，Foundry 开发体验从"必须在浏览器里"转向"本地 IDE + AI 辅助"，工程师体验大幅提升 [推断]
+4. **两种 MCP 定位不同**：Palantir MCP 面向平台构建者（类比 `git`），Ontology MCP 面向应用消费者（类比 REST API） [事实]
+5. **AI FDE 是 Foundry 的长期战略方向**：从"低代码"向"自然语言操作"进化，目标是大幅降低使用门槛 [推断]
 
 ---
 

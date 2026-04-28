@@ -4,6 +4,8 @@
 **类型：** 系统设计 · 可落地方案  
 **目标：** 指导从零构建具备 Palantir Foundry 级别算子能力的数据处理平台
 
+> **文档性质说明：** 本文为基于 Palantir Foundry 调研的**架构设计建议**，接口定义、类名、方法名均为作者自行设计（参考 Apache Beam 等开源框架），**不代表 Palantir 的真实内部实现**。涉及 Palantir 现状的描述已标注 [事实]/[推断]/[猜测]。
+
 ---
 
 ## 0. 阅读指引
@@ -212,7 +214,7 @@ class OperatorExecutor(ABC):
 | 测试方式 | 单元测试，毫秒级 | 集成测试，需要引擎环境 |
 | 核心价值 | 编译期类型安全 | 运行时正确性 |
 
-同一个 OperatorSpec 可以有多个 Executor 实现（Spark 版 / Polars 版），平台根据数据规模路由。
+同一个 OperatorSpec 可以有多个 Executor 实现（Spark 版 / Polars 版），平台根据数据规模路由。[推断]
 
 ---
 
@@ -291,7 +293,7 @@ def discover_and_register_all():
         OperatorRegistry.register(plugin.spec(), plugin.executors())
 ```
 
-**三种注册方式对比：**
+**三种注册方式对比：**（本表为本文设计建议，非 Palantir 真实实现）
 
 | 方式 | 适用场景 | 生效时机 |
 |------|---------|---------|
@@ -670,7 +672,7 @@ class LineageWrappedExecutor(OperatorExecutor):
 ### 5.1 官方算子 vs 用户自定义：决策原则
 
 ```
-官方算子（platform.* namespace）：
+官方算子（platform.* namespace）：（以下为本文设计建议，参考了 Palantir 官方/自定义边界原则[推断]）
   判断标准：
   ✓ 使用频率 ≥ 30%（超过 30% 的 Pipeline 需要）
   ✓ 可标准化：不依赖业务特定语义
@@ -950,7 +952,7 @@ Phase 3（第 7-12 个月）：P2 算子 + 扩展生态
 |--------|---------|------|--------------|
 | Schema 推导时机 | 编译期（配置时） | 早发现，0 运行成本 | 运行期推导：快速开发但问题晚暴露 |
 | Spec/Executor 分离 | 是 | 单元测试 Spec 不需要引擎 | 合并：实现简单但测试成本高 |
-| 多引擎策略 | 按规模自动路由 | 降本增效，DuckDB 比 Spark 快 3-5x | 只用 Spark：稳定但成本高 |
+| 多引擎策略 | 按规模自动路由 | 降本增效，DuckDB 比 Spark 快 3-5x[推断] | 只用 Spark：稳定但成本高 |
 | 算子版本锁定 | Pipeline 配置锁定 MAJOR 版本 | 升级不打破存量 Pipeline | 不锁定：灵活但升级风险大 |
 | 自定义算子注册 | entry_points（Python SPI） | 标准生态，无需修改平台代码 | 中心化注册 API：更可控但耦合高 |
 | 数据质量失败处理 | 断路（不写入 + 下游不触发） | 防止坏数据传播 | 警告不失败：容错但掩盖问题 |

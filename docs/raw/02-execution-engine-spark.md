@@ -196,11 +196,11 @@ Foundry Dataset（新版本）
 
 ## 关键结论
 
-1. **Compute Profile 屏蔽集群复杂度**：用户只选规格，Foundry 负责 Spark 集群生命周期，降低数据工程门槛
-2. **增量计算基于 Transaction 类型**：APPEND → 增量可行；UPDATE/SNAPSHOT → 强制全量重算，这是理解增量 Transform 适用边界的关键
-3. **`semantic_version` 是逻辑变更的信号机制**：Transform 逻辑变更时必须手动递增，否则旧输出不会重算（数据质量风险）
-4. **小文件问题是增量模式的主要运维负担**：长期 APPEND-only 累积大量 Parquet 小文件，需定期执行 SNAPSHOT Build 合并
-5. **DAG 同层并行**：无依赖关系的兄弟 Transform 并行执行，Foundry 自动调度，无需手工指定顺序
+1. **Compute Profile 屏蔽集群复杂度**：用户只选规格，Foundry 负责 Spark 集群生命周期，降低数据工程门槛 [事实]
+2. **增量计算基于 Transaction 类型**：APPEND → 增量可行；UPDATE/SNAPSHOT → 强制全量重算，这是理解增量 Transform 适用边界的关键 [事实]
+3. **`semantic_version` 是逻辑变更的信号机制**：Transform 逻辑变更时必须手动递增，否则旧输出不会重算（数据质量风险） [事实]
+4. **小文件问题是增量模式的主要运维负担**：长期 APPEND-only 累积大量 Parquet 小文件，需定期执行 SNAPSHOT Build 合并 [推断]
+5. **DAG 同层并行**：无依赖关系的兄弟 Transform 并行执行，Foundry 自动调度，无需手工指定顺序 [事实]
 
 ---
 

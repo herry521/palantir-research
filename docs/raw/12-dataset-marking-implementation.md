@@ -36,7 +36,7 @@ Foundry 的 Dataset Marking 由三个内部服务协作实现：
 | **直接 Marking（Direct Marking）** | 管理员/Owner 显式施加在该 Dataset 上的 Marking | 手动操作或 API 调用 |
 | **继承 Marking（Inherited Marking）** | 从上游 Dataset 血缘传播而来的 Marking | Build Service 在 Build 时自动计算 |
 
-**数据分类（Data Classification）= 直接 Marking ∪ 继承 Marking 的并集**，且永远 ≥ 所有上游资源的数据分类。
+**数据分类（Data Classification）= 直接 Marking ∪ 继承 Marking 的并集**，且永远 ≥ 所有上游资源的数据分类。 [事实]
 
 ### 1.3 Build Time vs Query Time 双重执行
 
@@ -55,7 +55,7 @@ Query Time（读取阶段）：
       → 通过：返回数据；拒绝：返回 403 PermissionDenied
 ```
 
-两阶段的分工：**Build Time 负责 Marking 传播计算**（写入元数据），**Query Time 负责访问拦截**（查权限）。两者都不可缺少。
+两阶段的分工：**Build Time 负责 Marking 传播计算**（写入元数据），**Query Time 负责访问拦截**（查权限）。两者都不可缺少。 [推断]
 
 ---
 
@@ -99,7 +99,7 @@ Content-Type: application/json
 }
 ```
 
-**注意**：该端点目前为 Preview 状态（`preview=true` 必传），API 设计可能变化。
+**注意**：该端点目前为 Preview 状态（`preview=true` 必传），API 设计可能变化。 [事实]
 
 #### 移除资源上的 Marking
 
@@ -235,7 +235,7 @@ Dataset A（加了新 Marking M）
           → ...（递归到所有传递下游）
 ```
 
-注意：这个传播**只更新 Marking 元数据**，不触发 Build 重算数据。数据文件不变，只是访问权限改变了。
+注意：这个传播**只更新 Marking 元数据**，不触发 Build 重算数据。数据文件不变，只是访问权限改变了。 [推断]
 
 ---
 
@@ -506,7 +506,7 @@ jobs:
 | **Build Time（Foundry 选择）** | 查询时无额外计算，性能好；Marking 状态持久化便于审计 | 上游 Marking 变更需触发下游刷新，有延迟 |
 | **Query Time** | Marking 变更立即生效，无刷新延迟 | 每次查询都要遍历血缘计算，性能差；血缘图大时延迟高 |
 
-Foundry 选择 Build Time 传播是正确的工程权衡：数据平台的 Dataset 数量巨大，Query Time 遍历血缘不可行。
+Foundry 选择 Build Time 传播是正确的工程权衡：数据平台的 Dataset 数量巨大，Query Time 遍历血缘不可行。 [推断]
 
 ### 6.2 为什么 stop_propagating 必须走受保护分支？
 
@@ -518,19 +518,19 @@ Foundry 选择 Build Time 传播是正确的工程权衡：数据平台的 Datas
 
 开源栈复刻 Foundry Marking 的核心难点**不是代码逻辑，而是两点**：
 
-1. **血缘与 Marking 的深度集成**：传播引擎依赖实时、准确的跨系统血缘图（Spark/dbt/Flink 都要有），OpenLineage 是目前最好的标准，但跨引擎的实时传播仍有 Gap
-2. **全链路拦截点的覆盖**：Foundry 是闭合平台，只有一个数据访问入口；自建开放栈中，Spark/Trino/Jupyter/BI 工具都是访问入口，每个都需要部署 Marking 鉴权拦截器
+1. **血缘与 Marking 的深度集成**：传播引擎依赖实时、准确的跨系统血缘图（Spark/dbt/Flink 都要有），OpenLineage 是目前最好的标准，但跨引擎的实时传播仍有 Gap [推断]
+2. **全链路拦截点的覆盖**：Foundry 是闭合平台，只有一个数据访问入口；自建开放栈中，Spark/Trino/Jupyter/BI 工具都是访问入口，每个都需要部署 Marking 鉴权拦截器 [推断]
 
 ---
 
 ## 七、关键结论
 
-1. **Foundry Marking 本质是元数据 + 传播引擎 + 访问拦截器的组合**：三者缺一不可，单独实现任一都不能达到 Foundry 的效果
-2. **传播算法的核心是"取上游 Marking 并集，减去 stop_propagating 列表"**：逻辑简单，挑战在于工程上保证所有写入路径都触发传播计算
-3. **Build Time 传播 + Query Time 拦截是正确的双重保障**：前者保证元数据正确，后者保证访问安全
-4. **stop_propagating 必须走审批流**：这是安全设计的关键，不能因为方便而省略
-5. **Databricks Unity Catalog 最接近但有根本差距**：ABAC 更灵活，但传播不自动，需要手工维护标签传播关系
-6. **自建方案的可行性**：数据模型和算法完全可以开源实现，真正的挑战是覆盖所有数据访问路径的拦截点，以及与各引擎血缘系统的深度集成
+1. **Foundry Marking 本质是元数据 + 传播引擎 + 访问拦截器的组合**：三者缺一不可，单独实现任一都不能达到 Foundry 的效果 [推断]
+2. **传播算法的核心是"取上游 Marking 并集，减去 stop_propagating 列表"**：逻辑简单，挑战在于工程上保证所有写入路径都触发传播计算 [推断]
+3. **Build Time 传播 + Query Time 拦截是正确的双重保障**：前者保证元数据正确，后者保证访问安全 [推断]
+4. **stop_propagating 必须走审批流**：这是安全设计的关键，不能因为方便而省略 [事实]
+5. **Databricks Unity Catalog 最接近但有根本差距**：ABAC 更灵活，但传播不自动，需要手工维护标签传播关系 [推断]
+6. **自建方案的可行性**：数据模型和算法完全可以开源实现，真正的挑战是覆盖所有数据访问路径的拦截点，以及与各引擎血缘系统的深度集成 [推断]
 
 ---
 

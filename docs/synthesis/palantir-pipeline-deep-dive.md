@@ -49,9 +49,9 @@ def compute(raw, config):
 **关键洞察：路径即依赖**
 
 Foundry 以**数据集路径（Dataset Path）为节点**，以 Transform 为边，自动构建有向无环图：
-- 无需显式 `set_upstream()` / `>>` 算子（对比 Airflow）
-- `@transform_df(Output('/a'), source=Input('/b'))` 即声明 `/b → /a` 的依赖边
-- Foundry 平台级依赖管理（官方称 **Automation dependencies**）统一收集所有 Transform 的声明，构建全局 DAG
+- 无需显式 `set_upstream()` / `>>` 算子（对比 Airflow）[事实]
+- `@transform_df(Output('/a'), source=Input('/b'))` 即声明 `/b → /a` 的依赖边[事实]
+- Foundry 平台级依赖管理（官方称 **Automation dependencies**）统一收集所有 Transform 的声明，构建全局 DAG[事实]
 
 **`pipeline.py` 是注册入口：**
 ```python
@@ -78,9 +78,9 @@ my_pipeline.discover_transforms()  # 扫描当前包下所有 @transform 函数
 ### 2.1 托管 Spark 架构
 
 Foundry 对用户完全隐藏集群运维：
-- 用户通过 **Compute Profile**（XS/S/M/L/XL）选择资源规格
-- 每个 Build 在独立 Spark Application 中执行（强隔离）
-- `TransformInput/Output` 对象自动处理 Dataset 的 Transaction 版本隔离
+- 用户通过 **Compute Profile**（XS/S/M/L/XL）选择资源规格[事实]
+- 每个 Build 在独立 Spark Application 中执行（强隔离）[事实]
+- `TransformInput/Output` 对象自动处理 Dataset 的 Transaction 版本隔离[事实]
 
 ### 2.2 增量计算：Transaction 驱动的差量执行
 
@@ -139,15 +139,15 @@ FDS 事件广播 → 触发下游 Build（事件驱动传播）
 **⚠️ 重要修正：流处理引擎是 Apache Flink，非 Spark Structured Streaming**
 
 Foundry 流批使用**不同引擎**，由 Pipeline Builder 统一界面屏蔽：
-- **批处理**：Apache Spark（`@transform_df` 等 Code Repository 路径）
-- **流处理**：Apache Flink（Pipeline Builder Streaming Pipeline）
+- **批处理**：Apache Spark（`@transform_df` 等 Code Repository 路径）[事实]
+- **流处理**：Apache Flink（Pipeline Builder Streaming Pipeline）[事实]
 
 Flink 在 Foundry 中的关键机制：
-- **Keyed State**：有状态转换必须指定 Partition Key，同 Key 记录路由到同一算子实例
-- **Checkpointing**：定期快照状态 + 流位置，故障后无数据丢失地恢复
-- **一致性模式**：`AT_LEAST_ONCE`（默认，低延迟）和 `EXACTLY_ONCE`（需配置，有额外开销）
+- **Keyed State**：有状态转换必须指定 Partition Key，同 Key 记录路由到同一算子实例[事实]
+- **Checkpointing**：定期快照状态 + 流位置，故障后无数据丢失地恢复[事实]
+- **一致性模式**：`AT_LEAST_ONCE`（默认，低延迟）和 `EXACTLY_ONCE`（需配置，有额外开销）[事实]
 
-典型端到端延迟：**在推荐配置下可达 < 15 秒**（非硬性 SLA，受数据量、算子复杂度、Compute 规格影响）
+典型端到端延迟：**在推荐配置下可达 < 15 秒**（非硬性 SLA，受数据量、算子复杂度、Compute 规格影响）[事实]
 
 **Kafka 集成流程：**
 ```
@@ -218,9 +218,9 @@ Dataset
               └── SNAPSHOT：全量替换
 ```
 
-**关键限制：Dataset Branch 不支持 Merge**
-- 与 Git 类比容易误导：代码 Repo 可 Merge，数据集 Branch 不行
-- 多团队协作时需通过 Transform 将数据从一个 Branch 读出写入另一个 Branch
+**关键限制：Dataset Branch 不支持 Merge**[事实]
+- 与 Git 类比容易误导：代码 Repo 可 Merge，数据集 Branch 不行[事实]
+- 多团队协作时需通过 Transform 将数据从一个 Branch 读出写入另一个 Branch[推断]
 
 ### 4.3 Ontology 集成的技术路径
 
@@ -242,14 +242,14 @@ Writeback Dataset（变更记录）
 原始数据集更新 / 外部系统写回
 ```
 
-**Writeback 延迟说明：** Writeback Dataset 不是实时自动更新的，依赖 Build 触发，存在**分钟级延迟**。
+**Writeback 延迟说明：** Writeback Dataset 不是实时自动更新的，依赖 Build 触发，存在**分钟级延迟**。[事实]
 
 ### 4.4 开放性短板：与 OpenLineage 不兼容
 
-Foundry 使用私有血缘模型，**未原生支持 OpenLineage 标准**，导致：
-- 无法与 dbt、Databricks、Airflow 的血缘图互通
-- 在多平台企业环境中形成数据血缘孤岛
-- 这是 Foundry 与开源生态最显著的集成壁垒之一
+Foundry 使用私有血缘模型，**未原生支持 OpenLineage 标准**，导致：[事实]
+- 无法与 dbt、Databricks、Airflow 的血缘图互通[推断]
+- 在多平台企业环境中形成数据血缘孤岛[推断]
+- 这是 Foundry 与开源生态最显著的集成壁垒之一[推断]
 
 ---
 
@@ -304,24 +304,24 @@ Data Connection 是 Pipeline 的上游入口，负责将外部数据源接入 Fo
 
 | 优势 | 技术实现 |
 |---|---|
-| 零运维 Spark 集群 | Compute Profile 屏蔽集群管理 |
-| 自动血缘追踪 | FDS 统一收集 Transform 依赖 |
-| 高效增量计算 | Transaction 类型驱动，APPEND → 自动增量 |
-| 流批输出统一 | 无论来源，最终都进 Ontology，应用无感知 |
-| 数据安全治理 | Column Masking + 数据分类 + 审计日志内置 |
-| 低代码开发 | Pipeline Builder + AIP 自然语言生成代码 |
+| 零运维 Spark 集群 | Compute Profile 屏蔽集群管理[事实] |
+| 自动血缘追踪 | FDS 统一收集 Transform 依赖[事实] |
+| 高效增量计算 | Transaction 类型驱动，APPEND → 自动增量[事实] |
+| 流批输出统一 | 无论来源，最终都进 Ontology，应用无感知[推断] |
+| 数据安全治理 | Column Masking + 数据分类 + 审计日志内置[事实] |
+| 低代码开发 | Pipeline Builder + AIP 自然语言生成代码[事实] |
 
 ### 5.2 核心限制
 
 | 限制 | 影响 |
 |---|---|
-| 强平台绑定 | 技术栈锁定，迁移成本极高 |
-| Dataset Branch 不支持 Merge | 多团队协作数据流复杂 |
-| OpenLineage 不兼容 | 多平台血缘孤岛 |
-| Writeback 分钟级延迟 | 不适合强实时写回场景 |
-| 列级血缘不完整 | 手写 PySpark 代码血缘缺失 |
-| 小文件问题 | 增量模式长期运行需定期 SNAPSHOT 合并 |
-| 极低延迟限制 | 基于 Spark，< 1s 延迟场景不适用（Flink 更合适）|
+| 强平台绑定 | 技术栈锁定，迁移成本极高[推断] |
+| Dataset Branch 不支持 Merge | 多团队协作数据流复杂[事实] |
+| OpenLineage 不兼容 | 多平台血缘孤岛[推断] |
+| Writeback 分钟级延迟 | 不适合强实时写回场景[事实] |
+| 列级血缘不完整 | 手写 PySpark 代码血缘缺失[事实] |
+| 小文件问题 | 增量模式长期运行需定期 SNAPSHOT 合并[推断] |
+| 极低延迟限制 | 基于 Spark，< 1s 延迟场景不适用（Flink 更合适）[推断] |
 
 ### 5.3 适合 vs 不适合场景
 
@@ -341,13 +341,13 @@ Data Connection 是 Pipeline 的上游入口，负责将外部数据源接入 Fo
 
 ## 八、关键技术结论汇总
 
-1. **装饰器即 DAG**：`@transform_df` 的 `Input/Output` 声明是 DAG 边的定义，FDS 自动组装全局依赖图，无需手工编排
-2. **Transaction 类型是增量计算的开关**：APPEND → 增量可行；UPDATE/SNAPSHOT → 全量重算，这是理解 Pipeline 性能优化的核心
-3. **`semantic_version` 是逻辑变更的信号**：必须在 Transform 逻辑实质性变更时手动递增，否则旧数据不会重算
-4. **流批统一在 Ontology 层而非 API 层**：两者共享数据目的地（Ontology），上层应用无感知，但开发模型不同
-5. **流处理引擎是 Apache Flink（非 Spark）**：批处理用 Spark，流处理用 Flink；Flink 的 Keyed State + Checkpoint 提供有状态流计算能力；< 15s 是推荐配置下的典型值而非硬性 SLA；Exactly-once 需显式配置，默认为 AT_LEAST_ONCE
-6. **Dataset Branch 不支持 Merge**：这是最易被误解的重要限制，影响多团队协作工作流设计
-7. **OpenLineage 不兼容是开放性最大短板**：多平台架构下 Foundry 血缘形成孤岛
+1. **装饰器即 DAG**：`@transform_df` 的 `Input/Output` 声明是 DAG 边的定义，FDS 自动组装全局依赖图，无需手工编排[事实]
+2. **Transaction 类型是增量计算的开关**：APPEND → 增量可行；UPDATE/SNAPSHOT → 全量重算，这是理解 Pipeline 性能优化的核心[事实]
+3. **`semantic_version` 是逻辑变更的信号**：必须在 Transform 逻辑实质性变更时手动递增，否则旧数据不会重算[事实]
+4. **流批统一在 Ontology 层而非 API 层**：两者共享数据目的地（Ontology），上层应用无感知，但开发模型不同[推断]
+5. **流处理引擎是 Apache Flink（非 Spark）**：批处理用 Spark，流处理用 Flink；Flink 的 Keyed State + Checkpoint 提供有状态流计算能力；< 15s 是推荐配置下的典型值而非硬性 SLA；Exactly-once 需显式配置，默认为 AT_LEAST_ONCE[事实]
+6. **Dataset Branch 不支持 Merge**：这是最易被误解的重要限制，影响多团队协作工作流设计[事实]
+7. **OpenLineage 不兼容是开放性最大短板**：多平台架构下 Foundry 血缘形成孤岛[推断]
 
 ---
 

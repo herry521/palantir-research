@@ -94,14 +94,14 @@ Foundry 的 Ontology 是其核心价值所在，目前**无开源工具可完整
 | Workshop 应用消费 Ontology | 无等价工具（需自建应用层） |
 | Ontology Grounded AI | 需自建 RAG + 工具调用框架 |
 
-**结论：如果核心价值诉求是"数据 → 业务语义 → 可操作 AI"，开源栈短期内无法复刻。**
+**结论：如果核心价值诉求是"数据 → 业务语义 → 可操作 AI"，开源栈短期内无法复刻。** [推断]
 
 ### 3.2 次要 GAP：增量计算语义
 
 Foundry 的 Transaction 类型（APPEND/UPDATE/SNAPSHOT）驱动的增量计算语义，在开源栈中需要手动实现：
 - Iceberg 的 Incremental Read 接近 APPEND 语义，但需手写判断逻辑
 - dbt 的 Incremental Models 需要显式指定增量字段，不如 Foundry 自动
-- **无工具能自动识别上游是 APPEND 还是 SNAPSHOT 并切换执行模式**
+- **无工具能自动识别上游是 APPEND 还是 SNAPSHOT 并切换执行模式** [推断]
 
 ### 3.3 平台统一性 GAP
 
@@ -156,7 +156,7 @@ Dagster 的 **Software-Defined Assets（SDA）** 模型与 Foundry 的 Dataset +
 - Ontology Action（Writeback）需重建为标准 REST API
 - AIP Agent 能力需用 LangChain + 自建工具调用框架替换
 
-**迁移评估结论：L1-L3 层（接入/计算/调度）迁移成本可控，L4-L5 层（治理/Ontology）迁移成本极高，通常是企业不迁移的主要原因。**
+**迁移评估结论：L1-L3 层（接入/计算/调度）迁移成本可控，L4-L5 层（治理/Ontology）迁移成本极高，通常是企业不迁移的主要原因。** [推断]
 
 ### 5.2 绿地建设（从零构建）
 
@@ -176,12 +176,12 @@ AI 层：     LangChain + Anthropic Claude（Ontology 需自设计）
 
 ## 六、关键结论
 
-1. **L1-L3 层开源替代成熟度高**：接入（Airbyte）、计算（Spark+Iceberg）、调度（Dagster/Airflow）组合可覆盖 Foundry 85% 的 Pipeline 能力
-2. **Ontology 层是 Foundry 的核心护城河**：目前无开源工具可完整替代，这也是 Palantir 最难被替代的差异化价值
-3. **Dagster 是最接近 Foundry 设计思想的开源调度器**：Asset-based 模型 + 内置血缘 + Sensor 事件驱动，适合作为主要替代
-4. **OpenLineage 是开放生态的关键标准**：选择开源栈时，优先选择支持 OpenLineage 的工具（Airflow、dbt、Spark 均已支持），确保血缘可互通
-5. **迁移 Foundry 的最大成本在 L5（Ontology + 应用层）**：重建 Ontology Action、Workshop 应用、AI 能力的工程量通常超出预期
-6. **增量计算语义需手动实现**：开源栈缺乏 Foundry Transaction 类型自动切换增量/全量的机制，这是工程复杂度的隐藏来源
+1. **L1-L3 层开源替代成熟度高**：接入（Airbyte）、计算（Spark+Iceberg）、调度（Dagster/Airflow）组合可覆盖 Foundry 85% 的 Pipeline 能力 [推断]
+2. **Ontology 层是 Foundry 的核心护城河**：目前无开源工具可完整替代，这也是 Palantir 最难被替代的差异化价值 [推断]
+3. **Dagster 是最接近 Foundry 设计思想的开源调度器**：Asset-based 模型 + 内置血缘 + Sensor 事件驱动，适合作为主要替代 [推断]
+4. **OpenLineage 是开放生态的关键标准**：选择开源栈时，优先选择支持 OpenLineage 的工具（Airflow、dbt、Spark 均已支持），确保血缘可互通 [事实]
+5. **迁移 Foundry 的最大成本在 L5（Ontology + 应用层）**：重建 Ontology Action、Workshop 应用、AI 能力的工程量通常超出预期 [推断]
+6. **增量计算语义需手动实现**：开源栈缺乏 Foundry Transaction 类型自动切换增量/全量的机制，这是工程复杂度的隐藏来源 [推断]
 
 ---
 

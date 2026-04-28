@@ -177,11 +177,11 @@ Foundry 支持配置 Build 优先级：
 
 ## 八、关键结论
 
-1. **Data Health 是运维中枢**：告警配置、SLA 管理、数据质量规则全部收口在此，监控规范化的前提是认真配置 Data Health
-2. **Live Logs 是 2024 年最重要的调试改进**：历史上 Foundry Pipeline 调试体验较差（要等 Job 完成），实时日志大幅改善
-3. **Job Comparison 是 Foundry 特色工具**：定位"代码未变但 Build 失败"类问题效率极高，值得推广为标准排查流程
-4. **Linter 可自动发现成本浪费**：建议纳入月度运维 Review，而非被动等问题暴露
-5. **SLA 配置优先级高于事后告警**：有 SLA 的 Dataset 问题往往有业务影响，应作为工程交付标准之一
+1. **Data Health 是运维中枢**：告警配置、SLA 管理、数据质量规则全部收口在此，监控规范化的前提是认真配置 Data Health [事实]
+2. **Live Logs 是 2024 年最重要的调试改进**：历史上 Foundry Pipeline 调试体验较差（要等 Job 完成），实时日志大幅改善 [事实]
+3. **Job Comparison 是 Foundry 特色工具**：定位"代码未变但 Build 失败"类问题效率极高，值得推广为标准排查流程 [事实]
+4. **Linter 可自动发现成本浪费**：建议纳入月度运维 Review，而非被动等问题暴露 [事实]
+5. **SLA 配置优先级高于事后告警**：有 SLA 的 Dataset 问题往往有业务影响，应作为工程交付标准之一 [推断]
 
 ---
 

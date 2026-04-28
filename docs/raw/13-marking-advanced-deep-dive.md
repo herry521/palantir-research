@@ -214,8 +214,8 @@ Branch 切换时 Marking 的状态：
 
 ### 3.1 AIP 的安全架构原则
 
-AIP 在设计上遵循 **"AI 继承调用者身份"** 原则：
-LLM Agent 的数据访问权限 **绝不超过** 触发该 Agent 的人类用户的权限。
+AIP 在设计上遵循 **"AI 继承调用者身份"** 原则：[事实]
+LLM Agent 的数据访问权限 **绝不超过** 触发该 Agent 的人类用户的权限。 [事实]
 
 ```
 用户（持有 Marking M1，不持有 M2）
@@ -254,7 +254,7 @@ def aip_logic_function(user_context: UserContext, query: str):
     return llm.summarize(results)
 ```
 
-**关键机制**：OSDK（Ontology SDK）在所有数据访问路径上强制注入调用者的 `UserContext`，Marking 鉴权在 Ontology 层执行，LLM 的 Prompt 上下文中永远不会出现用户无权访问的数据。
+**关键机制**：OSDK（Ontology SDK）在所有数据访问路径上强制注入调用者的 `UserContext`，Marking 鉴权在 Ontology 层执行，LLM 的 Prompt 上下文中永远不会出现用户无权访问的数据。 [事实]
 
 ### 3.3 AIP 的多层 Marking 策略（与传统场景的差异）
 
@@ -437,11 +437,11 @@ FDS（Foundry Dependency Service）的级联刷新机制：
   ...
   问题：深度血缘图中，一个 Marking 变更可能触发百万次元数据更新
 
-Foundry 的优化策略：
-  1. 批量化（Batching）：同一时间窗口内多个 Marking 变更合并为一次传播
-  2. 版本化（Versioning）：Marking 状态有版本号，下游只处理比自身版本号高的变更
-  3. 幂等性（Idempotency）：重复收到相同 Marking 状态不触发重复刷新
-  4. 异步刷新：元数据刷新异步进行，用户操作不被阻塞（可能有短暂不一致窗口）
+Foundry 的优化策略：[推断]
+  1. 批量化（Batching）：同一时间窗口内多个 Marking 变更合并为一次传播 [推断]
+  2. 版本化（Versioning）：Marking 状态有版本号，下游只处理比自身版本号高的变更 [推断]
+  3. 幂等性（Idempotency）：重复收到相同 Marking 状态不触发重复刷新 [推断]
+  4. 异步刷新：元数据刷新异步进行，用户操作不被阻塞（可能有短暂不一致窗口）[推断]
 ```
 
 ### 5.3 Query Time 的性能保障
@@ -456,9 +456,9 @@ Query Time Marking 鉴权的性能路径：
     → 返回结果
 
 关键优化：
-  1. user_markings 缓存（TTL 约 5 分钟）：用户 Marking 成员资格不频繁变化，缓存命中率高
-  2. resource_markings 本地缓存：Query Engine 节点缓存热点资源的 Marking 列表
-  3. 提前拒绝（Fast Fail）：只要发现用户缺少任一 Marking，立即返回 403，无需继续计算
+  1. user_markings 缓存（TTL 约 5 分钟）：用户 Marking 成员资格不频繁变化，缓存命中率高 [推断]
+  2. resource_markings 本地缓存：Query Engine 节点缓存热点资源的 Marking 列表 [推断]
+  3. 提前拒绝（Fast Fail）：只要发现用户缺少任一 Marking，立即返回 403，无需继续计算 [推断]
 ```
 
 ### 5.4 大规模场景的工程约束
@@ -473,11 +473,11 @@ Query Time Marking 鉴权的性能路径：
 ### 5.5 Marking 传播延迟窗口
 
 ```
-典型传播延迟（Foundry 官方参考值不公开，业界经验值）：
+典型传播延迟（Foundry 官方参考值不公开，业界经验值）：[猜测]
 
-直接下游（1跳）：     毫秒~秒级（元数据写入）
-二级下游（2跳）：     秒~分钟级（异步广播）
-深度血缘（10+跳）：  分钟~十分钟级（队列积压时更慢）
+直接下游（1跳）：     毫秒~秒级（元数据写入）[猜测]
+二级下游（2跳）：     秒~分钟级（异步广播）[猜测]
+深度血缘（10+跳）：  分钟~十分钟级（队列积压时更慢）[猜测]
 
 实践意义：
   加 Marking 后，下游用户可能有短暂的"还能访问"窗口
@@ -489,17 +489,17 @@ Query Time Marking 鉴权的性能路径：
 
 ## 六、关键结论（进阶部分）
 
-1. **SDS 是 Marking 的自动化入口，但不能替代人工治理**：SDS 负责边界数据的自动发现和打标，人工负责误报处理和 stop_propagating 的合规审批，两者协作才构成完整的 Marking 生命周期管理
+1. **SDS 是 Marking 的自动化入口，但不能替代人工治理**：SDS 负责边界数据的自动发现和打标，人工负责误报处理和 stop_propagating 的合规审批，两者协作才构成完整的 Marking 生命周期管理 [事实]
 
-2. **增量 Transform 是 Marking 一致性的最大隐患**：上游 Marking 变更后，增量 Transform 的历史 Transaction 不会自动更新，必须触发 SNAPSHOT Build 全量重算，这是 Foundry 数据架构中需要特别关注的运维盲区
+2. **增量 Transform 是 Marking 一致性的最大隐患**：上游 Marking 变更后，增量 Transform 的历史 Transaction 不会自动更新，必须触发 SNAPSHOT Build 全量重算，这是 Foundry 数据架构中需要特别关注的运维盲区 [事实]
 
-3. **AIP 场景下 Marking 完全透明传递**：LLM Agent 的数据访问权限严格等于触发该 Agent 的用户权限，AI 不存在"绕过" Marking 的机制，这是 Foundry 在企业 AI 合规场景的核心竞争力
+3. **AIP 场景下 Marking 完全透明传递**：LLM Agent 的数据访问权限严格等于触发该 Agent 的用户权限，AI 不存在"绕过" Marking 的机制，这是 Foundry 在企业 AI 合规场景的核心竞争力 [事实]
 
-4. **Marking Category 的 AND/OR 设计决定了治理粒度**：合取用于"必须同时满足多条件"（数据敏感度维度），析取用于"满足其一即可"（地理合规维度），混淆两者会导致不合理的访问控制策略
+4. **Marking Category 的 AND/OR 设计决定了治理粒度**：合取用于"必须同时满足多条件"（数据敏感度维度），析取用于"满足其一即可"（地理合规维度），混淆两者会导致不合理的访问控制策略 [事实]
 
-5. **Marking 传播只更新元数据，不触发数据重算**：除非涉及 stop_propagating 变更，Marking 的加减只是权限元数据更新，对数据文件和 Build 计算无影响，性能开销远低于直觉预期
+5. **Marking 传播只更新元数据，不触发数据重算**：除非涉及 stop_propagating 变更，Marking 的加减只是权限元数据更新，对数据文件和 Build 计算无影响，性能开销远低于直觉预期 [推断]
 
-6. **传播延迟不可预测，高敏感数据应主动管理**：不能依赖"等级联传播完成"作为安全保障，应在数据公开前主动确认所有关键资源的 Marking 状态
+6. **传播延迟不可预测，高敏感数据应主动管理**：不能依赖"等级联传播完成"作为安全保障，应在数据公开前主动确认所有关键资源的 Marking 状态 [推断]
 
 ---
 
