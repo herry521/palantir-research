@@ -128,9 +128,13 @@ Flink Job 运行中
 
 ### 5.1 Warm Pool（冷启动消除）
 
-- Rubix/OpenShift 部署模式下，维持一批持续运行的 VM 实例池[事实]
-- Build 触发时直接从池中分配，消除 JVM 启动 + Conda 环境初始化的 2-5 分钟冷启动时间[事实]
-- 对有 Freshness SLA 的关键 Pipeline 效果显著[推断]
+- **所有 enrollment 均可用**（非仅限特定部署模式）[事实]
+- 维持一批持续运行的 VM 实例池，Build 触发时直接分配，减少冷启动等待时间[事实]
+- **⚠️ 目前仅支持 Extra Small Profile**，大规格 Profile 暂不支持[事实]
+- 每个 VM 最多同时运行 **3 个 Job**，共享资源[事实]
+- 启用 Warm Pool 时 **Debug Cluster 不可用**（调试时需额外等待约 1 分钟以上）[事实]
+- 使用 Trained Model Node 时推荐关闭 Warm Pool[事实]
+- 适用场景：**轻量快速构建**（Extra Small 规格），而非大规格生产 Pipeline 的 SLA 保障手段[事实]
 - 代价：持续运行有额外 Compute 成本[事实]
 
 ### 5.2 Build 优先级队列
@@ -251,7 +255,7 @@ Data Health 提供 SLA 影响链可视化：
 
 3. **Exactly-once 需主动开启**：默认 AT_LEAST_ONCE，选用 EXACTLY_ONCE 需权衡延迟代价（2PC 开销）；金融/计费场景强制开启。[事实]（前半句为官方文档直接支撑；"强制开启"为最佳实践推断）
 
-4. **Warm Pool 解决冷启动的 SLA 痛点**：对于有严格 Freshness SLA 的关键 Pipeline，Warm Pool 是消除 5 分钟冷启动延迟的核心机制，但持续运行有额外成本。[事实]
+4. **Warm Pool 适用于轻量快速构建**：仅支持 Extra Small Profile，减少冷启动等待，适合小规模快速 Build 场景；大规格生产 Pipeline 暂不支持，不是通用 SLA 保障手段。[事实]
 
 5. **Job Comparison 是 Foundry 差异化工具**：对比两次 Build 的输入数据/代码/依赖/配置变化，能快速定位"代码未变但 Build 突然失败"类问题，无需手动排查。[事实]
 
