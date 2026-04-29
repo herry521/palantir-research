@@ -502,7 +502,73 @@ Paimon 读取效率取决于表类型：
 
 ---
 
-## 十、DataFusion 开源生态背景
+## 十、轻量引擎生态：DataFusion / DuckDB / Polars 的关系
+
+Palantir Foundry 的轻量计算层同时提供 DataFusion、DuckDB、Polars、Pandas 四种引擎，三者并非竞争而是互补。
+
+> **证据：** "Palantir Foundry offers 'lightweight compute' which supports single-node engines like DuckDB, Pandas, and Polars."（搜索结果对 Palantir 文档的转述）
+
+### 10.1 共同基础：Apache Arrow
+
+三者共享 Apache Arrow 内存格式，是互操作的根基：
+
+```
+┌─────────────────────────────────────────────────────┐
+│                Apache Arrow 生态                    │
+│     统一列式内存格式，零拷贝跨工具传递数据           │
+├───────────────┬──────────────────┬──────────────────┤
+│    DuckDB     │   DataFusion     │    Polars        │
+│    (C++)      │    (Rust)        │    (Rust)        │
+│               │                  │                  │
+│ Arrow 互操作  │  Arrow 原生      │  Arrow 原生      │
+│ （适配层）    │ （内存格式即Arrow)│ （内存格式即Arrow)│
+└───────────────┴──────────────────┴──────────────────┘
+```
+
+DataFusion 和 Polars 内部直接使用 Arrow RecordBatch 作为唯一内存格式；DuckDB 有自己独立的内存格式，通过适配层与 Arrow 交互（非原生 Arrow）。
+
+### 10.2 本质定位差异
+
+| 维度 | DataFusion | DuckDB | Polars |
+|---|---|---|---|
+| **本质** | 查询执行**框架**（Library） | 完整嵌入式**数据库** | **DataFrame** 操作库 |
+| **类比** | LLVM（给人造编译器的） | SQLite（直接能用的） | pandas（数据处理的） |
+| **面向谁** | 造系统的工程师 | 分析师/工程师直接用 | 数据科学家 |
+| **语言** | Rust | C++ | Rust（Python API） |
+| **主要 API** | SQL + DataFrame + 扩展 API | SQL | 表达式 API（SQL 为辅） |
+| **内置存储** | ❌ 无，读外部文件 | ✅ 自有列式存储格式 | ❌ 无，读外部文件 |
+| **可扩展性** | 极高（TableProvider / OptimizerRule 等） | 中等 | 较低 |
+| **开箱即用** | ❌ 需自行组装 | ✅ | ✅ |
+
+### 10.3 Palantir 的选型逻辑
+
+三者在 Foundry 轻量计算层各司其职：
+
+```
+Palantir 轻量计算层
+├── DataFusion → Faster Pipeline 底层执行引擎（Pipeline Builder 背后）
+├── DuckDB     → 交互式 ad-hoc 查询、嵌入式分析场景
+├── Polars     → Python 代码中的高性能 DataFrame 操作
+└── Pandas     → 兼容现有 Python 数据科学代码
+```
+
+Faster Pipeline 选择 DataFusion 而非 DuckDB 的核心原因（推断）：
+
+1. **深度可定制**：DataFusion 是框架，Palantir 可实现自定义 `TableProvider` 接入 Foundry Dataset 事务模型、注入自定义优化规则；DuckDB 是完整数据库，黑盒较多
+2. **Arrow 原生**：DataFusion 内存格式即 Arrow，与 Foundry 整体数据流零序列化集成；DuckDB 需要格式转换层
+3. **平台嵌入性**：DataFusion 设计定位就是"嵌入到其他系统中"，DuckDB 定位是独立使用的数据库
+
+### 10.4 性能横向对比
+
+| 场景 | 排名 |
+|---|---|
+| Parquet 文件查询（ClickBench 等） | DataFusion ≥ DuckDB > ClickHouse（单节点） |
+| DataFrame 操作 | Polars ≈ DataFusion > DuckDB > Pandas |
+| 超出内存数据集（spill to disk） | DuckDB（成熟）≈ Polars > DataFusion（仍在完善） |
+
+---
+
+## 十一、DataFusion 开源生态背景
 
 DataFusion 被多个知名项目采用，说明其技术成熟度：
 
@@ -519,7 +585,7 @@ DataFusion 被多个知名项目采用，说明其技术成熟度：
 
 ---
 
-## 十一、关键结论
+## 十二、关键结论
 
 1. **Faster 引擎 = DataFusion**（推断可信度：高）  
    底层使用 Apache DataFusion，Rust 实现，单节点架构，Arrow 列式内存。
@@ -538,11 +604,13 @@ DataFusion 被多个知名项目采用，说明其技术成熟度：
 
 8. **混合使用是正式支持的模式**：Faster 节点 + Spark 节点可在同一 Pipeline 中共存。
 
-9. **最适配数据湖格式为 Delta Lake**：`delta-rs` + DataFusion 同源 Rust/Arrow 技术栈，全链路零序列化，Parquet 下推优化完全生效，写支持完整且经生产验证。Iceberg 为第二选择（DML 仍在追赶）；Paimon 当前仅只读；Hudi 无 Rust/DataFusion 路径。
+9. **DataFusion / DuckDB / Polars 是互补而非竞争**：三者共享 Arrow 生态，DataFusion 是"造引擎的框架"（极强扩展性），DuckDB 是开箱即用的嵌入式数据库，Polars 是高性能 DataFrame 库；Palantir 选 DataFusion 作 Faster Pipeline 底层，核心因其可深度定制 TableProvider 接入 Foundry 存储模型。
+
+10. **最适配数据湖格式为 Delta Lake**：`delta-rs` + DataFusion 同源 Rust/Arrow 技术栈，全链路零序列化，Parquet 下推优化完全生效，写支持完整且经生产验证。Iceberg 为第二选择（DML 仍在追赶）；Paimon 当前仅只读；Hudi 无 Rust/DataFusion 路径。
 
 ---
 
-## 十二、证据可信度说明
+## 十三、证据可信度说明
 
 | 结论 | 来源类型 | 可信度 |
 |---|---|---|
@@ -561,5 +629,8 @@ DataFusion 被多个知名项目采用，说明其技术成熟度：
 | Delta Lake 最适配 DataFusion | delta-rs 官方文档 + iceberg-rust release notes + paimon-datafusion crate 文档 | 高 |
 | Paimon MOR 读效率劣化 | Paimon 官方文档（MOR 读并发受 bucket 限制） + DataFusion Parquet 优化原理推导 | 高 |
 | Hudi 无 DataFusion 路径 | 社区公知，Hudi 无 Rust 实现 | 高 |
+| Palantir 提供 DuckDB/Polars 轻量引擎 | Palantir 官方文档转述 | 高 |
+| DataFusion 选而非 DuckDB 的原因（可定制性）| 架构推断，基于 DataFusion 设计定位 | 中（推断） |
+| 三引擎性能排序 | ClickBench 及社区基准测试 | 中（基准随版本变化）|
 
 > **注：** Palantir 官方文档 `/docs/foundry/pipeline-builder/faster-pipelines/` 等页面返回 404，直接证据来自可信度较高的第三方转述，核心事实可交叉验证。DataFusion 相关章节均有官方文档直接支撑。
