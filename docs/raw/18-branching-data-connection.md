@@ -38,7 +38,9 @@ Dataset (RID)
 └── feature/dev-B   ← Pipeline Transform 可在此 branch 运行
 ```
 
-**分支语义**：每个 dataset branch 是一个独立的事务指针，互不干扰，类似 Git branch，但**不支持 merge**（dataset branch 无法合并，无 merge 操作）。
+**分支语义（数据层面）**：每个 dataset branch 是一个独立的事务指针，互不干扰，类似 Git branch，但**数据层面不支持 merge**——无法将 feature branch 上的数据事务直接 merge 回 master。
+
+> **注意**：Foundry 的 Global Branching 机制支持在 **Logic/配置层面**（Transform 代码、Sync 配置、Ontology 对象等）提交 proposal 并 merge 回 Main，这是代码/配置的 merge，与 dataset 数据 merge 是不同概念（见第六节）。
 
 典型开发模式：
 1. Sync → master（生产数据持续流入）
@@ -93,7 +95,48 @@ Data Connection
 
 ---
 
-## 五、证据可信度说明
+## 六、Global Branching：Foundry 分支能力的统一体系
+
+Data Connection 的配置分支能力是 Foundry **Global Branching** 体系的组成部分，而非孤立功能。
+
+### 6.1 Global Branching 覆盖范围
+
+Global Branching 提供跨应用的统一分支体验，在一个 branch 上可同时管理：
+- **Pipeline Builder / Code Repo** — Transform 逻辑分支
+- **Data Connection** — Sync 配置分支（源、调度、字段映射等）
+- **Ontology** — 对象类型、Link 类型的定义变更
+- **Workshop** — 应用界面变更
+
+这意味着一个 branch 可以承载完整的端到端变更（从 Sync 配置到 Transform 逻辑到 Ontology 对象），在不影响生产环境的前提下整体测试。
+
+### 6.2 Proposal → Merge 流程（Logic 层面）
+
+```
+feature branch（端到端开发测试）
+        ↓
+   创建 Proposal
+        ↓
+   Review + Approval
+        ↓
+   一键 Merge 回 Main（配置/代码层面）
+```
+
+> **[事实]** Pipeline Builder 在 merge 时有 conflict 检测和解决流程。
+>
+> **重要区分**：这里的 merge 是 **Logic/配置 merge**（类似 Git PR），不是 dataset 数据内容的 merge。dataset 数据层面仍不支持 merge。
+
+### 6.3 对本文核心结论的影响
+
+| 结论 | 是否受影响 | 说明 |
+|---|---|---|
+| Sync 配置支持分支 | 是 | Data Connection 配置分支是 Global Branching 体系一部分，不是独立功能 |
+| Sync 产出只写 master | 否 | Global Branching 管理的是 **配置**，运行中的 Sync Job 数据产出目标仍为 master |
+| Dataset 分支不支持 merge | 需区分 | 数据层面确实不支持；配置/代码层面通过 Global Branching proposal 可 merge |
+| Stream 约束 | 否 | 不受影响 |
+
+---
+
+## 七、证据可信度说明
 
 | 结论 | 来源 | 可信度 |
 |---|---|---|
@@ -102,3 +145,5 @@ Data Connection
 | Dataset 支持多分支但不可 merge | Palantir 官方文档转述 | 高 |
 | Stream 每 branch 限 1 active stream | Palantir 官方文档转述 | 高 |
 | Streaming Sync 默认写 master | 设计逻辑推断，与 batch sync 行为一致 | 中（推断）|
+| Data Connection 分支是 Global Branching 体系一部分 | 多来源搜索结果综合 | 高 |
+| Global Branching 支持配置/代码层面 merge，不包含数据 merge | 搜索结果 + 官方 Pipeline Builder 文档描述 | 高 |
