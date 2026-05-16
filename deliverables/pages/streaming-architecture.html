@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>流式架构</title>
+    <link rel="stylesheet" href="../styles.css" />
+    <script defer src="../app.js"></script>
+  </head>
+  <body class="detail-body">
+    <div class="site-shell">
+      <svg class="icon-sprite" xmlns="http://www.w3.org/2000/svg">
+        <symbol id="i-home" viewBox="0 0 24 24">
+          <path
+            d="M12 3l8 6v11a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V9l8-6Z"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.8"
+            stroke-linejoin="round"
+          />
+          <path
+            d="M9 21v-8h6v8"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.8"
+            stroke-linejoin="round"
+          />
+        </symbol>
+        <symbol id="i-map" viewBox="0 0 24 24">
+          <path d="M9 4 3 6v14l6-2 6 2 6-2V4l-6 2-6-2Z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" />
+          <path d="M9 4v14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
+          <path d="M15 6v14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
+        </symbol>
+        <symbol id="i-brackets" viewBox="0 0 24 24">
+          <path d="M9 6 5 12l4 6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" />
+          <path d="M15 6l4 6-4 6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" />
+          <path d="M13 6l-2 12" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
+        </symbol>
+        <symbol id="i-cpu" viewBox="0 0 24 24">
+          <path d="M9 9h6v6H9V9Z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" />
+          <path d="M9 2v3M15 2v3M9 19v3M15 19v3M2 9h3M2 15h3M19 9h3M19 15h3" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
+          <path d="M7 7h10v10H7V7Z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" />
+        </symbol>
+        <symbol id="i-wave" viewBox="0 0 24 24">
+          <path d="M3 14c2 0 2-4 4-4s2 4 4 4 2-4 4-4 2 4 4 4 2-4 4-4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" />
+        </symbol>
+        <symbol id="i-nodes" viewBox="0 0 24 24">
+          <path d="M7 7h0" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
+          <path d="M17 7h0" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
+          <path d="M12 17h0" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
+          <path d="M7 7 12 17 17 7" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" />
+        </symbol>
+        <symbol id="i-wrench" viewBox="0 0 24 24">
+          <path d="M14 7a4 4 0 0 0-6 3.5l-5 5a2 2 0 1 0 2.8 2.8l5-5A4 4 0 0 0 17 9l-3 3-2-2 2-3Z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" />
+        </symbol>
+        <symbol id="i-spark" viewBox="0 0 24 24">
+          <path d="M12 2l1.5 6.5L20 10l-6.5 1.5L12 18l-1.5-6.5L4 10l6.5-1.5L12 2Z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" />
+        </symbol>
+        <symbol id="i-layers" viewBox="0 0 24 24">
+          <path d="M12 3 2.5 8 12 13l9.5-5L12 3Z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" />
+          <path d="M2.5 12 12 17l9.5-5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round" />
+          <path d="M2.5 16 12 21l9.5-5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round" />
+        </symbol>
+        <symbol id="i-file" viewBox="0 0 24 24">
+          <path d="M7 3h7l3 3v15a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1Z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" />
+          <path d="M14 3v4h4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" />
+        </symbol>
+      </svg>
+      <header class="site-nav">
+        <div class="nav-inner">
+          <a class="brand-mark" href="../index.html">
+            <span class="brand-dot"></span>
+            <span>Palantir Research Summary</span>
+          </a>
+          <nav class="nav-links">
+            <a data-nav href="../index.html"><svg class="icon sm" aria-hidden="true"><use href="#i-home"></use></svg><span>管理层一页纸</span></a>
+            <a data-nav href="overview.html"><svg class="icon sm" aria-hidden="true"><use href="#i-map"></use></svg><span>研发技术总览</span></a>
+            <a data-nav href="expression-and-operators.html"><svg class="icon sm" aria-hidden="true"><use href="#i-brackets"></use></svg><span>表达层</span></a>
+            <a data-nav href="execution-and-incremental.html"><svg class="icon sm" aria-hidden="true"><use href="#i-cpu"></use></svg><span>执行与增量</span></a>
+            <a data-nav href="streaming-architecture.html"><svg class="icon sm" aria-hidden="true"><use href="#i-wave"></use></svg><span>流式</span></a>
+            <a data-nav href="lineage-ontology-governance.html"><svg class="icon sm" aria-hidden="true"><use href="#i-nodes"></use></svg><span>治理</span></a>
+            <a data-nav href="engineering-and-ecosystem.html"><svg class="icon sm" aria-hidden="true"><use href="#i-wrench"></use></svg><span>工程化</span></a>
+          </nav>
+        </div>
+      </header>
+
+      <main>
+        <section class="topic-header">
+          <p class="eyebrow">Topic 03</p>
+          <h1>流式架构</h1>
+          <p class="intro-note">Palantir 的流式能力不是“把 Spark 改成 Streaming”，而是明确采用 Flink 和 Pipeline Builder 作为主要载体，并将流与批在上层目的地统一。</p>
+          <div class="topic-meta">
+            <span class="tag">流式</span>
+            <span class="tag">Flink</span>
+            <span class="tag">Window / State</span>
+          </div>
+        </section>
+
+        <div class="detail-layout">
+          <aside class="section-nav">
+            <strong>本页导航</strong>
+            <a href="#conclusion">结论</a>
+            <a href="#mechanism">关键机制</a>
+            <a href="#implication">对我们的启发</a>
+            <a href="#sources">相关来源</a>
+          </aside>
+
+          <div class="detail-main">
+            <section class="section-card" id="conclusion">
+              <p class="section-kicker">Conclusions</p>
+              <h2>
+                <span class="title-row"><svg class="icon lg" aria-hidden="true"><use href="#i-spark"></use></svg><span>结论</span></span>
+              </h2>
+              <div class="detail-grid conclusion-grid">
+                <article class="detail-card">
+                  <h3>
+                    <span class="title-row"><svg class="icon sm" aria-hidden="true"><use href="#i-spark"></use></svg><span>流处理主引擎是 Flink，不是 Spark Structured Streaming</span></span>
+                  </h3>
+                  <p class="muted">这意味着 Palantir 的实时能力依赖的是状态管理、Checkpoint 和 Watermark 体系，而不是把批处理 API 直接复用到流处理。</p>
+                </article>
+                <article class="detail-card">
+                  <h3>
+                    <span class="title-row"><svg class="icon sm" aria-hidden="true"><use href="#i-spark"></use></svg><span>流与批的统一主要发生在“输出目的地层”</span></span>
+                  </h3>
+                  <p class="muted">编程 API 和开发入口并未彻底统一，但输出都可以沉淀到 Dataset / Ontology，从而在上层应用侧形成无感消费。</p>
+                </article>
+                <article class="detail-card">
+                  <h3>
+                    <span class="title-row"><svg class="icon sm" aria-hidden="true"><use href="#i-spark"></use></svg><span>Pipeline Builder 是流式能力的主入口</span></span>
+                  </h3>
+                  <p class="muted">这说明流式产品化的关键不是提供很多 SDK，而是把状态、窗口、Join 和监控等复杂概念做成可配置能力。</p>
+                </article>
+              </div>
+            </section>
+
+            <section class="section-card" id="mechanism">
+              <p class="section-kicker">Mechanisms</p>
+              <h2>
+                <span class="title-row"><svg class="icon lg" aria-hidden="true"><use href="#i-layers"></use></svg><span>关键机制</span></span>
+              </h2>
+              <div class="split-callout">
+                <div class="split-stack">
+                  <div class="detail-card mechanism-card">
+                    <h3>1. 流式核心由状态与时间语义驱动</h3>
+                    <ul>
+                      <li>Keyed State 决定有状态算子的正确性与扩展方式。</li>
+                      <li>Watermark 与 Allowed Lateness 决定窗口何时闭合、迟到数据如何处理。</li>
+                      <li>Checkpoint 绑定恢复语义和 Offset 管理。</li>
+                    </ul>
+                  </div>
+                  <div class="detail-card mechanism-card">
+                    <h3>2. Stream 不是普通 Dataset 的实时开关</h3>
+                    <ul>
+                      <li>Stream 具有热缓冲与冷存储双层模型。</li>
+                      <li>Pipeline Builder 和 Streaming Export 构成主要产品路径。</li>
+                      <li>流式支持 Java 与 Builder，但不支持 Python Transform。</li>
+                    </ul>
+                  </div>
+                </div>
+                <div class="detail-card mechanism-card">
+                  <h3>3. 统一的关键在于结果层与应用层</h3>
+                  <p class="muted">Palantir 并没有强行让流和批在底层 API 上完全一致，而是通过 Dataset、Ontology 和上层应用保持结果层统一。这种“分层统一”比“API 强统一”更现实。</p>
+                  <ul>
+                    <li>秒级诉求走 Streaming Pipeline。</li>
+                    <li>分钟级诉求优先考虑 Incremental Batch。</li>
+                    <li>复杂历史计算仍然适合 Full Batch。</li>
+                  </ul>
+                </div>
+              </div>
+              <div class="detail-grid mechanism-grid">
+                <article class="detail-card mechanism-card">
+                  <h3>4. 流式监控和 Schema Evolution 是必要配套</h3>
+                  <p class="muted">一旦进入长期运行作业模式，延迟、堆积、状态增长、Schema 兼容性就不再是附属问题，而是产品可用性的核心部分。</p>
+                </article>
+                <article class="detail-card mechanism-card">
+                  <h3>5. 自建方案可以借鉴“热缓冲 + 冷存储”分层</h3>
+                  <p class="muted">调研中的 Kafka + Flink + Paimon 路线，说明这条产品思路是可复刻的，但产品化难点在于控制面与可观测性。</p>
+                </article>
+              </div>
+            </section>
+
+            <section class="section-card" id="implication">
+              <p class="section-kicker">Implications</p>
+              <h2>
+                <span class="title-row"><svg class="icon lg" aria-hidden="true"><use href="#i-map"></use></svg><span>对我们的启发</span></span>
+              </h2>
+              <ul>
+                <li>实时能力建设应基于明确的状态模型和时间语义，而不是把“支持流式”停留在引擎接入层面。</li>
+                <li>无需强求流批 API 完全统一，更重要的是让上层对象和应用可以无感消费流批结果。</li>
+                <li>实时链路的产品化必须同步建设监控、告警、Schema 演进与恢复机制，否则可用性会成为最大短板。</li>
+                <li>分钟级诉求应优先用增量链路承接，避免所有实时需求都直接推向流处理。</li>
+              </ul>
+            </section>
+
+            <section class="section-card" id="sources">
+              <p class="section-kicker">Sources</p>
+              <h2>
+                <span class="title-row"><svg class="icon lg" aria-hidden="true"><use href="#i-file"></use></svg><span>相关来源</span></span>
+              </h2>
+              <div class="source-list">
+                <a class="source-link" href="../../docs/raw/03-streaming-batch-architecture.md"
+                  ><svg class="icon sm" aria-hidden="true"><use href="#i-file"></use></svg><span>docs/raw/03-streaming-batch-architecture.md</span></a
+                >
+                <a class="source-link" href="../../docs/raw/16-streaming-capability-deep-dive.md"
+                  ><svg class="icon sm" aria-hidden="true"><use href="#i-file"></use></svg><span>docs/raw/16-streaming-capability-deep-dive.md</span></a
+                >
+                <a class="source-link" href="../../docs/raw/19-streaming-pipeline-deep-dive.md"
+                  ><svg class="icon sm" aria-hidden="true"><use href="#i-file"></use></svg><span>docs/raw/19-streaming-pipeline-deep-dive.md</span></a
+                >
+                <a class="source-link" href="../../docs/raw/20-stream-self-build-architecture.md"
+                  ><svg class="icon sm" aria-hidden="true"><use href="#i-file"></use></svg><span>docs/raw/20-stream-self-build-architecture.md</span></a
+                >
+              </div>
+            </section>
+          </div>
+        </div>
+      </main>
+
+      <footer class="site-footer">
+        <div class="page-footer">
+          <div>流式产品化的关键是状态与控制面</div>
+          <div class="footer-note">继续阅读：血缘、Ontology 与治理</div>
+        </div>
+      </footer>
+    </div>
+  </body>
+</html>

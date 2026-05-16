@@ -1,2 +1,6 @@
 .DS_Store
 diagrams/*.bkp
+.superpowers/
+.agents/
+.claude/
+_bmad/

@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>表达层与算子平台</title>
+    <link rel="stylesheet" href="../styles.css" />
+    <script defer src="../app.js"></script>
+  </head>
+  <body class="detail-body">
+    <div class="site-shell">
+      <svg class="icon-sprite" xmlns="http://www.w3.org/2000/svg">
+        <symbol id="i-home" viewBox="0 0 24 24">
+          <path
+            d="M12 3l8 6v11a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V9l8-6Z"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.8"
+            stroke-linejoin="round"
+          />
+          <path
+            d="M9 21v-8h6v8"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.8"
+            stroke-linejoin="round"
+          />
+        </symbol>
+        <symbol id="i-map" viewBox="0 0 24 24">
+          <path d="M9 4 3 6v14l6-2 6 2 6-2V4l-6 2-6-2Z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" />
+          <path d="M9 4v14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
+          <path d="M15 6v14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
+        </symbol>
+        <symbol id="i-brackets" viewBox="0 0 24 24">
+          <path d="M9 6 5 12l4 6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" />
+          <path d="M15 6l4 6-4 6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" />
+          <path d="M13 6l-2 12" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
+        </symbol>
+        <symbol id="i-cpu" viewBox="0 0 24 24">
+          <path d="M9 9h6v6H9V9Z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" />
+          <path d="M9 2v3M15 2v3M9 19v3M15 19v3M2 9h3M2 15h3M19 9h3M19 15h3" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
+          <path d="M7 7h10v10H7V7Z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" />
+        </symbol>
+        <symbol id="i-wave" viewBox="0 0 24 24">
+          <path d="M3 14c2 0 2-4 4-4s2 4 4 4 2-4 4-4 2 4 4 4 2-4 4-4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" />
+        </symbol>
+        <symbol id="i-nodes" viewBox="0 0 24 24">
+          <path d="M7 7h0" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
+          <path d="M17 7h0" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
+          <path d="M12 17h0" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
+          <path d="M7 7 12 17 17 7" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" />
+        </symbol>
+        <symbol id="i-wrench" viewBox="0 0 24 24">
+          <path d="M14 7a4 4 0 0 0-6 3.5l-5 5a2 2 0 1 0 2.8 2.8l5-5A4 4 0 0 0 17 9l-3 3-2-2 2-3Z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" />
+        </symbol>
+        <symbol id="i-spark" viewBox="0 0 24 24">
+          <path d="M12 2l1.5 6.5L20 10l-6.5 1.5L12 18l-1.5-6.5L4 10l6.5-1.5L12 2Z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" />
+        </symbol>
+        <symbol id="i-layers" viewBox="0 0 24 24">
+          <path d="M12 3 2.5 8 12 13l9.5-5L12 3Z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" />
+          <path d="M2.5 12 12 17l9.5-5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round" />
+          <path d="M2.5 16 12 21l9.5-5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round" />
+        </symbol>
+        <symbol id="i-file" viewBox="0 0 24 24">
+          <path d="M7 3h7l3 3v15a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1Z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" />
+          <path d="M14 3v4h4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" />
+        </symbol>
+      </svg>
+      <header class="site-nav">
+        <div class="nav-inner">
+          <a class="brand-mark" href="../index.html">
+            <span class="brand-dot"></span>
+            <span>Palantir Research Summary</span>
+          </a>
+          <nav class="nav-links">
+            <a data-nav href="../index.html"><svg class="icon sm" aria-hidden="true"><use href="#i-home"></use></svg><span>管理层一页纸</span></a>
+            <a data-nav href="overview.html"><svg class="icon sm" aria-hidden="true"><use href="#i-map"></use></svg><span>研发技术总览</span></a>
+            <a data-nav href="expression-and-operators.html"><svg class="icon sm" aria-hidden="true"><use href="#i-brackets"></use></svg><span>表达层</span></a>
+            <a data-nav href="execution-and-incremental.html"><svg class="icon sm" aria-hidden="true"><use href="#i-cpu"></use></svg><span>执行与增量</span></a>
+            <a data-nav href="streaming-architecture.html"><svg class="icon sm" aria-hidden="true"><use href="#i-wave"></use></svg><span>流式</span></a>
+            <a data-nav href="lineage-ontology-governance.html"><svg class="icon sm" aria-hidden="true"><use href="#i-nodes"></use></svg><span>治理</span></a>
+            <a data-nav href="engineering-and-ecosystem.html"><svg class="icon sm" aria-hidden="true"><use href="#i-wrench"></use></svg><span>工程化</span></a>
+          </nav>
+        </div>
+      </header>
+
+      <main>
+        <section class="topic-header">
+          <p class="eyebrow">Topic 01</p>
+          <h1>表达层与算子平台</h1>
+          <p class="intro-note">表达层决定开发心智。Palantir 的第一层优势，不是把 Spark 封装得更漂亮，而是把“如何描述数据开发”做成了可复用的平台契约。</p>
+          <div class="topic-meta">
+            <span class="tag">表达层</span>
+            <span class="tag">Transform DSL</span>
+            <span class="tag">算子平台</span>
+          </div>
+        </section>
+
+        <div class="detail-layout">
+          <aside class="section-nav">
+            <strong>本页导航</strong>
+            <a href="#conclusion">结论</a>
+            <a href="#mechanism">关键机制</a>
+            <a href="#implication">对我们的启发</a>
+            <a href="#sources">相关来源</a>
+          </aside>
+
+          <div class="detail-main">
+            <section class="section-card" id="conclusion">
+              <p class="section-kicker">Conclusions</p>
+              <h2>
+                <span class="title-row"><svg class="icon lg" aria-hidden="true"><use href="#i-spark"></use></svg><span>结论</span></span>
+              </h2>
+              <div class="detail-grid conclusion-grid">
+                <article class="detail-card">
+                  <h3>
+                    <span class="title-row"><svg class="icon sm" aria-hidden="true"><use href="#i-spark"></use></svg><span>路径即依赖，是表达层最重要的抽象</span></span>
+                  </h3>
+                  <p class="muted">通过 <code>Input()</code> / <code>Output()</code> 声明数据集路径，平台就能自动构建 DAG、感知依赖与调度关系，降低手工编排成本。</p>
+                </article>
+                <article class="detail-card">
+                  <h3>
+                    <span class="title-row"><svg class="icon sm" aria-hidden="true"><use href="#i-spark"></use></svg><span>DSL 不只是语法糖，而是平台契约入口</span></span>
+                  </h3>
+                  <p class="muted">装饰器、<code>pipeline.py</code> 注册入口和可发现的 Transform 集合，让开发逻辑天然可被平台理解、追踪和治理。</p>
+                </article>
+                <article class="detail-card">
+                  <h3>
+                    <span class="title-row"><svg class="icon sm" aria-hidden="true"><use href="#i-spark"></use></svg><span>算子平台把“代码能力”转化成“产品能力”</span></span>
+                  </h3>
+                  <p class="muted">当逻辑可以被沉淀为带契约的算子，低代码、代码优先和平台治理才能共享同一个能力底座。</p>
+                </article>
+              </div>
+            </section>
+
+            <section class="section-card" id="mechanism">
+              <p class="section-kicker">Mechanisms</p>
+              <h2>
+                <span class="title-row"><svg class="icon lg" aria-hidden="true"><use href="#i-layers"></use></svg><span>关键机制</span></span>
+              </h2>
+              <div class="split-callout">
+                <div class="split-stack">
+                  <div class="detail-card mechanism-card">
+                    <h3>1. Transform DSL 把开发动作平台化</h3>
+                    <ul>
+                      <li><code>@transform_df</code>、<code>@transform</code>、<code>@transform_pandas</code> 对应不同开发范式。</li>
+                      <li>数据集路径而不是任务节点成为核心依赖抽象，更利于平台统一编排。</li>
+                      <li><code>pipeline.py</code> 负责注册和发现，使平台可以集中感知所有 Transform。</li>
+                    </ul>
+                  </div>
+                  <div class="detail-card mechanism-card">
+                    <h3>2. Pipeline Builder 与 Code Repository 并列存在</h3>
+                    <ul>
+                      <li>代码优先路径服务复杂逻辑与复用。</li>
+                      <li>低代码路径服务标准化转换与可视化开发。</li>
+                      <li>二者共享数据集、调度和治理模型，避免裂成两个世界。</li>
+                    </ul>
+                  </div>
+                </div>
+                <div class="image-frame mechanism-figure">
+                  <img
+                    src="../assets/diagrams/platform-architecture.drawio.png"
+                    alt="平台架构"
+                    loading="lazy"
+                    decoding="async"
+                    width="1210"
+                    height="780"
+                  />
+                  <div class="image-caption">表达层的价值不在于前端交互，而在于它是否能向下连接执行层、向上连接治理与应用层。</div>
+                </div>
+              </div>
+              <div class="detail-grid mechanism-grid">
+                <article class="detail-card mechanism-card">
+                  <h3>3. 算子契约是走向平台能力的桥</h3>
+                  <p class="muted">从调研里的算子平台方案看，输入输出声明、参数声明、Schema 推导和执行绑定需要分层设计，才能同时支撑编译期校验和运行期执行。</p>
+                </article>
+                <article class="detail-card mechanism-card">
+                  <h3>4. 平台真正要沉淀的是可发现、可校验、可组合</h3>
+                  <p class="muted">Palantir 的做法说明，算子丰富只是结果，平台更底层的价值是让逻辑可被发现、被拼装、被治理和被复用。</p>
+                </article>
+              </div>
+            </section>
+
+            <section class="section-card" id="implication">
+              <p class="section-kicker">Implications</p>
+              <h2>
+                <span class="title-row"><svg class="icon lg" aria-hidden="true"><use href="#i-map"></use></svg><span>对我们的启发</span></span>
+              </h2>
+              <ul>
+                <li>优先统一“数据开发的表达模型”，比先做复杂可视化 Builder 更关键。</li>
+                <li>把数据集路径、输入输出契约和 Schema 传播作为平台主线，而不是把调度节点当中心。</li>
+                <li>低代码和代码优先应共享同一套底层算子与契约，否则后续治理和复用会持续分叉。</li>
+                <li>算子平台设计要同时考虑编译期校验和运行期执行，避免只做“函数库”而缺失平台感知能力。</li>
+              </ul>
+            </section>
+
+            <section class="section-card" id="sources">
+              <p class="section-kicker">Sources</p>
+              <h2>
+                <span class="title-row"><svg class="icon lg" aria-hidden="true"><use href="#i-file"></use></svg><span>相关来源</span></span>
+              </h2>
+              <div class="source-list">
+                <a class="source-link" href="../../docs/raw/01-pipeline-expression-dsl.md"
+                  ><svg class="icon sm" aria-hidden="true"><use href="#i-file"></use></svg><span>docs/raw/01-pipeline-expression-dsl.md</span></a
+                >
+                <a class="source-link" href="../../docs/raw/07-code-pipeline.md"
+                  ><svg class="icon sm" aria-hidden="true"><use href="#i-file"></use></svg><span>docs/raw/07-code-pipeline.md</span></a
+                >
+                <a class="source-link" href="../../docs/raw/14-transform-operator-library.md"
+                  ><svg class="icon sm" aria-hidden="true"><use href="#i-file"></use></svg><span>docs/raw/14-transform-operator-library.md</span></a
+                >
+                <a class="source-link" href="../../docs/synthesis/operator-platform-design.md"
+                  ><svg class="icon sm" aria-hidden="true"><use href="#i-file"></use></svg><span>docs/synthesis/operator-platform-design.md</span></a
+                >
+              </div>
+            </section>
+          </div>
+        </div>
+      </main>
+
+      <footer class="site-footer">
+        <div class="page-footer">
+          <div>表达层决定平台心智</div>
+          <div class="footer-note">继续阅读：执行引擎与增量链路</div>
+        </div>
+      </footer>
+    </div>
+  </body>
+</html>

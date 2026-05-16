@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>工程化与生态边界</title>
+    <link rel="stylesheet" href="../styles.css" />
+    <script defer src="../app.js"></script>
+  </head>
+  <body class="detail-body">
+    <div class="site-shell">
+      <svg class="icon-sprite" xmlns="http://www.w3.org/2000/svg">
+        <symbol id="i-home" viewBox="0 0 24 24">
+          <path
+            d="M12 3l8 6v11a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V9l8-6Z"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.8"
+            stroke-linejoin="round"
+          />
+          <path
+            d="M9 21v-8h6v8"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.8"
+            stroke-linejoin="round"
+          />
+        </symbol>
+        <symbol id="i-map" viewBox="0 0 24 24">
+          <path d="M9 4 3 6v14l6-2 6 2 6-2V4l-6 2-6-2Z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" />
+          <path d="M9 4v14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
+          <path d="M15 6v14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
+        </symbol>
+        <symbol id="i-brackets" viewBox="0 0 24 24">
+          <path d="M9 6 5 12l4 6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" />
+          <path d="M15 6l4 6-4 6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" />
+          <path d="M13 6l-2 12" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
+        </symbol>
+        <symbol id="i-cpu" viewBox="0 0 24 24">
+          <path d="M9 9h6v6H9V9Z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" />
+          <path d="M9 2v3M15 2v3M9 19v3M15 19v3M2 9h3M2 15h3M19 9h3M19 15h3" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
+          <path d="M7 7h10v10H7V7Z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" />
+        </symbol>
+        <symbol id="i-wave" viewBox="0 0 24 24">
+          <path d="M3 14c2 0 2-4 4-4s2 4 4 4 2-4 4-4 2 4 4 4 2-4 4-4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" />
+        </symbol>
+        <symbol id="i-nodes" viewBox="0 0 24 24">
+          <path d="M7 7h0" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
+          <path d="M17 7h0" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
+          <path d="M12 17h0" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
+          <path d="M7 7 12 17 17 7" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" />
+        </symbol>
+        <symbol id="i-wrench" viewBox="0 0 24 24">
+          <path d="M14 7a4 4 0 0 0-6 3.5l-5 5a2 2 0 1 0 2.8 2.8l5-5A4 4 0 0 0 17 9l-3 3-2-2 2-3Z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" />
+        </symbol>
+        <symbol id="i-spark" viewBox="0 0 24 24">
+          <path d="M12 2l1.5 6.5L20 10l-6.5 1.5L12 18l-1.5-6.5L4 10l6.5-1.5L12 2Z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" />
+        </symbol>
+        <symbol id="i-layers" viewBox="0 0 24 24">
+          <path d="M12 3 2.5 8 12 13l9.5-5L12 3Z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" />
+          <path d="M2.5 12 12 17l9.5-5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round" />
+          <path d="M2.5 16 12 21l9.5-5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round" />
+        </symbol>
+        <symbol id="i-file" viewBox="0 0 24 24">
+          <path d="M7 3h7l3 3v15a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1Z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" />
+          <path d="M14 3v4h4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" />
+        </symbol>
+      </svg>
+      <header class="site-nav">
+        <div class="nav-inner">
+          <a class="brand-mark" href="../index.html">
+            <span class="brand-dot"></span>
+            <span>Palantir Research Summary</span>
+          </a>
+          <nav class="nav-links">
+            <a data-nav href="../index.html"><svg class="icon sm" aria-hidden="true"><use href="#i-home"></use></svg><span>管理层一页纸</span></a>
+            <a data-nav href="overview.html"><svg class="icon sm" aria-hidden="true"><use href="#i-map"></use></svg><span>研发技术总览</span></a>
+            <a data-nav href="expression-and-operators.html"><svg class="icon sm" aria-hidden="true"><use href="#i-brackets"></use></svg><span>表达层</span></a>
+            <a data-nav href="execution-and-incremental.html"><svg class="icon sm" aria-hidden="true"><use href="#i-cpu"></use></svg><span>执行与增量</span></a>
+            <a data-nav href="streaming-architecture.html"><svg class="icon sm" aria-hidden="true"><use href="#i-wave"></use></svg><span>流式</span></a>
+            <a data-nav href="lineage-ontology-governance.html"><svg class="icon sm" aria-hidden="true"><use href="#i-nodes"></use></svg><span>治理</span></a>
+            <a data-nav href="engineering-and-ecosystem.html"><svg class="icon sm" aria-hidden="true"><use href="#i-wrench"></use></svg><span>工程化</span></a>
+          </nav>
+        </div>
+      </header>
+
+      <main>
+        <section class="topic-header">
+          <p class="eyebrow">Topic 05</p>
+          <h1>工程化与生态边界</h1>
+          <p class="intro-note">真正让 Palantir 看起来像“完整平台”的，不只是功能本身，而是围绕测试、监控、安全、权限、AIP 与生态整合形成的工程体验。</p>
+          <div class="topic-meta">
+            <span class="tag">工程化</span>
+            <span class="tag">AIP / MCP</span>
+            <span class="tag">生态边界</span>
+          </div>
+        </section>
+
+        <div class="detail-layout">
+          <aside class="section-nav">
+            <strong>本页导航</strong>
+            <a href="#conclusion">结论</a>
+            <a href="#mechanism">关键机制</a>
+            <a href="#implication">对我们的启发</a>
+            <a href="#sources">相关来源</a>
+          </aside>
+
+          <div class="detail-main">
+            <section class="section-card" id="conclusion">
+              <p class="section-kicker">Conclusions</p>
+              <h2>
+                <span class="title-row"><svg class="icon lg" aria-hidden="true"><use href="#i-spark"></use></svg><span>结论</span></span>
+              </h2>
+              <div class="detail-grid conclusion-grid">
+                <article class="detail-card">
+                  <h3>
+                    <span class="title-row"><svg class="icon sm" aria-hidden="true"><use href="#i-spark"></use></svg><span>工程化成熟度决定平台“能不能长期用”</span></span>
+                  </h3>
+                  <p class="muted">测试框架、构建历史、监控与告警、安全与权限，并不是附属能力，而是数据平台进入生产状态的最低保障。</p>
+                </article>
+                <article class="detail-card">
+                  <h3>
+                    <span class="title-row"><svg class="icon sm" aria-hidden="true"><use href="#i-spark"></use></svg><span>AIP / MCP 体现的是控制面整合，而不是单点 AI 能力</span></span>
+                  </h3>
+                  <p class="muted">真正有效的 AI 能力不是聊天式入口，而是能调用平台对象、上下文和执行能力的集成式助手。</p>
+                </article>
+                <article class="detail-card">
+                  <h3>
+                    <span class="title-row"><svg class="icon sm" aria-hidden="true"><use href="#i-spark"></use></svg><span>Palantir 的开放性边界同样明显</span></span>
+                  </h3>
+                  <p class="muted">私有血缘模型、封闭事务位点和较强的平台绑定，意味着它在跨平台互通上存在天然摩擦。</p>
+                </article>
+              </div>
+            </section>
+
+            <section class="section-card" id="mechanism">
+              <p class="section-kicker">Mechanisms</p>
+              <h2>
+                <span class="title-row"><svg class="icon lg" aria-hidden="true"><use href="#i-layers"></use></svg><span>关键机制</span></span>
+              </h2>
+              <div class="detail-grid mechanism-grid">
+                <article class="detail-card mechanism-card">
+                  <h3>1. 测试与研发流程被嵌入平台</h3>
+                  <p class="muted"><code>TransformRunner</code>、<code>InMemoryDatastore</code>、pytest 等测试路径，让 Transform 不必依赖真实 Dataset 才能验证逻辑，这是平台工程化的重要基础。</p>
+                </article>
+                <article class="detail-card mechanism-card">
+                  <h3>2. 可观测性与告警贯穿 Build 和 Stream</h3>
+                  <p class="muted">批处理关注构建成功率、耗时、资源消耗和失败恢复；流式则进一步关注端到端延迟、堆积、Checkpoint 和状态增长。</p>
+                </article>
+                <article class="detail-card mechanism-card">
+                  <h3>3. 安全与权限并不是单点 RBAC</h3>
+                  <p class="muted">从数据接入、Marking、字段权限、访问审计到审批流程，安全控制应随血缘与对象模型自然传播，而不是割裂在外围系统。</p>
+                </article>
+                <article class="detail-card mechanism-card">
+                  <h3>4. AIP / MCP 的价值在于“平台动作可被调用”</h3>
+                  <p class="muted">自然语言生成 SQL 或 PySpark 只是表层能力，真正的竞争力在于 AI 能读懂平台对象、上下文和执行路径。</p>
+                </article>
+                <article class="detail-card mechanism-card">
+                  <h3>5. 开放性短板值得正视</h3>
+                  <ul>
+                    <li>Lineage 未原生对齐 OpenLineage。</li>
+                    <li>增量位点没有对外暴露为通用消费接口。</li>
+                    <li>平台语义层优势和生态锁定风险同时存在。</li>
+                  </ul>
+                </article>
+                <article class="detail-card mechanism-card">
+                  <h3>6. 与开源栈的差异在于“整合深度”</h3>
+                  <p class="muted">开源生态可以覆盖很多单点能力，但需要大量控制面、元数据层和产品化整合工作，才能接近 Palantir 的整体体验。</p>
+                </article>
+              </div>
+            </section>
+
+            <section class="section-card" id="implication">
+              <p class="section-kicker">Implications</p>
+              <h2>
+                <span class="title-row"><svg class="icon lg" aria-hidden="true"><use href="#i-map"></use></svg><span>对我们的启发</span></span>
+              </h2>
+              <ul>
+                <li>测试、监控、安全、权限要与平台核心模型一体设计，而不是后置补丁。</li>
+                <li>AI 能力应优先服务平台动作和上下文调用，而不是先追求表面的自然语言演示效果。</li>
+                <li>在借鉴 Palantir 时，要清楚地区分“值得对标的整合能力”和“需要避免的过度封闭风险”。</li>
+                <li>如果采用开源自建路线，最大的工作量会落在控制面、元数据层和工程化整合，而不是单个引擎接入。</li>
+              </ul>
+            </section>
+
+            <section class="section-card" id="sources">
+              <p class="section-kicker">Sources</p>
+              <h2>
+                <span class="title-row"><svg class="icon lg" aria-hidden="true"><use href="#i-file"></use></svg><span>相关来源</span></span>
+              </h2>
+              <div class="source-list">
+                <a class="source-link" href="../../docs/raw/05-testing-and-data-connection.md"
+                  ><svg class="icon sm" aria-hidden="true"><use href="#i-file"></use></svg><span>docs/raw/05-testing-and-data-connection.md</span></a
+                >
+                <a class="source-link" href="../../docs/raw/07-cicd-and-engineering-practices.md"
+                  ><svg class="icon sm" aria-hidden="true"><use href="#i-file"></use></svg><span>docs/raw/07-cicd-and-engineering-practices.md</span></a
+                >
+                <a class="source-link" href="../../docs/raw/08-monitoring-and-observability.md"
+                  ><svg class="icon sm" aria-hidden="true"><use href="#i-file"></use></svg><span>docs/raw/08-monitoring-and-observability.md</span></a
+                >
+                <a class="source-link" href="../../docs/raw/09-aip-and-mcp-integration.md"
+                  ><svg class="icon sm" aria-hidden="true"><use href="#i-file"></use></svg><span>docs/raw/09-aip-and-mcp-integration.md</span></a
+                >
+                <a class="source-link" href="../../docs/raw/10-opensource-alternative-stack.md"
+                  ><svg class="icon sm" aria-hidden="true"><use href="#i-file"></use></svg><span>docs/raw/10-opensource-alternative-stack.md</span></a
+                >
+                <a class="source-link" href="../../docs/raw/06-security-and-permissions.md"
+                  ><svg class="icon sm" aria-hidden="true"><use href="#i-file"></use></svg><span>docs/raw/06-security-and-permissions.md</span></a
+                >
+              </div>
+            </section>
+          </div>
+        </div>
+      </main>
+
+      <footer class="site-footer">
+        <div class="page-footer">
+          <div>工程化决定平台长期可用性</div>
+          <div class="footer-note">回到总览：研发技术总览</div>
+        </div>
+      </footer>
+    </div>
+  </body>
+</html>
