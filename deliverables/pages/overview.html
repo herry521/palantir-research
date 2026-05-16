@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Palantir 研发技术总览</title>
+    <link rel="stylesheet" href="../styles.css" />
+    <script defer src="../app.js"></script>
+  </head>
+  <body class="detail-body">
+    <div class="site-shell">
+      <svg class="icon-sprite" xmlns="http://www.w3.org/2000/svg">
+        <symbol id="i-home" viewBox="0 0 24 24">
+          <path
+            d="M12 3l8 6v11a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V9l8-6Z"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.8"
+            stroke-linejoin="round"
+          />
+          <path
+            d="M9 21v-8h6v8"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.8"
+            stroke-linejoin="round"
+          />
+        </symbol>
+        <symbol id="i-map" viewBox="0 0 24 24">
+          <path d="M9 4 3 6v14l6-2 6 2 6-2V4l-6 2-6-2Z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" />
+          <path d="M9 4v14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
+          <path d="M15 6v14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
+        </symbol>
+        <symbol id="i-brackets" viewBox="0 0 24 24">
+          <path d="M9 6 5 12l4 6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" />
+          <path d="M15 6l4 6-4 6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" />
+          <path d="M13 6l-2 12" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
+        </symbol>
+        <symbol id="i-cpu" viewBox="0 0 24 24">
+          <path d="M9 9h6v6H9V9Z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" />
+          <path d="M9 2v3M15 2v3M9 19v3M15 19v3M2 9h3M2 15h3M19 9h3M19 15h3" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
+          <path d="M7 7h10v10H7V7Z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" />
+        </symbol>
+        <symbol id="i-wave" viewBox="0 0 24 24">
+          <path d="M3 14c2 0 2-4 4-4s2 4 4 4 2-4 4-4 2 4 4 4 2-4 4-4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" />
+        </symbol>
+        <symbol id="i-nodes" viewBox="0 0 24 24">
+          <path d="M7 7h0" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
+          <path d="M17 7h0" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
+          <path d="M12 17h0" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
+          <path d="M7 7 12 17 17 7" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" />
+        </symbol>
+        <symbol id="i-wrench" viewBox="0 0 24 24">
+          <path d="M14 7a4 4 0 0 0-6 3.5l-5 5a2 2 0 1 0 2.8 2.8l5-5A4 4 0 0 0 17 9l-3 3-2-2 2-3Z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" />
+        </symbol>
+        <symbol id="i-spark" viewBox="0 0 24 24">
+          <path d="M12 2l1.5 6.5L20 10l-6.5 1.5L12 18l-1.5-6.5L4 10l6.5-1.5L12 2Z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" />
+        </symbol>
+        <symbol id="i-layers" viewBox="0 0 24 24">
+          <path d="M12 3 2.5 8 12 13l9.5-5L12 3Z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" />
+          <path d="M2.5 12 12 17l9.5-5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round" />
+          <path d="M2.5 16 12 21l9.5-5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round" />
+        </symbol>
+        <symbol id="i-file" viewBox="0 0 24 24">
+          <path d="M7 3h7l3 3v15a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1Z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" />
+          <path d="M14 3v4h4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" />
+        </symbol>
+      </svg>
+      <header class="site-nav">
+        <div class="nav-inner">
+          <a class="brand-mark" href="../index.html">
+            <span class="brand-dot"></span>
+            <span>Palantir Research Summary</span>
+          </a>
+          <nav class="nav-links">
+            <a data-nav href="../index.html"><svg class="icon sm" aria-hidden="true"><use href="#i-home"></use></svg><span>管理层一页纸</span></a>
+            <a data-nav href="overview.html"><svg class="icon sm" aria-hidden="true"><use href="#i-map"></use></svg><span>研发技术总览</span></a>
+            <a data-nav href="expression-and-operators.html"><svg class="icon sm" aria-hidden="true"><use href="#i-brackets"></use></svg><span>表达层</span></a>
+            <a data-nav href="execution-and-incremental.html"><svg class="icon sm" aria-hidden="true"><use href="#i-cpu"></use></svg><span>执行与增量</span></a>
+            <a data-nav href="streaming-architecture.html"><svg class="icon sm" aria-hidden="true"><use href="#i-wave"></use></svg><span>流式</span></a>
+            <a data-nav href="lineage-ontology-governance.html"><svg class="icon sm" aria-hidden="true"><use href="#i-nodes"></use></svg><span>治理</span></a>
+            <a data-nav href="engineering-and-ecosystem.html"><svg class="icon sm" aria-hidden="true"><use href="#i-wrench"></use></svg><span>工程化</span></a>
+          </nav>
+        </div>
+      </header>
+
+      <main>
+        <section class="topic-header">
+          <p class="eyebrow">Technical Overview</p>
+          <h1>技术总览</h1>
+          <p class="intro-note">
+            这一页是研发团队的地图页。它的任务不是重复首页结论，而是把 Palantir 体系拆成可进入、可对照、可继续深挖的技术视图。
+          </p>
+          <div class="topic-meta">
+            <span class="tag">1 个总览页</span>
+            <span class="tag">5 个专题页</span>
+            <span class="tag">对应 20+ 篇原始调研材料</span>
+          </div>
+        </section>
+
+        <section class="page-section">
+          <div class="section-head">
+            <div>
+              <p class="section-kicker">Platform Map</p>
+              <h2>
+                <span class="title-row"><svg class="icon lg" aria-hidden="true"><use href="#i-map"></use></svg><span>平台能力地图</span></span>
+              </h2>
+            </div>
+            <p>如果把 Palantir 抽象成平台能力，而不是产品页面，可以大致拆成四层：表达、执行、治理、应用闭环。</p>
+          </div>
+          <div class="map-layout">
+            <div class="image-frame">
+              <img
+                src="../assets/diagrams/platform-architecture.drawio.png"
+                alt="平台架构图"
+                loading="lazy"
+                decoding="async"
+                width="1210"
+                height="780"
+              />
+              <div class="image-caption">平台分层视角：更适合看“能力如何闭环”，而不是只看功能名词。</div>
+            </div>
+            <div class="map-layers">
+              <article class="map-layer">
+                <div class="map-layer-index">01</div>
+                <div class="map-layer-body">
+                  <h3>表达层</h3>
+                  <p>Transform DSL、Pipeline Builder、算子抽象与代码/低代码统一入口，共同定义平台如何被开发者“描述”。</p>
+                </div>
+              </article>
+              <article class="map-layer">
+                <div class="map-layer-index">02</div>
+                <div class="map-layer-body">
+                  <h3>执行层</h3>
+                  <p>Spark、Faster、Flink 以及全量、增量、流式等模式选择，共同决定平台如何把逻辑稳定地跑起来。</p>
+                </div>
+              </article>
+              <article class="map-layer">
+                <div class="map-layer-index">03</div>
+                <div class="map-layer-body">
+                  <h3>治理层</h3>
+                  <p>Dataset 事务版本、Branch、Lineage、Security、Marking 和质量门禁，让数据平台具备可追溯、可审计与可协作能力。</p>
+                </div>
+              </article>
+              <article class="map-layer">
+                <div class="map-layer-index">04</div>
+                <div class="map-layer-body">
+                  <h3>应用闭环层</h3>
+                  <p>Ontology、Writeback、AIP 和上层应用把“处理结果”变成“业务对象能力”，也是平台从数据系统走向业务系统的关键层。</p>
+                </div>
+              </article>
+            </div>
+          </div>
+        </section>
+
+        <section class="page-section">
+          <div class="section-head">
+            <div>
+              <p class="section-kicker">Topic Guide</p>
+              <h2>
+                <span class="title-row"><svg class="icon lg" aria-hidden="true"><use href="#i-layers"></use></svg><span>五个专题怎么读</span></span>
+              </h2>
+            </div>
+            <p>每个专题都遵循同一套结构：结论、关键机制、对我们的启发、相关来源，便于快速扫读和回到原文深挖。</p>
+          </div>
+          <div class="topic-grid">
+            <a class="topic-summary" href="expression-and-operators.html">
+              <span class="tag">专题 01</span>
+              <h3>表达层与算子平台</h3>
+              <p class="muted">回答“为什么 Palantir 能把数据开发做成平台能力”。</p>
+              <ul>
+                <li>Transform DSL</li>
+                <li>Pipeline Builder</li>
+                <li>算子库与复用</li>
+              </ul>
+            </a>
+            <a class="topic-summary" href="execution-and-incremental.html">
+              <span class="tag">专题 02</span>
+              <h3>执行引擎与增量链路</h3>
+              <p class="muted">回答“为什么它能平衡成本、性能和开发复杂度”。</p>
+              <ul>
+                <li>Spark / Faster</li>
+                <li>Transaction 驱动增量</li>
+                <li>构建调度与恢复</li>
+              </ul>
+            </a>
+            <a class="topic-summary" href="streaming-architecture.html">
+              <span class="tag">专题 03</span>
+              <h3>流式架构</h3>
+              <p class="muted">回答“它的实时能力到底做到哪一层，以及边界在哪里”。</p>
+              <ul>
+                <li>Flink 与 Streaming Pipeline</li>
+                <li>Window / Watermark / State</li>
+                <li>Streaming Export</li>
+              </ul>
+            </a>
+            <a class="topic-summary" href="lineage-ontology-governance.html">
+              <span class="tag">专题 04</span>
+              <h3>血缘、Ontology 与治理</h3>
+              <p class="muted">回答“它如何从数据平台走向业务语义平台”。</p>
+              <ul>
+                <li>Dataset Version / Branch</li>
+                <li>Lineage 与 Marking</li>
+                <li>Ontology 与 Writeback</li>
+              </ul>
+            </a>
+            <a class="topic-summary" href="engineering-and-ecosystem.html">
+              <span class="tag">专题 05</span>
+              <h3>工程化与生态边界</h3>
+              <p class="muted">回答“平台成熟度来自哪些工程能力，以及它的开放性边界在哪里”。</p>
+              <ul>
+                <li>测试与 CI/CD</li>
+                <li>监控、安全、权限</li>
+                <li>AIP / MCP / 开源对比</li>
+              </ul>
+            </a>
+          </div>
+        </section>
+
+        <section class="page-section">
+          <div class="section-head">
+            <div>
+              <p class="section-kicker">Map To The Homepage</p>
+              <h2>
+                <span class="title-row"><svg class="icon lg" aria-hidden="true"><use href="#i-nodes"></use></svg><span>与管理层结论的映射关系</span></span>
+              </h2>
+            </div>
+            <p>如果你想追溯首页上的三个判断，可以按下面的关系进入专题页。</p>
+          </div>
+          <div class="source-grid">
+            <article class="source-card">
+              <h4>判断 1：平台闭环强</h4>
+              <p class="muted">优先阅读表达层、执行层与治理层三个专题，理解闭环如何形成。</p>
+              <a class="source-link" href="expression-and-operators.html"
+                ><svg class="icon sm" aria-hidden="true"><use href="#i-brackets"></use></svg><span>去看表达层与算子平台</span></a
+              >
+            </article>
+            <article class="source-card">
+              <h4>判断 2：差距在层间断点</h4>
+              <p class="muted">重点阅读增量链路、血缘/Ontology、工程化专题，看断点具体出现在什么位置。</p>
+              <a class="source-link" href="lineage-ontology-governance.html"
+                ><svg class="icon sm" aria-hidden="true"><use href="#i-nodes"></use></svg><span>去看治理与 Ontology</span></a
+              >
+            </article>
+            <article class="source-card">
+              <h4>判断 3：先补底座</h4>
+              <p class="muted">按“表达 -> 数据集版本 -> 增量链路 -> 治理闭环”的顺序阅读，最接近实际建设优先级。</p>
+              <a class="source-link" href="execution-and-incremental.html"
+                ><svg class="icon sm" aria-hidden="true"><use href="#i-cpu"></use></svg><span>去看执行与增量链路</span></a
+              >
+            </article>
+          </div>
+        </section>
+
+        <section class="page-section">
+          <div class="section-head">
+            <div>
+              <p class="section-kicker">Further Reading</p>
+              <h2>
+                <span class="title-row"><svg class="icon lg" aria-hidden="true"><use href="#i-file"></use></svg><span>技术阅读入口</span></span>
+              </h2>
+            </div>
+            <p>如果你想直接回到仓库原始材料，这里给出最适合从总览页继续往下读的两个入口。</p>
+          </div>
+          <div class="entry-grid">
+            <a class="detail-card" href="../../docs/synthesis/palantir-pipeline-deep-dive.md">
+              <span class="tag">综合文档</span>
+              <h3>Palantir Pipeline 技术实现深度分析</h3>
+              <p class="muted">适合先看整体脉络，再返回各专题页按需深挖。</p>
+            </a>
+            <a class="detail-card" href="../../docs/synthesis/operator-platform-design.md">
+              <span class="tag">方案文档</span>
+              <h3>算子平台建设方案</h3>
+              <p class="muted">适合带着“对我们意味着什么”这一问题继续看。</p>
+            </a>
+          </div>
+        </section>
+      </main>
+
+      <footer class="site-footer">
+        <div class="page-footer">
+          <div>总览页用于建立技术地图；具体机制和证据请进入专题页</div>
+          <div class="footer-note">所有页面均可离线打开，所有来源均指向本仓库本地文档</div>
+        </div>
+      </footer>
+    </div>
+  </body>
+</html>

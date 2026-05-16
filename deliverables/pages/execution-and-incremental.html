@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>执行引擎与增量链路</title>
+    <link rel="stylesheet" href="../styles.css" />
+    <script defer src="../app.js"></script>
+  </head>
+  <body class="detail-body">
+    <div class="site-shell">
+      <svg class="icon-sprite" xmlns="http://www.w3.org/2000/svg">
+        <symbol id="i-home" viewBox="0 0 24 24">
+          <path
+            d="M12 3l8 6v11a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V9l8-6Z"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.8"
+            stroke-linejoin="round"
+          />
+          <path
+            d="M9 21v-8h6v8"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.8"
+            stroke-linejoin="round"
+          />
+        </symbol>
+        <symbol id="i-map" viewBox="0 0 24 24">
+          <path d="M9 4 3 6v14l6-2 6 2 6-2V4l-6 2-6-2Z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" />
+          <path d="M9 4v14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
+          <path d="M15 6v14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
+        </symbol>
+        <symbol id="i-brackets" viewBox="0 0 24 24">
+          <path d="M9 6 5 12l4 6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" />
+          <path d="M15 6l4 6-4 6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" />
+          <path d="M13 6l-2 12" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
+        </symbol>
+        <symbol id="i-cpu" viewBox="0 0 24 24">
+          <path d="M9 9h6v6H9V9Z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" />
+          <path d="M9 2v3M15 2v3M9 19v3M15 19v3M2 9h3M2 15h3M19 9h3M19 15h3" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
+          <path d="M7 7h10v10H7V7Z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" />
+        </symbol>
+        <symbol id="i-wave" viewBox="0 0 24 24">
+          <path d="M3 14c2 0 2-4 4-4s2 4 4 4 2-4 4-4 2 4 4 4 2-4 4-4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" />
+        </symbol>
+        <symbol id="i-nodes" viewBox="0 0 24 24">
+          <path d="M7 7h0" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
+          <path d="M17 7h0" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
+          <path d="M12 17h0" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
+          <path d="M7 7 12 17 17 7" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" />
+        </symbol>
+        <symbol id="i-wrench" viewBox="0 0 24 24">
+          <path d="M14 7a4 4 0 0 0-6 3.5l-5 5a2 2 0 1 0 2.8 2.8l5-5A4 4 0 0 0 17 9l-3 3-2-2 2-3Z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" />
+        </symbol>
+        <symbol id="i-spark" viewBox="0 0 24 24">
+          <path d="M12 2l1.5 6.5L20 10l-6.5 1.5L12 18l-1.5-6.5L4 10l6.5-1.5L12 2Z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" />
+        </symbol>
+        <symbol id="i-layers" viewBox="0 0 24 24">
+          <path d="M12 3 2.5 8 12 13l9.5-5L12 3Z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" />
+          <path d="M2.5 12 12 17l9.5-5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round" />
+          <path d="M2.5 16 12 21l9.5-5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round" />
+        </symbol>
+        <symbol id="i-file" viewBox="0 0 24 24">
+          <path d="M7 3h7l3 3v15a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1Z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" />
+          <path d="M14 3v4h4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" />
+        </symbol>
+      </svg>
+      <header class="site-nav">
+        <div class="nav-inner">
+          <a class="brand-mark" href="../index.html">
+            <span class="brand-dot"></span>
+            <span>Palantir Research Summary</span>
+          </a>
+          <nav class="nav-links">
+            <a data-nav href="../index.html"><svg class="icon sm" aria-hidden="true"><use href="#i-home"></use></svg><span>管理层一页纸</span></a>
+            <a data-nav href="overview.html"><svg class="icon sm" aria-hidden="true"><use href="#i-map"></use></svg><span>研发技术总览</span></a>
+            <a data-nav href="expression-and-operators.html"><svg class="icon sm" aria-hidden="true"><use href="#i-brackets"></use></svg><span>表达层</span></a>
+            <a data-nav href="execution-and-incremental.html"><svg class="icon sm" aria-hidden="true"><use href="#i-cpu"></use></svg><span>执行与增量</span></a>
+            <a data-nav href="streaming-architecture.html"><svg class="icon sm" aria-hidden="true"><use href="#i-wave"></use></svg><span>流式</span></a>
+            <a data-nav href="lineage-ontology-governance.html"><svg class="icon sm" aria-hidden="true"><use href="#i-nodes"></use></svg><span>治理</span></a>
+            <a data-nav href="engineering-and-ecosystem.html"><svg class="icon sm" aria-hidden="true"><use href="#i-wrench"></use></svg><span>工程化</span></a>
+          </nav>
+        </div>
+      </header>
+
+      <main>
+        <section class="topic-header">
+          <p class="eyebrow">Topic 02</p>
+          <h1>执行引擎与增量链路</h1>
+          <p class="intro-note">Palantir 的执行层价值，不是选了 Spark 或 Faster 这样的某个引擎，而是把全量、增量、轻量和构建恢复组织成统一的运行模型。</p>
+          <div class="topic-meta">
+            <span class="tag">执行层</span>
+            <span class="tag">增量</span>
+            <span class="tag">Transaction</span>
+          </div>
+        </section>
+
+        <div class="detail-layout">
+          <aside class="section-nav">
+            <strong>本页导航</strong>
+            <a href="#conclusion">结论</a>
+            <a href="#mechanism">关键机制</a>
+            <a href="#implication">对我们的启发</a>
+            <a href="#sources">相关来源</a>
+          </aside>
+
+          <div class="detail-main">
+            <section class="section-card" id="conclusion">
+              <p class="section-kicker">Conclusions</p>
+              <h2>
+                <span class="title-row"><svg class="icon lg" aria-hidden="true"><use href="#i-spark"></use></svg><span>结论</span></span>
+              </h2>
+              <div class="detail-grid conclusion-grid">
+                <article class="detail-card">
+                  <h3>
+                    <span class="title-row"><svg class="icon sm" aria-hidden="true"><use href="#i-spark"></use></svg><span>增量批处理是 Palantir 的关键中间层</span></span>
+                  </h3>
+                  <p class="muted">它不追求行级 CDC，而是利用 Transaction 和文件级差量，把成本、时效和实现复杂度压在一个更可控的区间。</p>
+                </article>
+                <article class="detail-card">
+                  <h3>
+                    <span class="title-row"><svg class="icon sm" aria-hidden="true"><use href="#i-spark"></use></svg><span>执行引擎的强项在于“托管与路由”</span></span>
+                  </h3>
+                  <p class="muted">Compute Profile、独立 Build、失败回退和调度拓扑共同构成运行平台，而不是单次 Spark 任务封装。</p>
+                </article>
+                <article class="detail-card">
+                  <h3>
+                    <span class="title-row"><svg class="icon sm" aria-hidden="true"><use href="#i-spark"></use></svg><span>Faster 说明执行层也可以做分层产品化</span></span>
+                  </h3>
+                  <p class="muted">对中小规模、低延迟批任务，DataFusion 这类轻量引擎能作为 Spark 的补位，而不是替代。</p>
+                </article>
+              </div>
+            </section>
+
+            <section class="section-card" id="mechanism">
+              <p class="section-kicker">Mechanisms</p>
+              <h2>
+                <span class="title-row"><svg class="icon lg" aria-hidden="true"><use href="#i-layers"></use></svg><span>关键机制</span></span>
+              </h2>
+              <div class="split-callout">
+                <div class="split-stack">
+                  <div class="detail-card mechanism-card">
+                    <h3>1. Transaction 类型决定增量可行性</h3>
+                    <ul>
+                      <li><code>APPEND</code> 适合增量处理，只读新增文件。</li>
+                      <li><code>UPDATE</code> 和 <code>SNAPSHOT</code> 往往触发全量重算。</li>
+                      <li><code>semantic_version</code> 和 <code>require_incremental</code> 让开发者显式控制重算边界。</li>
+                    </ul>
+                  </div>
+                  <div class="detail-card mechanism-card">
+                    <h3>2. Build 系统不是“调度器皮肤”</h3>
+                    <ul>
+                      <li>平台基于依赖拓扑决定执行顺序与并行度。</li>
+                      <li>同一输出数据集存在写入串行和失败回滚保障。</li>
+                      <li>Build History 与恢复语义共同构成运行可追溯性。</li>
+                    </ul>
+                  </div>
+                </div>
+                <div class="image-frame mechanism-figure">
+                  <img
+                    src="../assets/diagrams/dataworks-architecture.drawio.png"
+                    alt="执行与平台架构"
+                    loading="lazy"
+                    decoding="async"
+                    width="2835"
+                    height="1955"
+                  />
+                  <div class="image-caption">执行层最有价值的部分不是引擎本身，而是围绕版本、恢复、资源和调度构建出的平台能力。</div>
+                </div>
+              </div>
+              <div class="detail-grid mechanism-grid">
+                <article class="detail-card mechanism-card">
+                  <h3>3. Faster 作为 Spark 旁路，而不是全局替代</h3>
+                  <p class="muted">Faster 更适合运行时长短、中小规模且需要更低执行开销的任务；这是一种非常实用的“执行分层”思路。</p>
+                </article>
+                <article class="detail-card mechanism-card">
+                  <h3>4. 增量模型的边界必须被产品化暴露</h3>
+                  <p class="muted">何时增量、何时回退全量、何时强制失败，这些都需要被平台清楚表达，否则研发和运维无法形成稳定预期。</p>
+                </article>
+              </div>
+            </section>
+
+            <section class="section-card" id="implication">
+              <p class="section-kicker">Implications</p>
+              <h2>
+                <span class="title-row"><svg class="icon lg" aria-hidden="true"><use href="#i-map"></use></svg><span>对我们的启发</span></span>
+              </h2>
+              <ul>
+                <li>增量链路应当优先围绕 Dataset 版本与事务历史设计，而不是直接追求复杂行级 CDC。</li>
+                <li>执行平台要把资源规格、失败回滚、重试、拓扑执行纳入一个统一 Build 模型，而不是散落到多个系统里。</li>
+                <li>为中小规模任务设计轻量执行后端很有价值，但必须明确它与主执行引擎的边界和回退策略。</li>
+                <li>增量语义需要被产品化暴露成开发者能理解的能力，不应作为底层黑盒存在。</li>
+              </ul>
+            </section>
+
+            <section class="section-card" id="sources">
+              <p class="section-kicker">Sources</p>
+              <h2>
+                <span class="title-row"><svg class="icon lg" aria-hidden="true"><use href="#i-file"></use></svg><span>相关来源</span></span>
+              </h2>
+              <div class="source-list">
+                <a class="source-link" href="../../docs/raw/02-execution-engine-spark.md"
+                  ><svg class="icon sm" aria-hidden="true"><use href="#i-file"></use></svg><span>docs/raw/02-execution-engine-spark.md</span></a
+                >
+                <a class="source-link" href="../../docs/raw/06-incremental-pipeline.md"
+                  ><svg class="icon sm" aria-hidden="true"><use href="#i-file"></use></svg><span>docs/raw/06-incremental-pipeline.md</span></a
+                >
+                <a class="source-link" href="../../docs/raw/15-job-execution-guarantee.md"
+                  ><svg class="icon sm" aria-hidden="true"><use href="#i-file"></use></svg><span>docs/raw/15-job-execution-guarantee.md</span></a
+                >
+                <a class="source-link" href="../../docs/raw/17-faster-engine-deep-dive.md"
+                  ><svg class="icon sm" aria-hidden="true"><use href="#i-file"></use></svg><span>docs/raw/17-faster-engine-deep-dive.md</span></a
+                >
+              </div>
+            </section>
+          </div>
+        </div>
+      </main>
+
+      <footer class="site-footer">
+        <div class="page-footer">
+          <div>增量是连接全量批处理和实时链路的关键层</div>
+          <div class="footer-note">继续阅读：流式架构</div>
+        </div>
+      </footer>
+    </div>
+  </body>
+</html>

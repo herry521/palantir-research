@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>血缘、Ontology 与治理</title>
+    <link rel="stylesheet" href="../styles.css" />
+    <script defer src="../app.js"></script>
+  </head>
+  <body class="detail-body">
+    <div class="site-shell">
+      <svg class="icon-sprite" xmlns="http://www.w3.org/2000/svg">
+        <symbol id="i-home" viewBox="0 0 24 24">
+          <path
+            d="M12 3l8 6v11a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V9l8-6Z"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.8"
+            stroke-linejoin="round"
+          />
+          <path
+            d="M9 21v-8h6v8"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.8"
+            stroke-linejoin="round"
+          />
+        </symbol>
+        <symbol id="i-map" viewBox="0 0 24 24">
+          <path d="M9 4 3 6v14l6-2 6 2 6-2V4l-6 2-6-2Z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" />
+          <path d="M9 4v14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
+          <path d="M15 6v14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
+        </symbol>
+        <symbol id="i-brackets" viewBox="0 0 24 24">
+          <path d="M9 6 5 12l4 6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" />
+          <path d="M15 6l4 6-4 6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" />
+          <path d="M13 6l-2 12" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
+        </symbol>
+        <symbol id="i-cpu" viewBox="0 0 24 24">
+          <path d="M9 9h6v6H9V9Z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" />
+          <path d="M9 2v3M15 2v3M9 19v3M15 19v3M2 9h3M2 15h3M19 9h3M19 15h3" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
+          <path d="M7 7h10v10H7V7Z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" />
+        </symbol>
+        <symbol id="i-wave" viewBox="0 0 24 24">
+          <path d="M3 14c2 0 2-4 4-4s2 4 4 4 2-4 4-4 2 4 4 4 2-4 4-4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" />
+        </symbol>
+        <symbol id="i-nodes" viewBox="0 0 24 24">
+          <path d="M7 7h0" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
+          <path d="M17 7h0" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
+          <path d="M12 17h0" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
+          <path d="M7 7 12 17 17 7" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" />
+        </symbol>
+        <symbol id="i-wrench" viewBox="0 0 24 24">
+          <path d="M14 7a4 4 0 0 0-6 3.5l-5 5a2 2 0 1 0 2.8 2.8l5-5A4 4 0 0 0 17 9l-3 3-2-2 2-3Z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" />
+        </symbol>
+        <symbol id="i-spark" viewBox="0 0 24 24">
+          <path d="M12 2l1.5 6.5L20 10l-6.5 1.5L12 18l-1.5-6.5L4 10l6.5-1.5L12 2Z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" />
+        </symbol>
+        <symbol id="i-layers" viewBox="0 0 24 24">
+          <path d="M12 3 2.5 8 12 13l9.5-5L12 3Z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" />
+          <path d="M2.5 12 12 17l9.5-5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round" />
+          <path d="M2.5 16 12 21l9.5-5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round" />
+        </symbol>
+        <symbol id="i-file" viewBox="0 0 24 24">
+          <path d="M7 3h7l3 3v15a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1Z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" />
+          <path d="M14 3v4h4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" />
+        </symbol>
+      </svg>
+      <header class="site-nav">
+        <div class="nav-inner">
+          <a class="brand-mark" href="../index.html">
+            <span class="brand-dot"></span>
+            <span>Palantir Research Summary</span>
+          </a>
+          <nav class="nav-links">
+            <a data-nav href="../index.html"><svg class="icon sm" aria-hidden="true"><use href="#i-home"></use></svg><span>管理层一页纸</span></a>
+            <a data-nav href="overview.html"><svg class="icon sm" aria-hidden="true"><use href="#i-map"></use></svg><span>研发技术总览</span></a>
+            <a data-nav href="expression-and-operators.html"><svg class="icon sm" aria-hidden="true"><use href="#i-brackets"></use></svg><span>表达层</span></a>
+            <a data-nav href="execution-and-incremental.html"><svg class="icon sm" aria-hidden="true"><use href="#i-cpu"></use></svg><span>执行与增量</span></a>
+            <a data-nav href="streaming-architecture.html"><svg class="icon sm" aria-hidden="true"><use href="#i-wave"></use></svg><span>流式</span></a>
+            <a data-nav href="lineage-ontology-governance.html"><svg class="icon sm" aria-hidden="true"><use href="#i-nodes"></use></svg><span>治理</span></a>
+            <a data-nav href="engineering-and-ecosystem.html"><svg class="icon sm" aria-hidden="true"><use href="#i-wrench"></use></svg><span>工程化</span></a>
+          </nav>
+        </div>
+      </header>
+
+      <main>
+        <section class="topic-header">
+          <p class="eyebrow">Topic 04</p>
+          <h1>血缘、Ontology 与治理</h1>
+          <p class="intro-note">Palantir 最大的平台壁垒，往往不在算子或引擎，而在 Dataset 版本、Lineage、Marking、Ontology 和 Writeback 共同组成的治理闭环。</p>
+          <div class="topic-meta">
+            <span class="tag">Lineage</span>
+            <span class="tag">Ontology</span>
+            <span class="tag">治理</span>
+          </div>
+        </section>
+
+        <div class="detail-layout">
+          <aside class="section-nav">
+            <strong>本页导航</strong>
+            <a href="#conclusion">结论</a>
+            <a href="#mechanism">关键机制</a>
+            <a href="#implication">对我们的启发</a>
+            <a href="#sources">相关来源</a>
+          </aside>
+
+          <div class="detail-main">
+            <section class="section-card" id="conclusion">
+              <p class="section-kicker">Conclusions</p>
+              <h2>
+                <span class="title-row"><svg class="icon lg" aria-hidden="true"><use href="#i-spark"></use></svg><span>结论</span></span>
+              </h2>
+              <div class="detail-grid conclusion-grid">
+                <article class="detail-card">
+                  <h3>
+                    <span class="title-row"><svg class="icon sm" aria-hidden="true"><use href="#i-spark"></use></svg><span>数据版本和血缘是治理闭环的基础设施</span></span>
+                  </h3>
+                  <p class="muted">没有 Transaction、Branch 和自动注册的依赖关系，血缘、影响分析、重放和审计都无法形成统一能力。</p>
+                </article>
+                <article class="detail-card">
+                  <h3>
+                    <span class="title-row"><svg class="icon sm" aria-hidden="true"><use href="#i-spark"></use></svg><span>Ontology 把数据集提升成业务对象模型</span></span>
+                  </h3>
+                  <p class="muted">这让平台不再只产出表，而是产出可被业务操作、可回写、可被应用消费的语义对象。</p>
+                </article>
+                <article class="detail-card">
+                  <h3>
+                    <span class="title-row"><svg class="icon sm" aria-hidden="true"><use href="#i-spark"></use></svg><span>治理价值来自“自动传播”，不是手工登记</span></span>
+                  </h3>
+                  <p class="muted">无论是血缘、标记、权限还是对象映射，都要尽量由平台自动捕获和传播，才能成为规模化能力。</p>
+                </article>
+              </div>
+            </section>
+
+            <section class="section-card" id="mechanism">
+              <p class="section-kicker">Mechanisms</p>
+              <h2>
+                <span class="title-row"><svg class="icon lg" aria-hidden="true"><use href="#i-layers"></use></svg><span>关键机制</span></span>
+              </h2>
+              <div class="split-callout">
+                <div class="split-stack">
+                  <div class="detail-card mechanism-card">
+                    <h3>1. Lineage 的抓手来自 Input / Output 声明</h3>
+                    <ul>
+                      <li>编译期静态分析捕获 Dataset 级依赖。</li>
+                      <li>运行期记录实际读写版本，形成时间点血缘。</li>
+                      <li>列级血缘对手写代码依然存在天然边界。</li>
+                    </ul>
+                  </div>
+                  <div class="detail-card mechanism-card">
+                    <h3>2. Dataset Branch 支持实验，但不支持 Merge</h3>
+                    <ul>
+                      <li>分支主要用于隔离试验和开发。</li>
+                      <li>数据分支不像代码分支那样可以直接合并。</li>
+                      <li>这迫使“回主线”动作必须通过 Transform 或发布流程完成。</li>
+                    </ul>
+                  </div>
+                </div>
+                <div class="image-frame mechanism-figure">
+                  <img
+                    src="../assets/diagrams/ontology-backend-architecture.drawio.png"
+                    alt="Ontology 架构图"
+                    loading="lazy"
+                    decoding="async"
+                    width="2075"
+                    height="1593"
+                  />
+                  <div class="image-caption">Ontology 的价值在于把下游应用、对象模型和数据加工链路放到同一张图里理解。</div>
+                </div>
+              </div>
+              <div class="detail-grid mechanism-grid">
+                <article class="detail-card mechanism-card">
+                  <h3>3. Ontology + Writeback 构成业务闭环</h3>
+                  <p class="muted">Pipeline 输出 Dataset，经映射进入 Object Type；业务侧修改又可通过 Action / Writeback Dataset 回到数据链路，形成“分析结果可操作”的闭环。</p>
+                </article>
+                <article class="detail-card mechanism-card">
+                  <h3>4. 治理能力还包括 Marking、权限与安全策略传播</h3>
+                  <p class="muted">敏感标记、访问控制和审计如果能沿血缘自动传递，平台才能支撑更高敏感度的数据协作。</p>
+                </article>
+              </div>
+            </section>
+
+            <section class="section-card" id="implication">
+              <p class="section-kicker">Implications</p>
+              <h2>
+                <span class="title-row"><svg class="icon lg" aria-hidden="true"><use href="#i-map"></use></svg><span>对我们的启发</span></span>
+              </h2>
+              <ul>
+                <li>优先建设 Dataset 版本模型和自动血缘注册能力，这是后续治理与回放能力的基础。</li>
+                <li>如果希望平台走向业务语义层，就不能只停留在 Dataset，需要逐步建立对象模型和回写入口。</li>
+                <li>治理能力要尽量自动化传播，而不是依赖大量手工配置和人工维护。</li>
+                <li>Branch 的设计要区分“代码/配置分支”和“数据分支”，避免混淆 Git 语义与数据版本语义。</li>
+              </ul>
+            </section>
+
+            <section class="section-card" id="sources">
+              <p class="section-kicker">Sources</p>
+              <h2>
+                <span class="title-row"><svg class="icon lg" aria-hidden="true"><use href="#i-file"></use></svg><span>相关来源</span></span>
+              </h2>
+              <div class="source-list">
+                <a class="source-link" href="../../docs/raw/04-lineage-ontology-integration.md"
+                  ><svg class="icon sm" aria-hidden="true"><use href="#i-file"></use></svg><span>docs/raw/04-lineage-ontology-integration.md</span></a
+                >
+                <a class="source-link" href="../../docs/raw/11-marking-mechanism-deep-dive.md"
+                  ><svg class="icon sm" aria-hidden="true"><use href="#i-file"></use></svg><span>docs/raw/11-marking-mechanism-deep-dive.md</span></a
+                >
+                <a class="source-link" href="../../docs/raw/12-dataset-marking-implementation.md"
+                  ><svg class="icon sm" aria-hidden="true"><use href="#i-file"></use></svg><span>docs/raw/12-dataset-marking-implementation.md</span></a
+                >
+                <a class="source-link" href="../../docs/raw/13-marking-advanced-deep-dive.md"
+                  ><svg class="icon sm" aria-hidden="true"><use href="#i-file"></use></svg><span>docs/raw/13-marking-advanced-deep-dive.md</span></a
+                >
+                <a class="source-link" href="../../docs/raw/18-branching-data-connection.md"
+                  ><svg class="icon sm" aria-hidden="true"><use href="#i-file"></use></svg><span>docs/raw/18-branching-data-connection.md</span></a
+                >
+              </div>
+            </section>
+          </div>
+        </div>
+      </main>
+
+      <footer class="site-footer">
+        <div class="page-footer">
+          <div>治理的真正价值在于自动传播和业务语义提升</div>
+          <div class="footer-note">继续阅读：工程化与生态边界</div>
+        </div>
+      </footer>
+    </div>
+  </body>
+</html>
