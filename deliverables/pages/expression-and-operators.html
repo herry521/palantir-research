@@ -90,11 +90,11 @@
         <section class="topic-header">
           <p class="eyebrow">Topic 01</p>
           <h1>表达层与算子平台</h1>
-          <p class="intro-note">表达层决定开发心智。Palantir 的第一层优势，不是把 Spark 封装得更漂亮，而是把“如何描述数据开发”做成了可复用的平台契约。</p>
+          <p class="intro-note">表达层决定开发心智。Palantir 的第一层优势，不是把 Spark 封装得更漂亮，而是把 Dataset 依赖、transform 节点、expression 参数和执行适配做成同一套可复用的平台契约。</p>
           <div class="topic-meta">
             <span class="tag">表达层</span>
             <span class="tag">Transform DSL</span>
-            <span class="tag">算子平台</span>
+            <span class="tag">89 transform / 335 expression</span>
           </div>
         </section>
 
@@ -124,13 +124,19 @@
                   <h3>
                     <span class="title-row"><svg class="icon sm" aria-hidden="true"><use href="#i-spark"></use></svg><span>DSL 不只是语法糖，而是平台契约入口</span></span>
                   </h3>
-                  <p class="muted">装饰器、<code>pipeline.py</code> 注册入口和可发现的 Transform 集合，让开发逻辑天然可被平台理解、追踪和治理。</p>
+                  <p class="muted">装饰器、<code>pipeline.py</code> 注册入口、transform 清单和 expression 类型系统，让开发逻辑天然可被平台理解、追踪和治理。</p>
+                </article>
+                <article class="detail-card">
+                  <h3>
+                    <span class="title-row"><svg class="icon sm" aria-hidden="true"><use href="#i-spark"></use></svg><span>算子能力基线来自 final bundle</span></span>
+                  </h3>
+                  <p class="muted">外部算子调研已收口 89 条 transform 与 335 条 expression；全局调研应把这两套 final bundle 当成能力基线，而不是把临时解析结果当结论。</p>
                 </article>
                 <article class="detail-card">
                   <h3>
                     <span class="title-row"><svg class="icon sm" aria-hidden="true"><use href="#i-spark"></use></svg><span>算子平台把“代码能力”转化成“产品能力”</span></span>
                   </h3>
-                  <p class="muted">当逻辑可以被沉淀为带契约的算子，低代码、代码优先和平台治理才能共享同一个能力底座。</p>
+                  <p class="muted">当逻辑可以被沉淀为注册中心、类型化 IR 和执行适配器，低代码、代码优先和平台治理才能共享同一个能力底座。</p>
                 </article>
               </div>
             </section>
@@ -158,6 +164,14 @@
                       <li>二者共享数据集、调度和治理模型，避免裂成两个世界。</li>
                     </ul>
                   </div>
+                  <div class="detail-card mechanism-card">
+                    <h3>3. Pipeline Builder 算子分成两层</h3>
+                    <ul>
+                      <li>transform 是数据集级步骤，负责聚合、连接、窗口、解析、地理处理等 Pipeline 节点语义。</li>
+                      <li>expression 是字段和值级表达，负责数值、布尔、字符串、时间、类型转换、数组、结构体、JSON 和 Map 计算。</li>
+                      <li>这个分层决定 Builder 的节点面板、参数表单、类型校验和预览反馈如何组织。</li>
+                    </ul>
+                  </div>
                 </div>
                 <div class="image-frame mechanism-figure">
                   <img
@@ -173,11 +187,11 @@
               </div>
               <div class="detail-grid mechanism-grid">
                 <article class="detail-card mechanism-card">
-                  <h3>3. 算子契约是走向平台能力的桥</h3>
+                  <h3>4. 算子契约是走向平台能力的桥</h3>
                   <p class="muted">从调研里的算子平台方案看，输入输出声明、参数声明、Schema 推导和执行绑定需要分层设计，才能同时支撑编译期校验和运行期执行。</p>
                 </article>
                 <article class="detail-card mechanism-card">
-                  <h3>4. 平台真正要沉淀的是可发现、可校验、可组合</h3>
+                  <h3>5. 平台真正要沉淀的是可发现、可校验、可组合</h3>
                   <p class="muted">Palantir 的做法说明，算子丰富只是结果，平台更底层的价值是让逻辑可被发现、被拼装、被治理和被复用。</p>
                 </article>
               </div>
@@ -191,6 +205,7 @@
               <ul>
                 <li>优先统一“数据开发的表达模型”，比先做复杂可视化 Builder 更关键。</li>
                 <li>把数据集路径、输入输出契约和 Schema 传播作为平台主线，而不是把调度节点当中心。</li>
+                <li>把 transform final bundle 导入算子注册中心，把 expression final bundle 导入表达式类型系统，先形成统一能力目录。</li>
                 <li>低代码和代码优先应共享同一套底层算子与契约，否则后续治理和复用会持续分叉。</li>
                 <li>算子平台设计要同时考虑编译期校验和运行期执行，避免只做“函数库”而缺失平台感知能力。</li>
               </ul>
@@ -211,6 +226,12 @@
                 <a class="source-link" href="../../docs/raw/14-transform-operator-library.md"
                   ><svg class="icon sm" aria-hidden="true"><use href="#i-file"></use></svg><span>docs/raw/14-transform-operator-library.md</span></a
                 >
+                <a class="source-link" href="pipeline-builder-operators-overview.html"
+                  ><svg class="icon sm" aria-hidden="true"><use href="#i-file"></use></svg><span>Pipeline Builder 算子总览</span></a
+                >
+                <a class="source-link" href="../../docs/synthesis/palantir-pipeline-deep-dive.md"
+                  ><svg class="icon sm" aria-hidden="true"><use href="#i-file"></use></svg><span>docs/synthesis/palantir-pipeline-deep-dive.md</span></a
+                >
                 <a class="source-link" href="../../docs/synthesis/operator-platform-design.md"
                   ><svg class="icon sm" aria-hidden="true"><use href="#i-file"></use></svg><span>docs/synthesis/operator-platform-design.md</span></a
                 >
@@ -223,7 +244,7 @@
       <footer class="site-footer">
         <div class="page-footer">
           <div>Palantir Foundry / Pipeline 调研材料库</div>
-          <div class="footer-note">统一入口：首页 / 总览 / 高码 / 蓝图 / 五个技术专题</div>
+          <div class="footer-note">统一入口：首页 / 总览 / 高码 / 蓝图 / 算子总览 / 五个技术专题</div>
         </div>
       </footer>
     </div>

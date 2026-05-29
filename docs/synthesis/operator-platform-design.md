@@ -20,6 +20,17 @@
 | 4. 支撑体系建设 | Schema 传播、质量门禁、可观测性 |
 | 5. 算子规划路线图 | 优先造哪些算子、谁负责维护 |
 
+### 0.1 与 Pipeline Builder 算子调研的关系
+
+`/Users/huyongqiang/code/li/pipeline-transform-research` 已把 Pipeline Builder 可见能力收口为两套正式入口：89 条 transform final bundle 和 335 条 expression final bundle。【事实】
+
+本文的设计建议应以这两套 final bundle 作为能力基线：
+- transform 清单进入 `OperatorRegistry`，成为低代码节点、Schema 推导、执行适配和治理采集的目录来源。
+- expression 清单进入表达式类型系统，成为过滤、派生列、聚合参数、窗口参数和质量规则的字段级计算来源。
+- 自动解析、stage、verify 和临时渲染产物只保留为追溯材料，不作为正式能力数量或覆盖范围的引用入口。
+
+这意味着算子平台不是“把 424 个函数搬进页面”，而是把 transform / expression 的分层、参数类型、执行环境、证据等级和实现状态纳入同一套控制面。【推断】
+
 ---
 
 ## 1. 核心抽象设计
@@ -91,7 +102,7 @@ class TableSchema:
 @dataclass
 class ParamSpec:
     name: str
-    type: str                        # "string" | "integer" | "boolean" | "float" | "enum"
+    type: str                        # "string" | "integer" | "boolean" | "float" | "enum" | "expression"
     required: bool = True
     default: Any = None
     allowed_values: List[Any] = field(default_factory=list)
@@ -669,6 +680,18 @@ class LineageWrappedExecutor(OperatorExecutor):
 
 ## 5. 算子规划路线图
 
+### 5.0 从 final bundle 到建设 Backlog
+
+外部调研的两套 final bundle 应先映射成建设 Backlog，而不是直接等同于实现清单。【推断】
+
+| 输入清单 | 平台承接方式 | 建设动作 |
+|---|---|---|
+| 89 条 transform | `OperatorSpec` + `OperatorExecutor` + UI 节点模板 | 标注 P0/P1/P2、输入输出端口、Schema 推导、执行适配器和增量语义 |
+| 335 条 expression | 表达式 AST + 类型推导 + 函数注册表 | 标注参数类型、返回类型、空值语义、可用上下文和可下推能力 |
+| final bundle README / CSV / JSON | 证据入口 | 保留来源、解析方式、证据等级和实现状态，支持后续差异对齐 |
+
+优先级不能只按数量决定。transform 要按 Pipeline 主链路覆盖率排序；expression 要按被 filter、add_column、aggregate、window、quality rule 等节点复用的频率排序。【推断】
+
 ### 5.1 官方算子 vs 用户自定义：决策原则
 
 ```
@@ -692,7 +715,7 @@ class LineageWrappedExecutor(OperatorExecutor):
 
 #### P0：必须首批交付（平台上线前）
 
-这些算子覆盖 ~70% 的真实 Pipeline 需求，没有它们平台无法使用。
+这些算子覆盖 ~70% 的真实 Pipeline 需求，没有它们平台无法使用。它们应优先从 transform final bundle 中映射，并补齐 expression final bundle 中最常被参数引用的条件、类型转换和基础计算函数。【推断】
 
 **行列基础算子（P0）**
 
@@ -919,18 +942,20 @@ steps:
 Phase 0（第 1 个月）：基础框架
   ├── OperatorSpec / OperatorExecutor 接口定义
   ├── OperatorRegistry 实现（静态注册）
+  ├── 导入 transform / expression final bundle，形成能力基线
   ├── Schema 传播引擎（核心）
   └── 执行引擎路由（Lightweight 优先）
 
 Phase 1（第 2-3 个月）：P0 算子 + 基础支撑
   ├── 全部 P0 算子（filter/select/add_column/join/union/aggregate/IO）
+  ├── P0 expression 函数（条件、类型转换、基础字符串/数值/时间）
   ├── Layer 1-2 数据质量门禁
   ├── Lineage 自动采集
   └── 基础可观测性指标
 
 Phase 2（第 4-6 个月）：P1 算子 + 稳定性
   ├── 全部 P1 算子（window/pivot/case/split 等）
-  ├── P1 表达式库（字符串/日期/数值）
+  ├── P1 表达式库（数组/结构体/JSON/Map 等）
   ├── 重试 + 熔断机制
   ├── 版本兼容性扫描 CI
   └── Spark 引擎对接（P0/P1 算子双引擎实现）
@@ -962,6 +987,10 @@ Phase 3（第 7-12 个月）：P2 算子 + 扩展生态
 
 ## 9. 参考资料
 
+- `/Users/huyongqiang/code/li/pipeline-transform-research/docs/pipeline-builder-operators-research-summary.md` — Pipeline Builder transform / expression 算子调研总结
+- `/Users/huyongqiang/code/li/pipeline-transform-research/docs/pipeline-builder-operators-overview.html` — Pipeline Builder 算子 HTML 总览页
+- `/Users/huyongqiang/code/li/pipeline-transform-research/artifacts/transform-final/README.md` — transform final bundle 入口
+- `/Users/huyongqiang/code/li/pipeline-transform-research/artifacts/pb-expression-final/README.md` — expression final bundle 入口
 - `docs/raw/14-transform-operator-library.md` — Palantir 算子库现状分析
 - Apache Beam PTransform 设计：Spec/Executor 分离的标准参考
 - Spark Catalyst：类型系统与编译期优化的工程实践

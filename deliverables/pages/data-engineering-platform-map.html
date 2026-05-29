@@ -108,7 +108,7 @@
                 <span class="title-row"><svg class="icon lg" aria-hidden="true"><use href="#i-cpu"></use></svg><span>数据同步与 Pipeline 专项关注</span></span>
               </h2>
             </div>
-            <p>单独看数据同步和 Pipeline，重点不是多接几个源或多写几个算子，而是把状态、版本、事务、增量和质量变成平台内生能力。</p>
+            <p>单独看数据同步和 Pipeline，重点不是多接几个源或多写几个算子，而是把 transform / expression 能力基线、状态、版本、事务、增量和质量变成平台内生能力。</p>
           </div>
 
           <div class="sync-pipeline-grid">
@@ -142,6 +142,8 @@
               <p class="domain-lead">Pipeline 层解决“进入平台的数据如何被稳定加工”，核心是版本锁定、Transaction、增量判断、Build History 和发布门禁。</p>
               <div class="domain-chip-grid">
                 <span>Input / Output 自动形成 DAG</span>
+                <span>transform / expression 能力基线</span>
+                <span>算子注册中心与类型化 IR</span>
                 <span>Build 读取输入 Dataset 固定版本</span>
                 <span>写出新的不可变 Transaction</span>
                 <span>识别 APPEND / UPDATE / SNAPSHOT</span>
@@ -332,7 +334,11 @@
               <div class="capability-modules">
                 <div class="capability-module priority-p0">
                   <strong>开发表达统一</strong>
-                  <p>工程师、分析师、低代码用户都通过统一 Pipeline 模型表达数据加工。</p>
+                  <p>工程师、分析师、低代码用户都通过统一 Pipeline 模型、transform 节点和 expression 参数表达数据加工。</p>
+                </div>
+                <div class="capability-module priority-p0">
+                  <strong>算子注册中心与类型化 IR</strong>
+                  <p>把 89 条 transform、335 条 expression、参数、类型、证据等级和实现状态纳入同一套控制面。</p>
                 </div>
                 <div class="capability-module priority-p0">
                   <strong>执行与调度体系</strong>
@@ -373,7 +379,7 @@
             <div>
               <p class="section-kicker">Focus Points</p>
               <h2>
-                <span class="title-row"><svg class="icon lg" aria-hidden="true"><use href="#i-spark"></use></svg><span>15 个能力建设关注点</span></span>
+                <span class="title-row"><svg class="icon lg" aria-hidden="true"><use href="#i-spark"></use></svg><span>16 个能力建设关注点</span></span>
               </h2>
             </div>
             <p>这些关注点是评审平台方案时最应该反复追问的地方。它们横跨架构、产品、工程和治理，而不是某一个技术组件。</p>
@@ -393,65 +399,70 @@
             <article class="capability-focus-card">
               <span>03</span>
               <h3>开发表达统一</h3>
-              <p>避免 Spark、SQL、Flink、调度器各玩各的，让用户面对同一套 Pipeline 模型。</p>
+              <p>避免 Spark、SQL、Flink、调度器各玩各的，让用户面对同一套 Pipeline 模型、transform 节点和 expression 参数。</p>
             </article>
             <article class="capability-focus-card">
               <span>04</span>
+              <h3>算子注册中心</h3>
+              <p>将 transform / expression 清单、参数、类型、运行环境、证据等级和实现状态集中管理。</p>
+            </article>
+            <article class="capability-focus-card">
+              <span>05</span>
               <h3>执行与调度体系</h3>
               <p>支持 DAG、依赖调度、事件触发、失败重试、回填和资源规格选择。</p>
             </article>
             <article class="capability-focus-card">
-              <span>05</span>
+              <span>06</span>
               <h3>增量计算能力</h3>
               <p>用数据版本和事务类型驱动增量执行，这是成本、时效和稳定性的关键。</p>
             </article>
             <article class="capability-focus-card">
-              <span>06</span>
+              <span>07</span>
               <h3>流式能力</h3>
               <p>建设 Stream Dataset、Flink Job、Checkpoint、流式质量和低延迟对象写入。</p>
             </article>
             <article class="capability-focus-card">
-              <span>07</span>
+              <span>08</span>
               <h3>数据质量与测试</h3>
               <p>同时覆盖产出后质量规则、开发态单测、样本测试、增量测试和 CI/CD。</p>
             </article>
             <article class="capability-focus-card">
-              <span>08</span>
+              <span>09</span>
               <h3>血缘与影响分析</h3>
               <p>能追踪字段来源、Build 版本、下游影响和 Schema 变更风险。</p>
             </article>
             <article class="capability-focus-card">
-              <span>09</span>
+              <span>10</span>
               <h3>权限与治理</h3>
               <p>支持 Dataset 级、字段级、行级权限，敏感标记传播、脱敏、审计和申请流程。</p>
             </article>
             <article class="capability-focus-card">
-              <span>10</span>
+              <span>11</span>
               <h3>业务语义层</h3>
               <p>让应用、业务系统和 AI Agent 消费业务对象，而不是直接消费表。</p>
             </article>
             <article class="capability-focus-card">
-              <span>11</span>
+              <span>12</span>
               <h3>用户回写闭环</h3>
               <p>业务用户修改进入 Writeback Dataset，再通过 Pipeline 合并回主链路。</p>
             </article>
             <article class="capability-focus-card">
-              <span>12</span>
+              <span>13</span>
               <h3>可观测与健康度</h3>
               <p>统一查看 Build 状态、SLA、新鲜度、质量分、失败影响范围和资源成本。</p>
             </article>
             <article class="capability-focus-card">
-              <span>13</span>
+              <span>14</span>
               <h3>环境与发布管理</h3>
               <p>dev / staging / prod 中，代码、配置、数据版本能一起晋级、回滚和对比。</p>
             </article>
             <article class="capability-focus-card">
-              <span>14</span>
+              <span>15</span>
               <h3>资源与成本治理</h3>
               <p>Spark / Flink 资源需要队列、配额、优先级、成本归因和弹性策略。</p>
             </article>
             <article class="capability-focus-card">
-              <span>15</span>
+              <span>16</span>
               <h3>AI / MCP 集成</h3>
               <p>后期接入自然语言生成 Pipeline、LLM 算子、Agent 操作和 MCP 暴露能力。</p>
             </article>
@@ -477,10 +488,11 @@
               </div>
               <div class="stage-copy">
                 <h3>第一阶段：先建底座</h3>
-                <p>先把 Dataset 版本模型、数据接入、Pipeline 表达、调度、基础质量和基础血缘建起来。</p>
+                <p>先把 Dataset 版本模型、数据接入、transform / expression 注册中心、Pipeline 表达、调度、基础质量和基础血缘建起来。</p>
               </div>
               <ul>
                 <li>统一 Dataset / Schema / Transaction 模型。</li>
+                <li>导入 transform / expression final bundle，形成算子能力基线。</li>
                 <li>打通接入、加工、调度、质量和血缘的最小链路。</li>
                 <li>让现有 Spark / Flink / 调度体系通过平台边界复用。</li>
               </ul>
@@ -492,9 +504,10 @@
               </div>
               <div class="stage-copy">
                 <h3>第二阶段：补生产能力</h3>
-                <p>围绕增量、流式、测试、监控、权限治理、资源管理，把平台从可用推到可规模化。</p>
+                <p>围绕算子执行适配器、增量、流式、测试、监控、权限治理、资源管理，把平台从可用推到可规模化。</p>
               </div>
               <ul>
+                <li>将 transform 节点和 expression 参数接入类型校验、预览和运行时适配器。</li>
                 <li>将 APPEND / UPDATE / SNAPSHOT 纳入增量安全判断。</li>
                 <li>补齐流式链路、Checkpoint、实时质量和失败恢复。</li>
                 <li>建立 CI/CD、环境晋级、资源配额和成本归因。</li>
@@ -546,7 +559,7 @@
       <footer class="site-footer">
         <div class="page-footer">
           <div>Palantir Foundry / Pipeline 调研材料库</div>
-          <div class="footer-note">统一入口：首页 / 总览 / 高码 / 蓝图 / 五个技术专题</div>
+          <div class="footer-note">统一入口：首页 / 总览 / 高码 / 蓝图 / 算子总览 / 五个技术专题</div>
         </div>
       </footer>
     </div>

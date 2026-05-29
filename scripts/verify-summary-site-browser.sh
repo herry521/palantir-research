@@ -34,7 +34,7 @@ const pages = [
     path: "index.html",
     slug: "home",
     title: "Palantir 调研总结一页纸",
-    requiredText: ["三个管理判断", "高码能力研究"],
+    requiredText: ["三个管理判断", "高码能力研究", "Pipeline Builder 算子总览"],
   },
   {
     path: "pages/pro-code-capability.html",
@@ -46,7 +46,7 @@ const pages = [
     path: "pages/overview.html",
     slug: "overview",
     title: "Palantir 研发技术总览",
-    requiredText: ["完整阅读路径", "高码能力研究", "能力建设关注点", "算子调研结论", "Pipeline Builder 算子总览页"],
+    requiredText: ["完整阅读路径", "高码能力研究", "能力建设关注点", "算子主线如何嵌入平台图", "Pipeline Builder 算子总览页"],
     iframeSelector: 'iframe[title="Pipeline Builder 算子总览页预览"]',
     iframeRequiredText: ["算子总览", "transform 清单", "expression 清单"],
     iframeSrc: "pipeline-builder-operators-overview.html",
@@ -61,13 +61,13 @@ const pages = [
     path: "pages/data-engineering-platform-map.html",
     slug: "data-engineering-platform-map",
     title: "数据工程能力建设蓝图",
-    requiredText: ["能力建设关注点", "Dataset Control Plane", "Engine Router"],
+    requiredText: ["能力建设关注点", "Dataset Control Plane", "Engine Router", "算子注册中心"],
   },
   {
     path: "pages/expression-and-operators.html",
     slug: "expression-and-operators",
     title: "表达层与算子平台",
-    requiredText: ["表达层", "Transform DSL", "算子"],
+    requiredText: ["表达层", "Transform DSL", "89 条 transform", "335 条 expression", "Pipeline Builder 算子总览"],
   },
   {
     path: "pages/execution-and-incremental.html",
@@ -179,6 +179,15 @@ async function checkPage(browser, pageSpec, viewport) {
   assertScreenshotLooksRendered(screenshot, `${pageSpec.path} ${viewport.name}`);
 
   if (pageSpec.iframeSelector) {
+    const iframeElement = page.locator(pageSpec.iframeSelector);
+    await iframeElement.scrollIntoViewIfNeeded();
+    const iframeElementScreenshot = await iframeElement.screenshot();
+    const iframeElementScreenshotName = `${pageSpec.slug}-${viewport.name}-iframe-element.png`;
+    const iframeElementScreenshotPath = path.join(screenshotDir, iframeElementScreenshotName);
+    fs.writeFileSync(iframeElementScreenshotPath, iframeElementScreenshot);
+    assertScreenshotLooksRendered(iframeElementScreenshot, `${pageSpec.path} ${viewport.name} embedded iframe element`);
+    console.log(`Captured ${viewport.name} iframe element screenshot: ${iframeElementScreenshotPath}`);
+
     const iframePage = await browser.newPage({ viewport });
     const iframeUrl = new URL(pageSpec.iframeSrc, fileUrl).href;
     await iframePage.goto(iframeUrl, { waitUntil: "networkidle" });

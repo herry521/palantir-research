@@ -95,7 +95,7 @@
           </p>
           <div class="topic-meta">
             <span class="tag">1 个总览页</span>
-            <span class="tag">5 个专题页</span>
+            <span class="tag">算子总览入口</span>
             <span class="tag">对应 20+ 篇原始调研材料</span>
           </div>
         </section>
@@ -108,7 +108,7 @@
                 <span class="title-row"><svg class="icon lg" aria-hidden="true"><use href="#i-map"></use></svg><span>平台能力地图</span></span>
               </h2>
             </div>
-            <p>如果把 Palantir 抽象成平台能力，而不是产品页面，可以大致拆成四层：表达、执行、治理、应用闭环。</p>
+            <p>如果把 Palantir 抽象成平台能力，而不是产品页面，表达层不能只看代码 DSL，还要把 transform / expression 算子基线纳入同一个能力图。</p>
           </div>
           <div class="map-layout">
             <div class="image-frame">
@@ -127,14 +127,14 @@
                 <div class="map-layer-index">01</div>
                 <div class="map-layer-body">
                   <h3>表达层</h3>
-                  <p>Transform DSL、Pipeline Builder、算子抽象与代码/低代码统一入口，共同定义平台如何被开发者“描述”。</p>
+                  <p>Transform DSL、Pipeline Builder、89 条 transform、335 条 expression、算子注册中心和类型化 IR，共同定义平台如何被开发者“描述”。</p>
                 </div>
               </article>
               <article class="map-layer">
                 <div class="map-layer-index">02</div>
                 <div class="map-layer-body">
                   <h3>执行层</h3>
-                  <p>Spark、Faster、Flink 以及全量、增量、流式等模式选择，共同决定平台如何把逻辑稳定地跑起来。</p>
+                  <p>Spark、Faster、Flink、文件解析、地理空间和媒体处理等执行适配器，共同决定同一套语义计划如何稳定运行。</p>
                 </div>
               </article>
               <article class="map-layer">
@@ -160,7 +160,7 @@
             <div>
               <p class="section-kicker">Operator Conclusions</p>
               <h2>
-                <span class="title-row"><svg class="icon lg" aria-hidden="true"><use href="#i-brackets"></use></svg><span>算子调研结论</span></span>
+                <span class="title-row"><svg class="icon lg" aria-hidden="true"><use href="#i-brackets"></use></svg><span>算子主线如何嵌入平台图</span></span>
               </h2>
             </div>
             <p>
@@ -219,9 +219,19 @@
                 <span class="title-row"><svg class="icon lg" aria-hidden="true"><use href="#i-layers"></use></svg><span>完整阅读路径</span></span>
               </h2>
             </div>
-            <p>建议先读高码能力和建设蓝图，再进入五个技术专题；每页都按结论、机制、启发和来源组织。</p>
+            <p>建议先读算子总览、高码能力和建设蓝图，再进入技术专题；每页都按结论、机制、启发和来源组织。</p>
           </div>
           <div class="topic-grid">
+            <a class="topic-summary" href="pipeline-builder-operators-overview.html">
+              <span class="tag">能力基线</span>
+              <h3>Pipeline Builder 算子总览</h3>
+              <p class="muted">回答“transform / expression 到底是什么、当前调研证据边界在哪里”。</p>
+              <ul>
+                <li>89 条 transform</li>
+                <li>335 条 expression</li>
+                <li>2 套 final bundle</li>
+              </ul>
+            </a>
             <a class="topic-summary" href="pro-code-capability.html">
               <span class="tag">核心专题</span>
               <h3>高码能力研究</h3>
@@ -308,9 +318,9 @@
           <div class="source-grid">
             <article class="source-card">
               <h4>判断 1：平台闭环强</h4>
-              <p class="muted">优先阅读表达层、执行层与治理层三个专题，理解闭环如何形成。</p>
-              <a class="source-link" href="expression-and-operators.html"
-                ><svg class="icon sm" aria-hidden="true"><use href="#i-brackets"></use></svg><span>去看表达层与算子平台</span></a
+              <p class="muted">先看算子总览，再看表达层、执行层与治理层，理解能力目录如何进入平台闭环。</p>
+              <a class="source-link" href="pipeline-builder-operators-overview.html"
+                ><svg class="icon sm" aria-hidden="true"><use href="#i-brackets"></use></svg><span>去看 Pipeline Builder 算子总览</span></a
               >
             </article>
             <article class="source-card">
@@ -322,7 +332,7 @@
             </article>
             <article class="source-card">
               <h4>判断 3：先补底座</h4>
-              <p class="muted">按“表达 -> 数据集版本 -> 增量链路 -> 治理闭环”的顺序阅读，最接近实际建设优先级。</p>
+              <p class="muted">按“算子注册中心 / 类型化 IR -> 数据集版本 -> 增量链路 -> 治理闭环”的顺序阅读，最接近实际建设优先级。</p>
               <a class="source-link" href="execution-and-incremental.html"
                 ><svg class="icon sm" aria-hidden="true"><use href="#i-cpu"></use></svg><span>去看执行与增量链路</span></a
               >
@@ -351,6 +361,11 @@
               <h3>算子平台建设方案</h3>
               <p class="muted">适合带着“对我们意味着什么”这一问题继续看。</p>
             </a>
+            <a class="detail-card" href="pipeline-builder-operators-overview.html">
+              <span class="tag">HTML 总览</span>
+              <h3>Pipeline Builder 算子总览</h3>
+              <p class="muted">直接查看从外部调研仓库嵌入的 transform / expression 主入口。</p>
+            </a>
           </div>
         </section>
       </main>
@@ -358,7 +373,7 @@
       <footer class="site-footer">
         <div class="page-footer">
           <div>Palantir Foundry / Pipeline 调研材料库</div>
-          <div class="footer-note">统一入口：首页 / 总览 / 高码 / 蓝图 / 五个技术专题</div>
+          <div class="footer-note">统一入口：首页 / 总览 / 高码 / 蓝图 / 算子总览 / 五个技术专题</div>
         </div>
       </footer>
     </div>

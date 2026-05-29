@@ -2,26 +2,27 @@
 
 **日期：** 2026-04-16  
 **类型：** 技术调研  
-**覆盖方向：** Pipeline 表达层 / 算子平台 / 执行引擎 / 流批架构 / 血缘与 Ontology 集成
+**覆盖方向：** Pipeline 表达层 / Pipeline Builder 算子基线 / 算子平台 / 执行引擎 / 流批架构 / 血缘与 Ontology 集成
 
 ---
 
 ## 背景
 
-本报告聚焦 Palantir Foundry 的 Pipeline 技术实现，从四个维度并行调研：
+本报告聚焦 Palantir Foundry 的 Pipeline 技术实现，从六个维度并行调研：
 1. Pipeline 表达层 DSL 与 Transform 抽象
-2. 执行引擎 Spark 集成与增量计算
-3. 流批一体架构与 Streaming Pipeline
-4. 数据血缘与 Ontology-Pipeline 集成
-5. 算子平台设计：契约、注册、执行路由、治理与建设优先级
+2. Pipeline Builder 算子基线：transform 与 expression 两条主线
+3. 执行引擎 Spark 集成与增量计算
+4. 流批一体架构与 Streaming Pipeline
+5. 数据血缘与 Ontology-Pipeline 集成
+6. 算子平台设计：契约、注册、执行路由、治理与建设优先级
 
-原始调研文件：`docs/raw/01~05-*.md`、`docs/raw/14-transform-operator-library.md`
+原始调研文件：`docs/raw/01~05-*.md`、`docs/raw/14-transform-operator-library.md`，以及外部仓库 `/Users/huyongqiang/code/li/pipeline-transform-research` 的算子总结、HTML 总览和 final bundle。
 
 专题方案文件：`docs/synthesis/operator-platform-design.md`
 
 ---
 
-## 一、Pipeline 表达层：以装饰器为核心的声明式 DSL
+## 一、Pipeline 表达层：DSL、transform 和 expression 的共同契约
 
 ### 1.1 Transform 装饰器体系
 
@@ -63,7 +64,17 @@ my_pipeline = Pipeline()
 my_pipeline.discover_transforms()  # 扫描当前包下所有 @transform 函数
 ```
 
-### 1.3 与 dbt 的本质区别
+### 1.3 Pipeline Builder 算子分层
+
+外部 `pipeline-transform-research` 调研说明，Pipeline Builder 的可见算子能力不能只理解成一组 Transform 函数。它至少分成两层：
+- **转换算子（transform）**：数据集级转换，描述 Pipeline Builder 中的处理步骤，例如 Aggregate、Pivot、Window、Mapping join、Parse Excel、Key by。
+- **表达式函数（expression function）**：字段和值级表达，描述某个列、值或结构如何计算，例如数值、布尔、字符串、时间、类型转换、数组、结构体、JSON 和 Map 函数。
+
+这个分层会反过来影响 Transform DSL 的理解：`Input` / `Output` 解决 Dataset graph 的依赖声明，transform / expression 解决 Builder 节点内部的语义、参数和类型校验。也就是说，表达层不是“装饰器 + Spark 代码”这么简单，而是由 Dataset 依赖契约、算子能力目录、表达式类型系统和低代码 / 高码互操作共同组成。【事实 + 推断】
+
+当前可直接复用的外部调研基线是 89 条 transform 和 335 条 expression final bundle。全局调研后续引用算子能力时，应优先回到这两套 final bundle，而不是回到自动解析、stage、verify 或临时渲染文件。【事实】
+
+### 1.4 与 dbt 的本质区别
 
 | 维度 | Foundry Transforms | dbt |
 |---|---|---|
