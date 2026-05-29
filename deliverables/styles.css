@@ -45,11 +45,10 @@ body {
 }
 
 body.home-body {
-  color: rgba(255, 255, 255, 0.92);
+  color: var(--ink-900);
   background:
-    radial-gradient(circle at top right, rgba(111, 189, 150, 0.24), transparent 26%),
-    radial-gradient(circle at left 18% top 30%, rgba(201, 178, 116, 0.14), transparent 22%),
-    linear-gradient(180deg, #061510 0%, #0c2019 32%, #102b22 100%);
+    radial-gradient(circle at top right, rgba(98, 181, 143, 0.2), transparent 30%),
+    linear-gradient(180deg, #f3f8f3 0%, #f8faf6 42%, #fbfcfa 100%);
 }
 
 body.detail-body {
@@ -134,8 +133,8 @@ img {
 }
 
 .home-body .site-nav {
-  background: rgba(7, 24, 19, 0.68);
-  border-bottom: 1px solid var(--line-dark);
+  background: rgba(247, 250, 246, 0.88);
+  border-bottom: 1px solid var(--line-light);
 }
 
 .detail-body .site-nav {
@@ -197,7 +196,7 @@ img {
 }
 
 .home-body .nav-links a {
-  color: rgba(255, 255, 255, 0.72);
+  color: var(--ink-500);
 }
 
 .detail-body .nav-links a {
@@ -211,8 +210,8 @@ img {
 
 .home-body .nav-links a:hover,
 .home-body .nav-links a.active {
-  background: rgba(255, 255, 255, 0.08);
-  color: #fff;
+  background: rgba(39, 104, 77, 0.08);
+  color: var(--ink-900);
 }
 
 .detail-body .nav-links a:hover,
@@ -327,10 +326,10 @@ img {
   position: absolute;
   inset: 0;
   background-image:
-    linear-gradient(rgba(255, 255, 255, 0.04) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255, 255, 255, 0.04) 1px, transparent 1px);
+    linear-gradient(rgba(47, 106, 87, 0.07) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(47, 106, 87, 0.07) 1px, transparent 1px);
   background-size: 52px 52px;
-  mask-image: linear-gradient(180deg, rgba(0, 0, 0, 0.6), transparent 82%);
+  mask-image: linear-gradient(180deg, rgba(0, 0, 0, 0.46), transparent 78%);
   pointer-events: none;
 }
 
@@ -365,7 +364,7 @@ img {
   font-size: 13px;
   letter-spacing: 0.24em;
   text-transform: uppercase;
-  color: rgba(255, 255, 255, 0.64);
+  color: var(--forest-600);
 }
 
 .detail-body .eyebrow {
@@ -375,8 +374,8 @@ img {
 .lead {
   margin: 0;
   font-size: clamp(18px, 2.2vw, 24px);
-  color: rgba(255, 255, 255, 0.82);
-  max-width: 14.5em;
+  color: var(--ink-700);
+  max-width: 18em;
 }
 
 .hero-panel,
@@ -392,9 +391,9 @@ img {
 
 .hero-panel {
   padding: 28px;
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.03));
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  box-shadow: var(--shadow-heavy);
+  background: rgba(255, 255, 255, 0.82);
+  border: 1px solid rgba(16, 45, 34, 0.08);
+  box-shadow: 0 18px 54px rgba(14, 38, 29, 0.1);
 }
 
 .hero-panel h2,
@@ -424,20 +423,20 @@ img {
 .stat-block {
   padding: 16px;
   border-radius: var(--radius-sm);
-  background: rgba(255, 255, 255, 0.06);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(39, 104, 77, 0.055);
+  border: 1px solid rgba(39, 104, 77, 0.08);
 }
 
 .stat-block strong {
   display: block;
   font-size: 26px;
   font-weight: 600;
-  color: #fff;
+  color: var(--forest-700);
 }
 
 .stat-block span {
   font-size: 13px;
-  color: rgba(255, 255, 255, 0.7);
+  color: var(--ink-500);
 }
 
 .page-section {
@@ -452,7 +451,7 @@ img {
 }
 
 .home-body .section-kicker {
-  color: rgba(255, 255, 255, 0.54);
+  color: var(--forest-600);
 }
 
 .detail-body .section-kicker {
@@ -517,9 +516,9 @@ img {
 
 .glass-card {
   padding: 24px;
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.07), rgba(255, 255, 255, 0.03));
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  box-shadow: var(--shadow-soft);
+  background: rgba(255, 255, 255, 0.82);
+  border: 1px solid rgba(16, 45, 34, 0.08);
+  box-shadow: 0 14px 40px rgba(14, 38, 29, 0.08);
 }
 
 .glass-card h3,
@@ -577,8 +576,8 @@ img {
 }
 
 .home-body .tag {
-  background: rgba(255, 255, 255, 0.08);
-  color: rgba(255, 255, 255, 0.86);
+  background: rgba(39, 104, 77, 0.09);
+  color: var(--forest-700);
 }
 
 .detail-body .tag {
@@ -598,7 +597,7 @@ img {
 }
 
 .home-body .muted {
-  color: rgba(255, 255, 255, 0.68);
+  color: var(--ink-500);
 }
 
 .roadmap {
@@ -612,6 +611,12 @@ img {
   border-radius: var(--radius-md);
   background: linear-gradient(180deg, rgba(255, 255, 255, 0.07), rgba(255, 255, 255, 0.03));
   border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.home-body .roadmap-step {
+  background: rgba(255, 255, 255, 0.82);
+  border: 1px solid rgba(16, 45, 34, 0.08);
+  box-shadow: 0 14px 40px rgba(14, 38, 29, 0.08);
 }
 
 .roadmap-step strong {
@@ -1256,7 +1261,7 @@ img {
 }
 
 .home-body .site-footer {
-  border-top: 1px solid var(--line-dark);
+  border-top: 1px solid var(--line-light);
 }
 
 .detail-body .site-footer {
