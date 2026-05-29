@@ -240,6 +240,66 @@ img {
   text-decoration-thickness: from-font;
   text-underline-offset: 3px;
 }
+.confidence-live {
+  color: #0f4f3b;
+  background: rgba(98, 181, 143, 0.18);
+  border-color: rgba(47, 106, 87, 0.28);
+}
+
+.confidence-infer {
+  color: #66511f;
+  background: rgba(201, 178, 116, 0.2);
+  border-color: rgba(169, 139, 57, 0.25);
+}
+
+.confidence-guess {
+  color: #5e5667;
+  background: rgba(129, 116, 143, 0.16);
+  border-color: rgba(94, 86, 103, 0.22);
+}
+
+.research-flow {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 10px;
+  margin: 22px 0;
+}
+
+.research-flow > div {
+  position: relative;
+  min-height: 126px;
+  padding: 18px;
+  border: 1px solid var(--line-light);
+  border-radius: var(--radius-sm);
+  background: rgba(255, 255, 255, 0.66);
+  box-shadow: 0 10px 28px rgba(7, 24, 19, 0.08);
+}
+
+.research-flow > div:not(:last-child)::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  right: -10px;
+  width: 10px;
+  height: 1px;
+  background: rgba(36, 82, 68, 0.3);
+}
+
+.research-flow strong {
+  display: block;
+  color: var(--ink-900);
+  font-size: 15px;
+  line-height: 1.35;
+}
+
+.research-flow span {
+  display: block;
+  margin-top: 10px;
+  color: var(--ink-500);
+  font-size: 13px;
+  line-height: 1.45;
+}
+
 
 .hero {
   position: relative;

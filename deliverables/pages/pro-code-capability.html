@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>高码能力研究</title>
+    <link rel="stylesheet" href="../styles.css" />
+    <script defer src="../app.js"></script>
+  </head>
+  <body class="detail-body">
+    <div class="site-shell">
+      <svg class="icon-sprite" xmlns="http://www.w3.org/2000/svg">
+        <symbol id="i-home" viewBox="0 0 24 24">
+          <path d="M12 3l8 6v11a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V9l8-6Z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" />
+          <path d="M9 21v-8h6v8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" />
+        </symbol>
+        <symbol id="i-map" viewBox="0 0 24 24">
+          <path d="M9 4 3 6v14l6-2 6 2 6-2V4l-6 2-6-2Z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" />
+          <path d="M9 4v14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
+          <path d="M15 6v14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
+        </symbol>
+        <symbol id="i-brackets" viewBox="0 0 24 24">
+          <path d="M9 6 5 12l4 6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" />
+          <path d="M15 6l4 6-4 6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" />
+          <path d="M13 6l-2 12" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
+        </symbol>
+        <symbol id="i-cpu" viewBox="0 0 24 24">
+          <path d="M9 9h6v6H9V9Z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" />
+          <path d="M9 2v3M15 2v3M9 19v3M15 19v3M2 9h3M2 15h3M19 9h3M19 15h3" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
+          <path d="M7 7h10v10H7V7Z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" />
+        </symbol>
+        <symbol id="i-wave" viewBox="0 0 24 24">
+          <path d="M3 14c2 0 2-4 4-4s2 4 4 4 2-4 4-4 2 4 4 4 2-4 4-4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" />
+        </symbol>
+        <symbol id="i-nodes" viewBox="0 0 24 24">
+          <path d="M7 7h0M17 7h0M12 17h0" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
+          <path d="M7 7 12 17 17 7" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" />
+        </symbol>
+        <symbol id="i-wrench" viewBox="0 0 24 24">
+          <path d="M14 7a4 4 0 0 0-6 3.5l-5 5a2 2 0 1 0 2.8 2.8l5-5A4 4 0 0 0 17 9l-3 3-2-2 2-3Z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" />
+        </symbol>
+        <symbol id="i-layers" viewBox="0 0 24 24">
+          <path d="M12 3 2.5 8 12 13l9.5-5L12 3Z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" />
+          <path d="M2.5 12 12 17l9.5-5M2.5 16 12 21l9.5-5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round" />
+        </symbol>
+        <symbol id="i-file" viewBox="0 0 24 24">
+          <path d="M7 3h7l3 3v15a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1Z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" />
+          <path d="M14 3v4h4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" />
+        </symbol>
+      </svg>
+      <header class="site-nav">
+        <div class="nav-inner">
+          <a class="brand-mark" href="../index.html">
+            <span class="brand-dot"></span>
+            <span>Palantir Research Summary</span>
+          </a>
+          <nav class="nav-links">
+            <a data-nav href="../index.html"><svg class="icon sm" aria-hidden="true"><use href="#i-home"></use></svg><span>管理层一页纸</span></a>
+            <a data-nav href="overview.html"><svg class="icon sm" aria-hidden="true"><use href="#i-map"></use></svg><span>研发技术总览</span></a>
+            <a data-nav href="data-engineering-platform-map.html"><svg class="icon sm" aria-hidden="true"><use href="#i-layers"></use></svg><span>能力建设蓝图</span></a>
+            <a data-nav href="pro-code-capability.html"><svg class="icon sm" aria-hidden="true"><use href="#i-brackets"></use></svg><span>高码能力</span></a>
+            <a data-nav href="expression-and-operators.html"><svg class="icon sm" aria-hidden="true"><use href="#i-brackets"></use></svg><span>表达层</span></a>
+            <a data-nav href="execution-and-incremental.html"><svg class="icon sm" aria-hidden="true"><use href="#i-cpu"></use></svg><span>执行与增量</span></a>
+            <a data-nav href="streaming-architecture.html"><svg class="icon sm" aria-hidden="true"><use href="#i-wave"></use></svg><span>流式</span></a>
+            <a data-nav href="lineage-ontology-governance.html"><svg class="icon sm" aria-hidden="true"><use href="#i-nodes"></use></svg><span>治理</span></a>
+          </nav>
+        </div>
+      </header>
+
+      <main>
+        <section class="topic-header">
+          <p class="eyebrow">Pro-Code Capability</p>
+          <h1>Palantir 高码能力研究</h1>
+          <p class="intro-note">本页回答三个问题：高码能力到底强在哪里、怎么实现、怎么借鉴。所有关键结论按可信度标注为【实时】、【推断】或【猜测】。</p>
+          <div class="topic-meta">
+            <span class="tag">Code Repositories</span>
+            <span class="tag">Transform DSL</span>
+            <span class="tag">Dataset Transaction</span>
+          </div>
+        </section>
+
+        <div class="detail-layout">
+          <aside class="section-nav">
+            <strong>本页导航</strong>
+            <a href="#strength">强在哪里</a>
+            <a href="#implementation">怎么实现</a>
+            <a href="#borrow">怎么借鉴</a>
+            <a href="#confidence">可信度</a>
+            <a href="#sources">来源</a>
+          </aside>
+
+          <div class="detail-main">
+            <section class="section-card" id="strength">
+              <p class="section-kicker">Strength</p>
+              <h2>高码能力强在哪里</h2>
+              <div class="detail-grid conclusion-grid">
+                <article class="detail-card">
+                  <span class="tag confidence-live">【实时】</span>
+                  <h3>Code Repositories 是平台内 Git 工程环境</h3>
+                  <p class="muted">官方文档确认其支持 Git 分支、提交、tag、PR/code review、权限、IntelliSense、lint 和 error checking，并支持 Python、Java、SQL transform repositories。</p>
+                </article>
+                <article class="detail-card">
+                  <span class="tag confidence-infer">【推断】</span>
+                  <h3>真正强点是代码被平台理解</h3>
+                  <p class="muted">Transform 的 <code>Input</code> / <code>Output</code> 把函数变成 Dataset 生产关系，使调度、血缘、质量、权限和版本都能围绕同一对象工作。</p>
+                </article>
+                <article class="detail-card">
+                  <span class="tag confidence-live">【实时】</span>
+                  <h3>增量语义由 Dataset Transaction 承载</h3>
+                  <p class="muted">官方增量文档说明，append-only 输入通常可增量；full rewrite、update/delete 文件等会触发 snapshot 路径。</p>
+                </article>
+              </div>
+            </section>
+
+            <section class="section-card" id="implementation">
+              <p class="section-kicker">Implementation</p>
+              <h2>怎么实现</h2>
+              <div class="research-flow">
+                <div><strong>Code Repository</strong><span>Git / PR / checks / preview</span></div>
+                <div><strong>Transform Contract</strong><span>Input / Output / params / engine</span></div>
+                <div><strong>Build Runtime</strong><span>Spark / lightweight / Java / SQL</span></div>
+                <div><strong>Dataset Transaction</strong><span>append / replace / update / retention</span></div>
+                <div><strong>Control Plane</strong><span>schedule / lineage / health / governance</span></div>
+              </div>
+              <div class="detail-grid mechanism-grid">
+                <article class="detail-card mechanism-card">
+                  <span class="tag confidence-live">【实时】</span>
+                  <h3>多语言不是平铺能力</h3>
+                  <p class="muted">Python 最完整，支持 batch、incremental、共享库、data expectations 和多种 compute engine；Java 支持 batch、incremental、unit testing；SQL 基于 Spark SQL，但不支持 incremental transforms。</p>
+                </article>
+                <article class="detail-card mechanism-card">
+                  <span class="tag confidence-live">【实时】</span>
+                  <h3>Pipeline Builder 可导出 Java code，但不可逆</h3>
+                  <p class="muted">官方明确导出会写入 Java transforms repository，部分转换无法导出，部分优化回退到 native Spark 后语义可能不同。</p>
+                </article>
+                <article class="detail-card mechanism-card">
+                  <span class="tag confidence-infer">【推断】</span>
+                  <h3>调度中心更像 Dataset graph</h3>
+                  <p class="muted">Scheduling 支持按时间、数据更新、逻辑更新触发，并可围绕单个 Dataset、依赖或下游链路构建。这说明平台主轴是 Dataset 及其依赖图。</p>
+                </article>
+                <article class="detail-card mechanism-card">
+                  <span class="tag confidence-guess">【猜测】</span>
+                  <h3>内部依赖索引服务边界未公开</h3>
+                  <p class="muted">公开文档能确认效果与入口，但跨 repository 依赖索引、事件传播延迟和内部 IR 细节仍需真实环境或更多资料验证。</p>
+                </article>
+              </div>
+            </section>
+
+            <section class="section-card" id="borrow">
+              <p class="section-kicker">Borrow</p>
+              <h2>怎么借鉴</h2>
+              <div class="roadmap">
+                <article class="roadmap-step">
+                  <strong>P0：先做平台契约</strong>
+                  <p>定义 Transform Contract：输入、输出、参数、Schema、质量规则、执行引擎、增量语义和权限边界。【推断】</p>
+                </article>
+                <article class="roadmap-step">
+                  <strong>P1：再做 Dataset Transaction</strong>
+                  <p>每次写入生成不可变版本，运行时支持 added/current/previous 视图，让增量和回滚有平台依据。【推断】</p>
+                </article>
+                <article class="roadmap-step">
+                  <strong>P2：统一低码和高码底座</strong>
+                  <p>低码 Builder 应生成同一套 contract；代码导出作为升级路径，不承诺双向同步。【推断】</p>
+                </article>
+              </div>
+            </section>
+
+            <section class="section-card" id="confidence">
+              <p class="section-kicker">Confidence</p>
+              <h2>可信度规则</h2>
+              <div class="detail-grid">
+                <article class="detail-card">
+                  <span class="tag confidence-live">【实时】</span>
+                  <p class="muted">本轮通过 Palantir 官方文档或当前仓库资料查证到的结论，等同于当前已验证事实。</p>
+                </article>
+                <article class="detail-card">
+                  <span class="tag confidence-infer">【推断】</span>
+                  <p class="muted">由多个已验证事实组合出的工程判断，逻辑链明确，但官方未直接以同一句话表达。</p>
+                </article>
+                <article class="detail-card">
+                  <span class="tag confidence-guess">【猜测】</span>
+                  <p class="muted">证据不足，只能作为后续验证假设，不应直接进入设计决策。</p>
+                </article>
+              </div>
+            </section>
+
+            <section class="section-card" id="sources">
+              <p class="section-kicker">Sources</p>
+              <h2>来源与文档</h2>
+              <div class="source-list">
+                <a class="source-link" href="../../docs/raw/21-pro-code-capability-deep-dive.md"><svg class="icon sm" aria-hidden="true"><use href="#i-file"></use></svg><span>docs/raw/21-pro-code-capability-deep-dive.md</span></a>
+                <a class="source-link" href="../../docs/synthesis/palantir-pro-code-capability-research.md"><svg class="icon sm" aria-hidden="true"><use href="#i-file"></use></svg><span>docs/synthesis/palantir-pro-code-capability-research.md</span></a>
+                <a class="source-link" href="https://www.palantir.com/docs/foundry/code-repositories/overview/index.html"><svg class="icon sm" aria-hidden="true"><use href="#i-file"></use></svg><span>Palantir Code Repositories</span></a>
+                <a class="source-link" href="https://www.palantir.com/docs/foundry/transforms-python/overview"><svg class="icon sm" aria-hidden="true"><use href="#i-file"></use></svg><span>Palantir Python transforms</span></a>
+                <a class="source-link" href="https://www.palantir.com/docs/foundry/transforms-python/incremental-usage"><svg class="icon sm" aria-hidden="true"><use href="#i-file"></use></svg><span>Palantir Incremental transforms</span></a>
+                <a class="source-link" href="https://www.palantir.com/docs/foundry/pipeline-builder/export-pipeline"><svg class="icon sm" aria-hidden="true"><use href="#i-file"></use></svg><span>Palantir Export pipeline code</span></a>
+              </div>
+            </section>
+          </div>
+        </div>
+      </main>
+
+      <footer class="site-footer">
+        <div class="page-footer">
+          <div>高码能力的核心是平台可理解的生产逻辑</div>
+          <div class="footer-note">后续重点：Transform Contract 与 Dataset Transaction 设计</div>
+        </div>
+      </footer>
+    </div>
+  </body>
+</html>

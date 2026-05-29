@@ -7,6 +7,7 @@ required_files=(
   "$ROOT/styles.css"
   "$ROOT/app.js"
   "$ROOT/pages/overview.html"
+  "$ROOT/pages/pro-code-capability.html"
   "$ROOT/pages/expression-and-operators.html"
   "$ROOT/pages/execution-and-incremental.html"
   "$ROOT/pages/streaming-architecture.html"
@@ -28,6 +29,10 @@ check_contains "$ROOT/index.html" "Palantir"
 check_contains "$ROOT/index.html" "三个管理判断"
 check_contains "$ROOT/pages/overview.html" "技术总览"
 check_contains "$ROOT/pages/overview.html" "map-layers"
+check_contains "$ROOT/pages/pro-code-capability.html" "高码能力研究"
+check_contains "$ROOT/pages/pro-code-capability.html" "【实时】"
+check_contains "$ROOT/pages/pro-code-capability.html" "【推断】"
+check_contains "$ROOT/pages/pro-code-capability.html" "【猜测】"
 check_contains "$ROOT/pages/expression-and-operators.html" "表达层"
 check_contains "$ROOT/pages/execution-and-incremental.html" "增量"
 check_contains "$ROOT/pages/streaming-architecture.html" "流式"
@@ -50,6 +55,11 @@ check_contains "$ROOT/pages/engineering-and-ecosystem.html" "mechanism-card"
 
 grep -q 'href="pages/overview.html"' "$ROOT/index.html" || {
   echo "Homepage must link to overview page"
+  exit 1
+}
+
+grep -q 'href="pages/pro-code-capability.html"' "$ROOT/index.html" || {
+  echo "Homepage must link to pro-code capability page"
   exit 1
 }
 
