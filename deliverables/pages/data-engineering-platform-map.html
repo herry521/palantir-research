@@ -1,0 +1,553 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>数据工程能力建设蓝图</title>
+    <link rel="stylesheet" href="../styles.css" />
+    <script defer src="../app.js"></script>
+  </head>
+  <body class="detail-body">
+    <div class="site-shell">
+      <svg class="icon-sprite" xmlns="http://www.w3.org/2000/svg">
+        <symbol id="i-home" viewBox="0 0 24 24">
+          <path
+            d="M12 3l8 6v11a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V9l8-6Z"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.8"
+            stroke-linejoin="round"
+          />
+          <path
+            d="M9 21v-8h6v8"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.8"
+            stroke-linejoin="round"
+          />
+        </symbol>
+        <symbol id="i-map" viewBox="0 0 24 24">
+          <path d="M9 4 3 6v14l6-2 6 2 6-2V4l-6 2-6-2Z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" />
+          <path d="M9 4v14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
+          <path d="M15 6v14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
+        </symbol>
+        <symbol id="i-brackets" viewBox="0 0 24 24">
+          <path d="M9 6 5 12l4 6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" />
+          <path d="M15 6l4 6-4 6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" />
+          <path d="M13 6l-2 12" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
+        </symbol>
+        <symbol id="i-cpu" viewBox="0 0 24 24">
+          <path d="M9 9h6v6H9V9Z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" />
+          <path d="M9 2v3M15 2v3M9 19v3M15 19v3M2 9h3M2 15h3M19 9h3M19 15h3" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
+          <path d="M7 7h10v10H7V7Z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" />
+        </symbol>
+        <symbol id="i-wave" viewBox="0 0 24 24">
+          <path d="M3 14c2 0 2-4 4-4s2 4 4 4 2-4 4-4 2 4 4 4 2-4 4-4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" />
+        </symbol>
+        <symbol id="i-nodes" viewBox="0 0 24 24">
+          <path d="M7 7h0" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
+          <path d="M17 7h0" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
+          <path d="M12 17h0" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
+          <path d="M7 7 12 17 17 7" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" />
+        </symbol>
+        <symbol id="i-wrench" viewBox="0 0 24 24">
+          <path d="M14 7a4 4 0 0 0-6 3.5l-5 5a2 2 0 1 0 2.8 2.8l5-5A4 4 0 0 0 17 9l-3 3-2-2 2-3Z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" />
+        </symbol>
+        <symbol id="i-spark" viewBox="0 0 24 24">
+          <path d="M12 2l1.5 6.5L20 10l-6.5 1.5L12 18l-1.5-6.5L4 10l6.5-1.5L12 2Z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" />
+        </symbol>
+        <symbol id="i-layers" viewBox="0 0 24 24">
+          <path d="M12 3 2.5 8 12 13l9.5-5L12 3Z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" />
+          <path d="M2.5 12 12 17l9.5-5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round" />
+          <path d="M2.5 16 12 21l9.5-5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round" />
+        </symbol>
+        <symbol id="i-file" viewBox="0 0 24 24">
+          <path d="M7 3h7l3 3v15a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1Z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" />
+          <path d="M14 3v4h4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" />
+        </symbol>
+      </svg>
+      <header class="site-nav">
+        <div class="nav-inner">
+          <a class="brand-mark" href="../index.html">
+            <span class="brand-dot"></span>
+            <span>Palantir Research Summary</span>
+          </a>
+          <nav class="nav-links">
+            <a data-nav href="../index.html"><svg class="icon sm" aria-hidden="true"><use href="#i-home"></use></svg><span>管理层一页纸</span></a>
+            <a data-nav href="overview.html"><svg class="icon sm" aria-hidden="true"><use href="#i-map"></use></svg><span>研发技术总览</span></a>
+            <a data-nav href="data-engineering-platform-map.html"><svg class="icon sm" aria-hidden="true"><use href="#i-layers"></use></svg><span>能力建设蓝图</span></a>
+            <a data-nav href="expression-and-operators.html"><svg class="icon sm" aria-hidden="true"><use href="#i-brackets"></use></svg><span>表达层</span></a>
+            <a data-nav href="execution-and-incremental.html"><svg class="icon sm" aria-hidden="true"><use href="#i-cpu"></use></svg><span>执行与增量</span></a>
+            <a data-nav href="streaming-architecture.html"><svg class="icon sm" aria-hidden="true"><use href="#i-wave"></use></svg><span>流式</span></a>
+            <a data-nav href="lineage-ontology-governance.html"><svg class="icon sm" aria-hidden="true"><use href="#i-nodes"></use></svg><span>治理</span></a>
+            <a data-nav href="engineering-and-ecosystem.html"><svg class="icon sm" aria-hidden="true"><use href="#i-wrench"></use></svg><span>工程化</span></a>
+          </nav>
+        </div>
+      </header>
+
+      <main>
+        <section class="topic-header capability-header">
+          <p class="eyebrow">Capability Blueprint</p>
+          <h1>能力建设关注点</h1>
+          <p class="intro-note">
+            这一页把“参照 Palantir Integration 建数据工程平台”翻译成建设蓝图：先看平台分层，再看横向关注点，最后落到阶段优先级。
+          </p>
+          <div class="topic-meta">
+            <span class="tag">5 层能力架构</span>
+            <span class="tag">15 个关注点</span>
+            <span class="tag">3 阶段建设顺序</span>
+          </div>
+        </section>
+
+        <section class="page-section">
+          <div class="section-head">
+            <div>
+              <p class="section-kicker">Sync And Pipeline</p>
+              <h2>
+                <span class="title-row"><svg class="icon lg" aria-hidden="true"><use href="#i-cpu"></use></svg><span>数据同步与 Pipeline 专项关注</span></span>
+              </h2>
+            </div>
+            <p>单独看数据同步和 Pipeline，重点不是多接几个源或多写几个算子，而是把状态、版本、事务、增量和质量变成平台内生能力。</p>
+          </div>
+
+          <div class="sync-pipeline-grid">
+            <article class="sync-domain-card">
+              <div class="domain-card-head">
+                <span class="tag">Data Sync</span>
+                <h3>数据同步需要补齐的能力</h3>
+              </div>
+              <p class="domain-lead">同步层解决“外部数据如何可信进入平台”，核心是连接器、状态管理、Schema 演进、CDC 语义和失败恢复。</p>
+              <div class="domain-chip-grid">
+                <span>Connector 插件模型</span>
+                <span>全量 / 增量 / CDC / 流式同步</span>
+                <span>Watermark / offset / cursor 托管</span>
+                <span>Schema Diff 与兼容性判断</span>
+                <span>幂等写入与失败重试</span>
+                <span>insert / update / delete CDC 语义</span>
+                <span>按时间、分区、offset 回放回填</span>
+                <span>坏行隔离与 dead letter</span>
+                <span>源端目标端 reconciliation</span>
+                <span>Sync 配置版本化、分支与回滚</span>
+                <span>外部源到 Dataset 的血缘登记</span>
+                <span>连接密钥、敏感字段和同步审计</span>
+              </div>
+            </article>
+
+            <article class="sync-domain-card">
+              <div class="domain-card-head">
+                <span class="tag">Pipeline</span>
+                <h3>Pipeline 侧需要关注的能力</h3>
+              </div>
+              <p class="domain-lead">Pipeline 层解决“进入平台的数据如何被稳定加工”，核心是版本锁定、Transaction、增量判断、Build History 和发布门禁。</p>
+              <div class="domain-chip-grid">
+                <span>Input / Output 自动形成 DAG</span>
+                <span>Build 读取输入 Dataset 固定版本</span>
+                <span>写出新的不可变 Transaction</span>
+                <span>识别 APPEND / UPDATE / SNAPSHOT</span>
+                <span>自动选择增量或全量重算</span>
+                <span>记录输入版本、输出版本和代码版本</span>
+                <span>按日期、分区、业务域参数化运行</span>
+                <span>历史区间回填与覆盖策略</span>
+                <span>质量检查不通过不发布版本</span>
+                <span>Transform 单测、样本测试、增量测试</span>
+                <span>dev / staging / prod 环境隔离</span>
+                <span>资源规格、队列、优先级和超时重试</span>
+              </div>
+            </article>
+          </div>
+
+          <div class="engine-decision-panel">
+            <div class="engine-decision-copy">
+              <span class="tag">Platform Boundary</span>
+              <h3>底层存储和计算引擎需要定制么？</h3>
+              <p>
+                需要定制，但不建议优先魔改 Spark、Flink 或湖表内核。更现实的做法是在底层引擎之上建设 Dataset Control Plane，
+                统一封装事务、版本、Schema、血缘、质量、权限和消费位点。
+              </p>
+            </div>
+            <div class="engine-decision-grid">
+              <article>
+                <h4>存储层定制</h4>
+                <ul>
+                  <li>定义 APPEND / UPDATE / SNAPSHOT / DELETE 事务语义。</li>
+                  <li>通过 ReadSession / WriteSession 保证版本隔离和失败回退。</li>
+                  <li>在 Paimon / Iceberg / Delta 之上补 Dataset Branch、Schema Registry 和增量位点服务。</li>
+                  <li>治理小文件、compaction、snapshot rebuild，以及 Owner、SLA、权限、标记等平台元数据。</li>
+                </ul>
+              </article>
+              <article>
+                <h4>计算层定制</h4>
+                <ul>
+                  <li>Spark 侧自动注入读写会话、输入版本锁定、输出事务提交和质量门禁。</li>
+                  <li>Flink 侧托管 Checkpoint / Savepoint、offset、Exactly-once sink 和流式作业生命周期。</li>
+                  <li>调度器需要理解 Dataset 版本事件、依赖图、增量状态和回填范围。</li>
+                  <li>DuckDB / DataFusion / Polars 可作为轻量引擎，但必须受 Dataset 事务模型约束。</li>
+                </ul>
+              </article>
+            </div>
+          </div>
+
+          <div class="faster-engine-panel">
+            <div class="faster-engine-head">
+              <div>
+                <span class="tag">Faster Engine</span>
+                <h3>Faster / 轻量执行引擎规划</h3>
+              </div>
+              <p>
+                Faster 不应替代 Spark / Flink，而应作为 Pipeline 执行层的轻量后端：面向中小数据、低延迟、低成本和开发态快速预览。
+              </p>
+            </div>
+
+            <div class="faster-roadmap">
+              <article>
+                <span>P0</span>
+                <h4>预留执行引擎抽象</h4>
+                <p>Pipeline 节点不要写死 Spark，先抽象 Engine Router、Operator IR、ReadSession / WriteSession。</p>
+              </article>
+              <article>
+                <span>P1</span>
+                <h4>支持轻量批处理</h4>
+                <p>用 DataFusion / DuckDB / Polars 执行 Filter、Project、Join、Group By、Union 和简单表达式。</p>
+              </article>
+              <article>
+                <span>P1</span>
+                <h4>支持 Spark fallback</h4>
+                <p>某个节点不支持 Faster 时自动回退 Spark，保持同一 Pipeline 的完整性。</p>
+              </article>
+              <article>
+                <span>P2</span>
+                <h4>支持 APPEND 增量</h4>
+                <p>只处理新增文件 / 新增 snapshot，适合 append-only 数据，不承担复杂 upsert。</p>
+              </article>
+              <article>
+                <span>P2</span>
+                <h4>成本与规模自动路由</h4>
+                <p>小数据走 Faster，大 shuffle、大宽表、大状态计算走 Spark 或 Flink。</p>
+              </article>
+              <article>
+                <span>P3</span>
+                <h4>查询优化与算子覆盖</h4>
+                <p>增强列裁剪、谓词下推、Parquet row group pruning、表达式覆盖率和 UDF 边界。</p>
+              </article>
+            </div>
+
+            <div class="faster-boundary-grid">
+              <article>
+                <h4>适合 Faster 的场景</h4>
+                <ul>
+                  <li>中小数据量 Pipeline、执行时间小于 10-15 分钟。</li>
+                  <li>过滤、投影、聚合、轻量 Join、低成本高频小批次任务。</li>
+                  <li>开发态快速预览、append-only 增量处理。</li>
+                </ul>
+              </article>
+              <article>
+                <h4>不适合 Faster 的场景</h4>
+                <ul>
+                  <li>大规模 shuffle join、TB 级重计算、Streaming。</li>
+                  <li>CDC upsert / delete、强状态计算、复杂 UDF。</li>
+                  <li>高级地理空间计算和超出单节点内存的数据处理。</li>
+                </ul>
+              </article>
+              <article>
+                <h4>Paimon 场景注意点</h4>
+                <ul>
+                  <li>DataFusion 读 Paimon 优先支持 append-only / compacted snapshot。</li>
+                  <li>DataFusion 写 Paimon 不建议作为早期目标，写入仍交给 Spark / Flink。</li>
+                  <li>Faster 输出必须通过平台 WriteSession 提交 Dataset Transaction。</li>
+                </ul>
+              </article>
+            </div>
+          </div>
+        </section>
+
+        <section class="page-section">
+          <div class="section-head">
+            <div>
+              <p class="section-kicker">Capability Layers</p>
+              <h2>
+                <span class="title-row"><svg class="icon lg" aria-hidden="true"><use href="#i-layers"></use></svg><span>五层平台能力蓝图</span></span>
+              </h2>
+            </div>
+            <p>不要把它理解成工具清单。真正要建设的是一套能从数据接入、加工、治理到业务对象消费持续闭环的平台能力。</p>
+          </div>
+
+          <div class="capability-blueprint">
+            <article class="capability-layer">
+              <div class="capability-layer-title">
+                <span>05</span>
+                <h3>AI / Integration 层</h3>
+              </div>
+              <div class="capability-modules">
+                <div class="capability-module priority-p2">
+                  <strong>AI / MCP 集成</strong>
+                  <p>自然语言生成 Pipeline、LLM 算子、Agent 触发 Build、MCP 暴露 Dataset / Ontology 能力。</p>
+                </div>
+              </div>
+            </article>
+
+            <article class="capability-layer">
+              <div class="capability-layer-title">
+                <span>04</span>
+                <h3>业务语义层</h3>
+              </div>
+              <div class="capability-modules">
+                <div class="capability-module priority-p2">
+                  <strong>业务语义层</strong>
+                  <p>把 Dataset 提升为 Object / Ontology，让应用和业务用户消费对象、关系和动作。</p>
+                </div>
+                <div class="capability-module priority-p2">
+                  <strong>Ontology / Writeback</strong>
+                  <p>用户修改写入 Writeback Dataset，再通过 Pipeline 合并回主链路，形成业务操作闭环。</p>
+                </div>
+              </div>
+            </article>
+
+            <article class="capability-layer">
+              <div class="capability-layer-title">
+                <span>03</span>
+                <h3>治理与可信层</h3>
+              </div>
+              <div class="capability-modules">
+                <div class="capability-module priority-p0">
+                  <strong>血缘与影响分析</strong>
+                  <p>回答字段从哪来、影响谁、哪次 Build 产生、Schema 变更会影响哪里。</p>
+                </div>
+                <div class="capability-module priority-p1">
+                  <strong>权限与治理</strong>
+                  <p>Dataset、字段、行级权限，敏感标记传播、脱敏、审计和权限申请流程。</p>
+                </div>
+                <div class="capability-module priority-p1">
+                  <strong>数据质量与测试</strong>
+                  <p>质量门禁之外，还要覆盖 Transform 单测、样本数据测试、增量逻辑测试和 CI/CD 阻断。</p>
+                </div>
+              </div>
+            </article>
+
+            <article class="capability-layer">
+              <div class="capability-layer-title">
+                <span>02</span>
+                <h3>开发与执行层</h3>
+              </div>
+              <div class="capability-modules">
+                <div class="capability-module priority-p0">
+                  <strong>开发表达统一</strong>
+                  <p>工程师、分析师、低代码用户都通过统一 Pipeline 模型表达数据加工。</p>
+                </div>
+                <div class="capability-module priority-p0">
+                  <strong>执行与调度体系</strong>
+                  <p>DAG、事件触发、失败重试、回填、资源规格和依赖执行统一产品化。</p>
+                </div>
+                <div class="capability-module priority-p1">
+                  <strong>增量计算能力</strong>
+                  <p>基于数据版本判断 APPEND / UPDATE / SNAPSHOT，自动选择增量或全量重算。</p>
+                </div>
+                <div class="capability-module priority-p1">
+                  <strong>流式能力</strong>
+                  <p>Stream Dataset、Flink Job、Checkpoint、流式质量监控和流式写业务对象。</p>
+                </div>
+              </div>
+            </article>
+
+            <article class="capability-layer">
+              <div class="capability-layer-title">
+                <span>01</span>
+                <h3>资产底座层</h3>
+              </div>
+              <div class="capability-modules">
+                <div class="capability-module priority-p0">
+                  <strong>Dataset 版本模型</strong>
+                  <p>统一 Dataset、版本、分支、Schema、Transaction、Owner、权限和血缘。</p>
+                </div>
+                <div class="capability-module priority-p0">
+                  <strong>数据接入能力</strong>
+                  <p>稳定接入 JDBC、文件、API、CDC、Kafka / Pulsar，支持增量同步和 Schema 演进。</p>
+                </div>
+              </div>
+            </article>
+          </div>
+        </section>
+
+        <section class="page-section">
+          <div class="section-head">
+            <div>
+              <p class="section-kicker">Focus Points</p>
+              <h2>
+                <span class="title-row"><svg class="icon lg" aria-hidden="true"><use href="#i-spark"></use></svg><span>15 个能力建设关注点</span></span>
+              </h2>
+            </div>
+            <p>这些关注点是评审平台方案时最应该反复追问的地方。它们横跨架构、产品、工程和治理，而不是某一个技术组件。</p>
+          </div>
+
+          <div class="capability-focus-grid">
+            <article class="capability-focus-card">
+              <span>01</span>
+              <h3>数据资产模型</h3>
+              <p>Dataset 是否有统一的版本、分支、Schema、Transaction、Owner、权限和血缘。</p>
+            </article>
+            <article class="capability-focus-card">
+              <span>02</span>
+              <h3>数据接入能力</h3>
+              <p>是否支持批、增量、CDC 和流式接入，并能处理 Schema 变更和接入监控。</p>
+            </article>
+            <article class="capability-focus-card">
+              <span>03</span>
+              <h3>开发表达统一</h3>
+              <p>避免 Spark、SQL、Flink、调度器各玩各的，让用户面对同一套 Pipeline 模型。</p>
+            </article>
+            <article class="capability-focus-card">
+              <span>04</span>
+              <h3>执行与调度体系</h3>
+              <p>支持 DAG、依赖调度、事件触发、失败重试、回填和资源规格选择。</p>
+            </article>
+            <article class="capability-focus-card">
+              <span>05</span>
+              <h3>增量计算能力</h3>
+              <p>用数据版本和事务类型驱动增量执行，这是成本、时效和稳定性的关键。</p>
+            </article>
+            <article class="capability-focus-card">
+              <span>06</span>
+              <h3>流式能力</h3>
+              <p>建设 Stream Dataset、Flink Job、Checkpoint、流式质量和低延迟对象写入。</p>
+            </article>
+            <article class="capability-focus-card">
+              <span>07</span>
+              <h3>数据质量与测试</h3>
+              <p>同时覆盖产出后质量规则、开发态单测、样本测试、增量测试和 CI/CD。</p>
+            </article>
+            <article class="capability-focus-card">
+              <span>08</span>
+              <h3>血缘与影响分析</h3>
+              <p>能追踪字段来源、Build 版本、下游影响和 Schema 变更风险。</p>
+            </article>
+            <article class="capability-focus-card">
+              <span>09</span>
+              <h3>权限与治理</h3>
+              <p>支持 Dataset 级、字段级、行级权限，敏感标记传播、脱敏、审计和申请流程。</p>
+            </article>
+            <article class="capability-focus-card">
+              <span>10</span>
+              <h3>业务语义层</h3>
+              <p>让应用、业务系统和 AI Agent 消费业务对象，而不是直接消费表。</p>
+            </article>
+            <article class="capability-focus-card">
+              <span>11</span>
+              <h3>用户回写闭环</h3>
+              <p>业务用户修改进入 Writeback Dataset，再通过 Pipeline 合并回主链路。</p>
+            </article>
+            <article class="capability-focus-card">
+              <span>12</span>
+              <h3>可观测与健康度</h3>
+              <p>统一查看 Build 状态、SLA、新鲜度、质量分、失败影响范围和资源成本。</p>
+            </article>
+            <article class="capability-focus-card">
+              <span>13</span>
+              <h3>环境与发布管理</h3>
+              <p>dev / staging / prod 中，代码、配置、数据版本能一起晋级、回滚和对比。</p>
+            </article>
+            <article class="capability-focus-card">
+              <span>14</span>
+              <h3>资源与成本治理</h3>
+              <p>Spark / Flink 资源需要队列、配额、优先级、成本归因和弹性策略。</p>
+            </article>
+            <article class="capability-focus-card">
+              <span>15</span>
+              <h3>AI / MCP 集成</h3>
+              <p>后期接入自然语言生成 Pipeline、LLM 算子、Agent 操作和 MCP 暴露能力。</p>
+            </article>
+          </div>
+        </section>
+
+        <section class="page-section">
+          <div class="section-head">
+            <div>
+              <p class="section-kicker">Build Order</p>
+              <h2>
+                <span class="title-row"><svg class="icon lg" aria-hidden="true"><use href="#i-wrench"></use></svg><span>三阶段落地顺序</span></span>
+              </h2>
+            </div>
+            <p>建设顺序要防止两个极端：一边是只堆底层技术，另一边是过早复制 Palantir 的高级产品表象。</p>
+          </div>
+
+          <div class="capability-roadmap">
+            <article class="capability-stage">
+              <div class="stage-top">
+                <span class="tag">P0 最小闭环</span>
+                <span class="stage-index">01</span>
+              </div>
+              <div class="stage-copy">
+                <h3>第一阶段：先建底座</h3>
+                <p>先把 Dataset 版本模型、数据接入、Pipeline 表达、调度、基础质量和基础血缘建起来。</p>
+              </div>
+              <ul>
+                <li>统一 Dataset / Schema / Transaction 模型。</li>
+                <li>打通接入、加工、调度、质量和血缘的最小链路。</li>
+                <li>让现有 Spark / Flink / 调度体系通过平台边界复用。</li>
+              </ul>
+            </article>
+            <article class="capability-stage">
+              <div class="stage-top">
+                <span class="tag">P1 生产增强</span>
+                <span class="stage-index">02</span>
+              </div>
+              <div class="stage-copy">
+                <h3>第二阶段：补生产能力</h3>
+                <p>围绕增量、流式、测试、监控、权限治理、资源管理，把平台从可用推到可规模化。</p>
+              </div>
+              <ul>
+                <li>将 APPEND / UPDATE / SNAPSHOT 纳入增量安全判断。</li>
+                <li>补齐流式链路、Checkpoint、实时质量和失败恢复。</li>
+                <li>建立 CI/CD、环境晋级、资源配额和成本归因。</li>
+              </ul>
+            </article>
+            <article class="capability-stage">
+              <div class="stage-top">
+                <span class="tag">P2 差异化闭环</span>
+                <span class="stage-index">03</span>
+              </div>
+              <div class="stage-copy">
+                <h3>第三阶段：做 Palantir 级差异化</h3>
+                <p>在底座稳定后，把 Ontology、Writeback、业务对象、AIP / MCP 和 Agent 操作串成闭环。</p>
+              </div>
+              <ul>
+                <li>将数据资产提升为业务对象和对象关系。</li>
+                <li>让业务修改通过 Writeback 回到数据链路。</li>
+                <li>让 AI 能在权限约束下读取、解释和触发平台动作。</li>
+              </ul>
+            </article>
+          </div>
+        </section>
+
+        <section class="page-section">
+          <div class="section-head">
+            <div>
+              <p class="section-kicker">Reading Path</p>
+              <h2>
+                <span class="title-row"><svg class="icon lg" aria-hidden="true"><use href="#i-file"></use></svg><span>继续阅读</span></span>
+              </h2>
+            </div>
+            <p>如果要把这页继续拆成方案设计，可以从现有平台升级设计和 Palantir Pipeline 深度分析两份材料往下走。</p>
+          </div>
+          <div class="entry-grid">
+            <a class="detail-card" href="../../docs/superpowers/specs/2026-04-09-platform-upgrade-design.md">
+              <span class="tag">建设方案</span>
+              <h3>大数据平台升级设计文档</h3>
+              <p class="muted">已有 M1-M17 模块拆解、能力分级和 I1-I4 路线图，是这页蓝图的主要来源。</p>
+            </a>
+            <a class="detail-card" href="../../docs/synthesis/palantir-pipeline-deep-dive.md">
+              <span class="tag">技术深挖</span>
+              <h3>Palantir Pipeline 技术实现深度分析</h3>
+              <p class="muted">用于追溯 Transform、增量、流式、血缘与 Ontology 的技术依据。</p>
+            </a>
+          </div>
+        </section>
+      </main>
+
+      <footer class="site-footer">
+        <div class="page-footer">
+          <div>能力建设蓝图用于平台规划和评审对齐</div>
+          <div class="footer-note">建议配合研发技术总览和平台升级设计文档一起阅读</div>
+        </div>
+      </footer>
+    </div>
+  </body>
+</html>
