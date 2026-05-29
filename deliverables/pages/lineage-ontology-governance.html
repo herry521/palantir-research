@@ -106,6 +106,7 @@
             <a href="#conclusion">结论</a>
             <a href="#lineage-map">血缘关系图</a>
             <a href="#mechanism">关键机制</a>
+            <a href="#dataset-lineage-build">自建方案</a>
             <a href="#implication">对我们的启发</a>
             <a href="#sources">相关来源</a>
           </aside>
@@ -251,6 +252,45 @@
                 <article class="detail-card mechanism-card">
                   <h3>4. Data Lineage 是 branch-aware，但自身不是分支资源</h3>
                   <p class="muted">选择 Global Branch 后可查看分支上的 Dataset、Ontology 和 link 状态；但图配置不会作为分支资源 merge 回 Main。</p>
+                </article>
+              </div>
+            </section>
+
+            <section class="section-card" id="dataset-lineage-build">
+              <p class="section-kicker">Build Your Own</p>
+              <h2>
+                <span class="title-row"><svg class="icon lg" aria-hidden="true"><use href="#i-map"></use></svg><span>自建 Dataset 血缘建设方案</span></span>
+              </h2>
+              <div class="detail-grid mechanism-grid">
+                <article class="detail-card mechanism-card">
+                  <h3>1. 先建 Dataset 版本底座</h3>
+                  <p class="muted">血缘的主语不是任务，而是 Dataset、Branch、Transaction/View 和 Producer Run。每次读写都要绑定到具体版本，才能支持回放、审计和影响分析。</p>
+                </article>
+                <article class="detail-card mechanism-card">
+                  <h3>2. Pipeline 和 Sync 都要声明 I/O</h3>
+                  <p class="muted">Pipeline 记录 input/output Dataset contract；Sync 记录外部源、配置版本、cursor/watermark、transaction type 和 output transaction。</p>
+                </article>
+                <article class="detail-card mechanism-card">
+                  <h3>3. 运行时记录实际解析结果</h3>
+                  <p class="muted">BuildRun / SyncRun 必须落 run_input 和 run_output，尤其是 requested branch、resolved branch、transaction range 和 output transaction。</p>
+                </article>
+                <article class="detail-card mechanism-card">
+                  <h3>4. 分支不要承诺 Git 式数据合并</h3>
+                  <p class="muted">Dataset Branch 是 transaction 指针；把分支数据带回主线应通过 promote、copy 或 rebuild-to-target-branch 生成新的 transaction。</p>
+                </article>
+              </div>
+              <div class="lineage-version-grid">
+                <article class="mechanism-card">
+                  <h3>P0：版本血缘</h3>
+                  <p class="muted">Dataset transaction、schema version、SyncRun / BuildRun 输入输出版本，支撑版本追溯和基础上下游查询。</p>
+                </article>
+                <article class="mechanism-card">
+                  <h3>P1：分支与调度</h3>
+                  <p class="muted">声明式 I/O、branch/fallback resolution、staleness 和 schedule 集成，支撑分支视图和影响分析。</p>
+                </article>
+                <article class="mechanism-card">
+                  <h3>P2/P3：治理闭环</h3>
+                  <p class="muted">逐步扩展 SQL/低码列级血缘、schema impact、标签/权限传播、OpenLineage 和 Ontology / Writeback。</p>
                 </article>
               </div>
             </section>
