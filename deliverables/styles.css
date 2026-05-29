@@ -942,6 +942,160 @@ img {
   color: var(--ink-700);
 }
 
+.embedded-research-layout {
+  display: grid;
+  grid-template-columns: minmax(340px, 0.72fr) minmax(520px, 1.28fr);
+  gap: 20px;
+  align-items: stretch;
+}
+
+.operator-conclusion-stack {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.operator-conclusion-card,
+.embedded-page-card {
+  border-radius: var(--radius-md);
+  background: #fff;
+  border: 1px solid rgba(16, 45, 34, 0.08);
+  box-shadow: var(--shadow-soft);
+}
+
+.operator-conclusion-card {
+  position: relative;
+  min-height: 190px;
+  padding: 20px;
+  overflow: hidden;
+}
+
+.operator-conclusion-card::before {
+  content: "";
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 4px;
+  background: linear-gradient(180deg, var(--forest-500), rgba(201, 178, 116, 0.7));
+}
+
+.operator-conclusion-card span {
+  display: inline-flex;
+  width: 38px;
+  height: 38px;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 14px;
+  border-radius: 12px;
+  background: rgba(39, 104, 77, 0.09);
+  color: var(--forest-700);
+  font-weight: 700;
+}
+
+.operator-conclusion-card h3 {
+  margin: 0 0 8px;
+  font-size: 18px;
+}
+
+.operator-conclusion-card p {
+  margin: 0;
+  color: var(--ink-500);
+  font-size: 14px;
+  line-height: 1.55;
+}
+
+.embedded-page-card {
+  display: grid;
+  grid-template-rows: auto minmax(520px, 1fr);
+  min-height: 680px;
+  overflow: hidden;
+  background:
+    linear-gradient(180deg, #ffffff 0%, #fbfcfa 100%),
+    radial-gradient(circle at top left, rgba(98, 181, 143, 0.11), transparent 38%);
+}
+
+.embedded-page-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: start;
+  gap: 18px;
+  padding: 22px 24px 18px;
+  border-bottom: 1px solid rgba(16, 45, 34, 0.08);
+}
+
+.embedded-page-top h3 {
+  margin: 12px 0 0;
+  font-size: 24px;
+}
+
+.embedded-page-frame {
+  width: 100%;
+  min-height: 520px;
+  height: 100%;
+  border: 0;
+  background: #fbfcfa;
+}
+
+body.is-embedded,
+html.is-embedded-root body {
+  overflow-x: hidden;
+  background: #fbfcfa;
+}
+
+body.is-embedded .site-nav,
+body.is-embedded .site-footer,
+html.is-embedded-root .site-nav,
+html.is-embedded-root .site-footer {
+  display: none;
+}
+
+body.is-embedded .topic-header,
+body.is-embedded .detail-layout,
+html.is-embedded-root .topic-header,
+html.is-embedded-root .detail-layout {
+  width: min(100% - 24px, 980px);
+}
+
+body.is-embedded .topic-header,
+html.is-embedded-root .topic-header {
+  padding: 30px 0 18px;
+}
+
+body.is-embedded .topic-header h1,
+html.is-embedded-root .topic-header h1 {
+  margin-bottom: 14px;
+  font-size: 36px;
+  letter-spacing: -0.02em;
+}
+
+body.is-embedded .intro-note,
+html.is-embedded-root .intro-note {
+  max-width: none;
+  font-size: 15px;
+}
+
+body.is-embedded .detail-layout,
+html.is-embedded-root .detail-layout {
+  grid-template-columns: 1fr;
+  padding: 8px 0 30px;
+}
+
+body.is-embedded .section-nav,
+html.is-embedded-root .section-nav {
+  display: none;
+}
+
+body.is-embedded .detail-main,
+html.is-embedded-root .detail-main {
+  gap: 14px;
+}
+
+body.is-embedded .section-card,
+html.is-embedded-root .section-card {
+  padding: 22px;
+  border-radius: var(--radius-md);
+  box-shadow: 0 8px 26px rgba(14, 38, 29, 0.06);
+}
+
 .capability-header .intro-note {
   max-width: 760px;
 }
@@ -1394,7 +1548,8 @@ img {
   .section-head,
   .split-callout,
   .detail-layout,
-  .map-layout {
+  .map-layout,
+  .embedded-research-layout {
     grid-template-columns: 1fr;
   }
 
@@ -1480,6 +1635,10 @@ img {
   .lineage-branch-strip {
     grid-template-columns: 1fr;
   }
+
+  .embedded-page-card {
+    min-height: 620px;
+  }
 }
 
 @media (max-width: 720px) {
@@ -1505,7 +1664,8 @@ img {
   .detail-grid,
   .capability-focus-grid,
   .capability-roadmap,
-  .hero-stat {
+  .hero-stat,
+  .operator-conclusion-stack {
     grid-template-columns: 1fr;
   }
 
@@ -1538,8 +1698,22 @@ img {
   .sync-domain-card,
   .lineage-map-panel,
   .engine-decision-panel,
-  .faster-engine-panel {
+  .faster-engine-panel,
+  .embedded-page-top {
     padding: 18px;
+  }
+
+  .embedded-page-top {
+    display: grid;
+  }
+
+  .embedded-page-card {
+    grid-template-rows: auto 460px;
+    min-height: 0;
+  }
+
+  .embedded-page-frame {
+    min-height: 460px;
   }
 
   .domain-card-head {

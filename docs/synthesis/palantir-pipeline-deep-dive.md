@@ -2,7 +2,7 @@
 
 **日期：** 2026-04-16  
 **类型：** 技术调研  
-**覆盖方向：** Pipeline 表达层 / 执行引擎 / 流批架构 / 血缘与 Ontology 集成
+**覆盖方向：** Pipeline 表达层 / 算子平台 / 执行引擎 / 流批架构 / 血缘与 Ontology 集成
 
 ---
 
@@ -13,8 +13,11 @@
 2. 执行引擎 Spark 集成与增量计算
 3. 流批一体架构与 Streaming Pipeline
 4. 数据血缘与 Ontology-Pipeline 集成
+5. 算子平台设计：契约、注册、执行路由、治理与建设优先级
 
-原始调研文件：`docs/raw/01~04-*.md`
+原始调研文件：`docs/raw/01~05-*.md`、`docs/raw/14-transform-operator-library.md`
+
+专题方案文件：`docs/synthesis/operator-platform-design.md`
 
 ---
 
@@ -132,7 +135,7 @@ FDS 事件广播 → 触发下游 Build（事件驱动传播）
 
 ---
 
-## 三、流批架构：Spark Structured Streaming + Ontology 层统一
+## 三、流批架构：Flink Streaming Pipeline + Ontology 层统一
 
 ### 3.1 流处理技术栈
 
@@ -178,7 +181,7 @@ Pipeline Builder 和 Code Repository 是**并列关系**，非主从：
 | 层次 | 是否统一 | 说明 |
 |---|---|---|
 | 编程 API | ❌ 否 | 流用 Pipeline Builder，批用 `@transform_df` |
-| 执行引擎 | 部分统一 | 都基于 Spark，但运行模式不同 |
+| 执行引擎 | ❌ 否 | 批处理主要用 Spark，流处理使用 Flink |
 | 数据目的地 | ✅ 是 | 流/批输出都写入 Foundry Dataset / Ontology |
 | 上层应用 | ✅ 是 | Workshop/Slate/AIP 无感知数据来自流还是批 |
 
@@ -298,20 +301,110 @@ Data Connection 是 Pipeline 的上游入口，负责将外部数据源接入 Fo
 
 ---
 
+## 六、算子平台：把转换逻辑做成可治理的产品能力
+
+### 6.1 核心判断
+
+算子平台的关键不是“内置多少个函数”，而是把转换逻辑沉淀为**有契约的计算单元**。【推断】
+
+一个可平台化的算子至少需要暴露：
+- 输入端口、输出端口、参数声明与默认值。
+- 输入 Schema 约束、输出 Schema 推导和参数校验。
+- 执行资源提示、可用执行引擎、增量语义与质量规则。
+- 所属命名空间、版本、兼容性策略、Owner 与治理元数据。
+
+这意味着算子不是普通 SDK 函数库，也不是单纯的前端节点配置。它必须能被平台在**编译期发现和校验**，在**运行期路由和执行**，并在**治理面采集血缘、质量、指标和影响范围**。【推断】
+
+### 6.2 Spec 与 Executor 分离
+
+算子能力应拆成两层：【推断】
+
+| 层次 | 职责 | 调用时机 | 主要消费者 |
+|---|---|---|---|
+| `OperatorSpec` | 输入/输出/参数/Schema 推导/兼容性声明 | 配置与编译期 | UI、DAG Resolver、Schema 传播、质量门禁 |
+| `OperatorExecutor` | 具体执行逻辑 | 运行期 | Spark、Flink、DuckDB/Polars、Container Runtime |
+
+这种拆分的价值在于：平台可以在不启动 Spark/Flink 的情况下完成算子选择、参数校验、Schema 传播和下游影响判断；运行时则可以按数据规模、执行语义和资源成本选择不同 Executor。【推断】
+
+### 6.3 算子注册表是平台控制面的关键
+
+算子注册表应提供三类视图：【推断】
+
+```
+Operator Registry
+├── 元数据视图：operator_id / version / category / description / owner
+├── 契约视图：input_ports / output_ports / params / infer_output_schema
+└── 执行视图：engine -> executor / resource_hint / incremental_capability
+```
+
+这层注册表决定了低代码 Builder、代码优先 SDK、运行时调度器和治理系统能否共享同一套能力目录。没有注册表，低代码会退化成页面配置，高码会退化成自由脚本，二者很难在血缘、质量和版本管理上合流。【推断】
+
+### 6.4 与 Transform DSL 的关系
+
+Transform DSL 解决“这个计算读写哪些 Dataset”，算子契约解决“这一步计算的语义是什么”。二者互补，不应互相替代。【推断】
+
+| 维度 | Transform DSL | 算子平台 |
+|---|---|---|
+| 核心对象 | Dataset 输入输出与 Transform 函数 | 可发现、可组合、可校验的计算单元 |
+| 平台价值 | 自动构建 Dataset DAG、调度、血缘 | 支撑低代码节点、Schema 传播、复用和治理 |
+| 高码路径 | 装饰器 / SDK 生成 Transform Contract | 自定义算子或直接使用底层 SDK |
+| 低码路径 | Builder 生成 Pipeline / Transform Contract | Builder 从 Registry 渲染节点和参数表单 |
+
+自建平台的合理目标是让低代码 Builder 和高码 SDK 共享同一套 Contract / IR：低代码编辑器生成 IR，高码 SDK 生成等价 Contract，调度、血缘、权限、质量系统只消费 Contract，而不是分别适配两套产品。【推断】
+
+### 6.5 执行引擎路由
+
+算子不应该默认等同于 Spark 节点。更合理的设计是由 Engine Router 根据数据规模、算子能力、增量需求和成本约束选择执行路径：【推断】
+
+| 引擎路径 | 适合场景 | 边界 |
+|---|---|---|
+| Lightweight（DuckDB/Polars/DataFusion） | 中小数据、预览、低成本批处理 | 不适合大 shuffle、复杂状态和强一致写入 |
+| Spark | 大规模批处理、复杂 Join、通用生产链路 | 成本高，冷启动和小任务开销明显 |
+| Flink | 流式、有状态、低延迟处理 | 需要单独的状态、Checkpoint 和生命周期管理 |
+| Container | 特殊库、媒体处理、外部工具链 | 治理、资源和安全边界更复杂 |
+
+无论底层选择哪个引擎，输出都必须通过统一的 Dataset WriteSession 提交 Transaction；否则增量、血缘、权限、质量和回滚都会被绕开。【推断】
+
+### 6.6 建设优先级
+
+算子建设应按“框架优先、P0 覆盖主链路、P1 提升分析效率、P2 做差异化”的顺序推进：【推断】
+
+| 阶段 | 重点 | 目标 |
+|---|---|---|
+| Phase 0 | `OperatorSpec` / `OperatorExecutor`、Registry、Schema 传播、Engine Router | 先让平台能理解算子 |
+| Phase 1 | `filter`、`select`、`add_column`、`join`、`union`、`aggregate`、`read/write_dataset` | 覆盖大部分基础 Pipeline |
+| Phase 2 | `window`、`pivot`、`deduplicate`、字符串/日期/数值表达式、Spark fallback | 覆盖高频分析场景 |
+| Phase 3 | AI/ML、GIS、媒体、用户自定义算子框架、内部 Marketplace、Flink 流式算子 | 形成差异化和生态扩展 |
+
+平台团队应维护高频、标准化、可 Schema 推导、可多引擎实现的官方算子；业务特异逻辑应走自定义算子框架，并通过兼容性扫描、CI、Owner 和版本锁定纳入治理。【推断】
+
+### 6.7 对全局建设路线的影响
+
+算子平台应进入“先补底座”的范围，而不是被放到低代码页面之后再补。原因是：
+- Builder 的节点面板、参数表单、Schema 预览和错误提示都依赖算子契约。
+- 高码自定义能力如果不纳入 Registry，后续很难被低代码复用和治理。
+- Engine Router、Dataset Transaction、质量门禁和 Lineage 采集都需要围绕算子执行边界注入。
+- P0 算子覆盖不足时，业务会绕回自由代码；治理和复用能力会在第一阶段就被削弱。
+
+因此，全局路线应从“统一表达层”扩展为“统一表达层 + 算子契约 + Dataset 事务模型”三件事并行打底。【推断】
+
+---
+
 ## 七、综合技术评估
 
-### 5.1 核心优势
+### 7.1 核心优势
 
 | 优势 | 技术实现 |
 |---|---|
 | 零运维 Spark 集群 | Compute Profile 屏蔽集群管理[事实] |
+| 算子能力可产品化 | 通过算子契约、注册表、Schema 推导和执行绑定，把代码能力变成可复用平台能力[推断] |
 | 自动血缘追踪 | FDS 统一收集 Transform 依赖[事实] |
 | 高效增量计算 | Transaction 类型驱动，APPEND → 自动增量[事实] |
 | 流批输出统一 | 无论来源，最终都进 Ontology，应用无感知[推断] |
 | 数据安全治理 | Column Masking + 数据分类 + 审计日志内置[事实] |
 | 低代码开发 | Pipeline Builder + AIP 自然语言生成代码[事实] |
 
-### 5.2 核心限制
+### 7.2 核心限制
 
 | 限制 | 影响 |
 |---|---|
@@ -320,10 +413,11 @@ Data Connection 是 Pipeline 的上游入口，负责将外部数据源接入 Fo
 | OpenLineage 不兼容 | 多平台血缘孤岛[推断] |
 | Writeback 分钟级延迟 | 不适合强实时写回场景[事实] |
 | 列级血缘不完整 | 手写 PySpark 代码血缘缺失[事实] |
+| 算子平台建设成本高 | 如果缺少 Spec、Registry、版本兼容和多引擎绑定，很容易退化成函数库或页面配置[推断] |
 | 小文件问题 | 增量模式长期运行需定期 SNAPSHOT 合并[推断] |
-| 极低延迟限制 | 基于 Spark，< 1s 延迟场景不适用（Flink 更合适）[推断] |
+| 极低延迟限制 | Foundry 推荐配置强调秒级到十秒级流处理，< 1s 强实时场景仍不适合[推断] |
 
-### 5.3 适合 vs 不适合场景
+### 7.3 适合 vs 不适合场景
 
 **适合 Palantir Foundry Pipeline：**
 - 大型政府/企业，需要高度治理和合规
@@ -342,12 +436,15 @@ Data Connection 是 Pipeline 的上游入口，负责将外部数据源接入 Fo
 ## 八、关键技术结论汇总
 
 1. **装饰器即 DAG**：`@transform_df` 的 `Input/Output` 声明是 DAG 边的定义，FDS 自动组装全局依赖图，无需手工编排[事实]
-2. **Transaction 类型是增量计算的开关**：APPEND → 增量可行；UPDATE/SNAPSHOT → 全量重算，这是理解 Pipeline 性能优化的核心[事实]
-3. **`semantic_version` 是逻辑变更的信号**：必须在 Transform 逻辑实质性变更时手动递增，否则旧数据不会重算[事实]
-4. **流批统一在 Ontology 层而非 API 层**：两者共享数据目的地（Ontology），上层应用无感知，但开发模型不同[推断]
-5. **流处理引擎是 Apache Flink（非 Spark）**：批处理用 Spark，流处理用 Flink；Flink 的 Keyed State + Checkpoint 提供有状态流计算能力；< 15s 是推荐配置下的典型值而非硬性 SLA；Exactly-once 需显式配置，默认为 AT_LEAST_ONCE[事实]
-6. **Dataset Branch 不支持 Merge**：这是最易被误解的重要限制，影响多团队协作工作流设计[事实]
-7. **OpenLineage 不兼容是开放性最大短板**：多平台架构下 Foundry 血缘形成孤岛[推断]
+2. **算子是有契约的计算单元**：输入/输出/参数/Schema/执行绑定/质量规则需要被平台理解，不能只做成函数库[推断]
+3. **Spec 与 Executor 分离是算子平台化前提**：编译期校验和运行期执行分离后，Builder、SDK、调度和治理才能共享同一套能力[推断]
+4. **Operator Registry 是低码和高码合流的控制面**：没有注册表，低代码节点与高码自定义逻辑会持续分叉[推断]
+5. **Transaction 类型是增量计算的开关**：APPEND → 增量可行；UPDATE/SNAPSHOT → 全量重算，这是理解 Pipeline 性能优化的核心[事实]
+6. **`semantic_version` 是逻辑变更的信号**：必须在 Transform 逻辑实质性变更时手动递增，否则旧数据不会重算[事实]
+7. **流批统一在 Ontology 层而非 API 层**：两者共享数据目的地（Ontology），上层应用无感知，但开发模型不同[推断]
+8. **流处理引擎是 Apache Flink（非 Spark）**：批处理用 Spark，流处理用 Flink；Flink 的 Keyed State + Checkpoint 提供有状态流计算能力；< 15s 是推荐配置下的典型值而非硬性 SLA；Exactly-once 需显式配置，默认为 AT_LEAST_ONCE[事实]
+9. **Dataset Branch 不支持 Merge**：这是最易被误解的重要限制，影响多团队协作工作流设计[事实]
+10. **OpenLineage 不兼容是开放性最大短板**：多平台架构下 Foundry 血缘形成孤岛[推断]
 
 ---
 
@@ -357,11 +454,13 @@ Data Connection 是 Pipeline 的上游入口，负责将外部数据源接入 Fo
 - [ ] Foundry 托管 Spark 的底层基础设施（K8s？自研调度器？）
 - [ ] 增量状态存储的具体实现（Build History Service 的数据结构）
 - [ ] FDS 跨 Repository 事件传播的技术细节
+- [ ] 算子 Registry 与 Pipeline Builder 内部 IR 的真实映射方式
 
 ### 中优先级
 - [ ] Pipeline Builder 生成代码与手写 Code Repository 的执行路径差异
 - [ ] Streaming Schema Evolution 处理机制
 - [ ] OpenLineage Adapter 是否在 Palantir 路线图
+- [ ] 官方算子与用户自定义算子的边界、版本锁定和兼容性策略
 
 ### 扩展调研
 - [ ] Foundry AIP Agent 编排 Pipeline 的授权模型与回滚机制
@@ -377,3 +476,5 @@ Data Connection 是 Pipeline 的上游入口，负责将外部数据源接入 Fo
 - `docs/raw/03-streaming-batch-architecture.md`（已修正：流处理引擎 Flink）
 - `docs/raw/04-lineage-ontology-integration.md`（已修正：FDS 术语）
 - `docs/raw/05-testing-and-data-connection.md`（新增：测试框架 + 数据接入层）
+- `docs/raw/14-transform-operator-library.md`
+- `docs/synthesis/operator-platform-design.md`

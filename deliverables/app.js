@@ -1,4 +1,13 @@
+const embeddedParams = new URLSearchParams(window.location.search);
+if (embeddedParams.get("embed") === "1") {
+  document.documentElement.classList.add("is-embedded-root");
+}
+
 document.addEventListener("DOMContentLoaded", () => {
+  if (embeddedParams.get("embed") === "1") {
+    document.body.classList.add("is-embedded");
+  }
+
   const currentPath = window.location.pathname.split("/").pop() || "index.html";
   const currentHash = window.location.hash;
 

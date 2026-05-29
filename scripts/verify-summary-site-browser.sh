@@ -46,7 +46,10 @@ const pages = [
     path: "pages/overview.html",
     slug: "overview",
     title: "Palantir 研发技术总览",
-    requiredText: ["完整阅读路径", "高码能力研究", "能力建设关注点"],
+    requiredText: ["完整阅读路径", "高码能力研究", "能力建设关注点", "算子调研结论", "表达层与算子平台专题页"],
+    iframeSelector: 'iframe[title="表达层与算子平台专题页预览"]',
+    iframeRequiredText: ["表达层与算子平台", "结论", "算子平台"],
+    iframeSrc: "expression-and-operators.html?embed=1#conclusion",
   },
   {
     path: "pages/data-engineering-platform-map.html",
@@ -143,6 +146,18 @@ async function checkPage(browser, pageSpec, viewport) {
     }
   }
 
+  if (pageSpec.iframeSelector) {
+    const frame = page.frameLocator(pageSpec.iframeSelector);
+    await frame.locator("body").waitFor({ state: "visible", timeout: 5000 });
+    await frame.locator("body.is-embedded").waitFor({ state: "attached", timeout: 5000 });
+    const frameText = await frame.locator("body").innerText({ timeout: 5000 });
+    for (const text of pageSpec.iframeRequiredText || []) {
+      if (!frameText.includes(text)) {
+        throw new Error(`${pageSpec.path}: embedded iframe missing text "${text}"`);
+      }
+    }
+  }
+
   const bodyBox = await page.locator("body").boundingBox();
   if (!bodyBox || bodyBox.width < 320 || bodyBox.height < 200) {
     throw new Error(`${pageSpec.path}: body did not render with a usable size`);
@@ -157,6 +172,20 @@ async function checkPage(browser, pageSpec, viewport) {
   const screenshotPath = path.join(screenshotDir, screenshotName);
   fs.writeFileSync(screenshotPath, screenshot);
   assertScreenshotLooksRendered(screenshot, `${pageSpec.path} ${viewport.name}`);
+
+  if (pageSpec.iframeSelector) {
+    const iframePage = await browser.newPage({ viewport });
+    const iframeUrl = new URL(pageSpec.iframeSrc, fileUrl).href;
+    await iframePage.goto(iframeUrl, { waitUntil: "networkidle" });
+    await iframePage.locator("body.is-embedded").waitFor({ state: "attached", timeout: 5000 });
+    const iframeScreenshot = await iframePage.screenshot({ fullPage: false });
+    const iframeScreenshotName = `${pageSpec.slug}-${viewport.name}-iframe.png`;
+    const iframeScreenshotPath = path.join(screenshotDir, iframeScreenshotName);
+    fs.writeFileSync(iframeScreenshotPath, iframeScreenshot);
+    assertScreenshotLooksRendered(iframeScreenshot, `${pageSpec.path} ${viewport.name} embedded iframe`);
+    console.log(`Captured ${viewport.name} iframe screenshot: ${iframeScreenshotPath}`);
+    await iframePage.close();
+  }
 
   await page.close();
   return screenshotPath;
