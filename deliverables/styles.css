@@ -887,6 +887,134 @@ img {
   margin-top: 18px;
 }
 
+.permission-matrix,
+.implementation-chain {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+  margin-top: 18px;
+}
+
+.permission-matrix article,
+.implementation-chain article,
+.architecture-chain div {
+  border-radius: 16px;
+  border: 1px solid rgba(16, 45, 34, 0.1);
+  background: linear-gradient(180deg, #ffffff 0%, #fbfcfa 100%);
+  box-shadow: 0 8px 26px rgba(14, 38, 29, 0.06);
+}
+
+.permission-matrix article {
+  padding: 20px;
+}
+
+.permission-matrix h3,
+.implementation-chain h3 {
+  margin: 14px 0 8px;
+  font-size: 18px;
+}
+
+.permission-matrix p,
+.implementation-chain p {
+  margin: 0;
+  color: var(--ink-500);
+  font-size: 14px;
+  line-height: 1.55;
+}
+
+.access-equation {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  margin-top: 18px;
+  padding: 18px;
+  border-radius: var(--radius-md);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.96), #fbfcfa),
+    radial-gradient(circle at top right, rgba(201, 178, 116, 0.14), transparent 34%);
+  border: 1px solid rgba(16, 45, 34, 0.1);
+  box-shadow: var(--shadow-soft);
+}
+
+.access-equation strong,
+.access-equation span {
+  display: inline-flex;
+  align-items: center;
+  min-height: 36px;
+  padding: 8px 12px;
+  border-radius: 999px;
+  background: rgba(39, 104, 77, 0.07);
+  border: 1px solid rgba(39, 104, 77, 0.1);
+  color: var(--ink-700);
+  font-size: 13px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.access-equation strong {
+  color: var(--forest-700);
+  background: rgba(201, 178, 116, 0.18);
+  border-color: rgba(201, 178, 116, 0.32);
+}
+
+.permission-flow {
+  display: grid;
+  grid-template-columns: minmax(136px, 1fr) 22px minmax(136px, 1fr) 22px minmax(136px, 1fr) 22px minmax(136px, 1fr) 22px minmax(136px, 1fr);
+  gap: 10px;
+  align-items: stretch;
+  min-width: 840px;
+}
+
+.architecture-chain {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+  margin-top: 18px;
+}
+
+.architecture-chain div {
+  display: flex;
+  align-items: center;
+  min-height: 72px;
+  padding: 14px;
+  color: var(--ink-700);
+  font-size: 14px;
+  line-height: 1.35;
+}
+
+.architecture-chain div:nth-child(4n + 1) {
+  border-left: 4px solid var(--forest-500);
+}
+
+.architecture-chain div:nth-child(4n + 2) {
+  border-left: 4px solid var(--gold-400);
+}
+
+.architecture-chain div:nth-child(4n + 3) {
+  border-left: 4px solid #8b9bd7;
+}
+
+.architecture-chain div:nth-child(4n + 4) {
+  border-left: 4px solid var(--forest-400);
+}
+
+.implementation-chain article {
+  padding: 20px;
+}
+
+.implementation-chain span {
+  display: inline-flex;
+  width: 38px;
+  height: 38px;
+  align-items: center;
+  justify-content: center;
+  border-radius: 12px;
+  background: rgba(39, 104, 77, 0.09);
+  color: var(--forest-700);
+  font-weight: 700;
+}
+
 .map-layers {
   display: grid;
   gap: 14px;
@@ -1586,6 +1714,8 @@ html.is-embedded-root .section-card {
 
   .sync-pipeline-grid,
   .lineage-version-grid,
+  .permission-matrix,
+  .implementation-chain,
   .engine-decision-panel,
   .engine-decision-grid,
   .faster-engine-head,
@@ -1619,12 +1749,18 @@ html.is-embedded-root .section-card {
   }
 
   .lineage-flow,
+  .permission-flow,
   .lineage-branch-strip {
     min-width: 0;
   }
 
-  .lineage-flow {
+  .lineage-flow,
+  .permission-flow {
     grid-template-columns: 1fr;
+  }
+
+  .architecture-chain {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
   .lineage-arrow {
@@ -1664,6 +1800,9 @@ html.is-embedded-root .section-card {
   .detail-grid,
   .capability-focus-grid,
   .capability-roadmap,
+  .permission-matrix,
+  .implementation-chain,
+  .architecture-chain,
   .hero-stat,
   .operator-conclusion-stack {
     grid-template-columns: 1fr;
@@ -1724,6 +1863,18 @@ html.is-embedded-root .section-card {
   .domain-chip-grid span {
     max-width: 100%;
     white-space: normal;
+  }
+
+  .access-equation {
+    display: grid;
+  }
+
+  .access-equation strong,
+  .access-equation span {
+    width: 100%;
+    justify-content: center;
+    white-space: normal;
+    text-align: center;
   }
 
   .conclusion-grid {

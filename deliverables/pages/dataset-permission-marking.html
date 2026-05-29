@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dataset 权限与 Marking 架构</title>
+    <link rel="stylesheet" href="../styles.css" />
+    <script defer src="../app.js"></script>
+  </head>
+  <body class="detail-body">
+    <div class="site-shell">
+      <svg class="icon-sprite" xmlns="http://www.w3.org/2000/svg">
+        <symbol id="i-home" viewBox="0 0 24 24">
+          <path d="M12 3l8 6v11a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V9l8-6Z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" />
+          <path d="M9 21v-8h6v8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" />
+        </symbol>
+        <symbol id="i-map" viewBox="0 0 24 24">
+          <path d="M9 4 3 6v14l6-2 6 2 6-2V4l-6 2-6-2Z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" />
+          <path d="M9 4v14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
+          <path d="M15 6v14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
+        </symbol>
+        <symbol id="i-brackets" viewBox="0 0 24 24">
+          <path d="M9 6 5 12l4 6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" />
+          <path d="M15 6l4 6-4 6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" />
+          <path d="M13 6l-2 12" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
+        </symbol>
+        <symbol id="i-cpu" viewBox="0 0 24 24">
+          <path d="M9 9h6v6H9V9Z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" />
+          <path d="M9 2v3M15 2v3M9 19v3M15 19v3M2 9h3M2 15h3M19 9h3M19 15h3" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
+          <path d="M7 7h10v10H7V7Z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" />
+        </symbol>
+        <symbol id="i-wave" viewBox="0 0 24 24">
+          <path d="M3 14c2 0 2-4 4-4s2 4 4 4 2-4 4-4 2 4 4 4 2-4 4-4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" />
+        </symbol>
+        <symbol id="i-nodes" viewBox="0 0 24 24">
+          <path d="M7 7h0" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
+          <path d="M17 7h0" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
+          <path d="M12 17h0" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
+          <path d="M7 7 12 17 17 7" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" />
+        </symbol>
+        <symbol id="i-wrench" viewBox="0 0 24 24">
+          <path d="M14 7a4 4 0 0 0-6 3.5l-5 5a2 2 0 1 0 2.8 2.8l5-5A4 4 0 0 0 17 9l-3 3-2-2 2-3Z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" />
+        </symbol>
+        <symbol id="i-spark" viewBox="0 0 24 24">
+          <path d="M12 2l1.5 6.5L20 10l-6.5 1.5L12 18l-1.5-6.5L4 10l6.5-1.5L12 2Z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" />
+        </symbol>
+        <symbol id="i-layers" viewBox="0 0 24 24">
+          <path d="M12 3 2.5 8 12 13l9.5-5L12 3Z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" />
+          <path d="M2.5 12 12 17l9.5-5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round" />
+          <path d="M2.5 16 12 21l9.5-5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round" />
+        </symbol>
+        <symbol id="i-file" viewBox="0 0 24 24">
+          <path d="M7 3h7l3 3v15a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1Z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" />
+          <path d="M14 3v4h4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" />
+        </symbol>
+      </svg>
+      <header class="site-nav">
+        <div class="nav-inner">
+          <a class="brand-mark" href="../index.html">
+            <span class="brand-dot"></span>
+            <span>Palantir Research Summary</span>
+          </a>
+          <nav class="nav-links">
+            <a data-nav href="../index.html"><svg class="icon sm" aria-hidden="true"><use href="#i-home"></use></svg><span>首页</span></a>
+            <a data-nav href="overview.html"><svg class="icon sm" aria-hidden="true"><use href="#i-map"></use></svg><span>总览</span></a>
+            <a data-nav href="pro-code-capability.html"><svg class="icon sm" aria-hidden="true"><use href="#i-brackets"></use></svg><span>高码</span></a>
+            <a data-nav href="data-engineering-platform-map.html"><svg class="icon sm" aria-hidden="true"><use href="#i-layers"></use></svg><span>蓝图</span></a>
+            <a data-nav href="expression-and-operators.html"><svg class="icon sm" aria-hidden="true"><use href="#i-brackets"></use></svg><span>表达</span></a>
+            <a data-nav href="execution-and-incremental.html"><svg class="icon sm" aria-hidden="true"><use href="#i-cpu"></use></svg><span>执行</span></a>
+            <a data-nav href="streaming-architecture.html"><svg class="icon sm" aria-hidden="true"><use href="#i-wave"></use></svg><span>流式</span></a>
+            <a data-nav href="lineage-ontology-governance.html"><svg class="icon sm" aria-hidden="true"><use href="#i-nodes"></use></svg><span>治理</span></a>
+            <a data-nav href="dataset-permission-marking.html"><svg class="icon sm" aria-hidden="true"><use href="#i-file"></use></svg><span>权限</span></a>
+            <a data-nav href="engineering-and-ecosystem.html"><svg class="icon sm" aria-hidden="true"><use href="#i-wrench"></use></svg><span>工程</span></a>
+          </nav>
+        </div>
+      </header>
+
+      <main>
+        <section class="topic-header">
+          <p class="eyebrow">Topic 06</p>
+          <h1>Dataset 权限与 Marking 架构</h1>
+          <p class="intro-note">Foundry 的权限壁垒不是单个角色表，而是把资源角色、组织边界、Marking、血缘传播、细粒度策略、审批和审计放进同一个 Dataset 控制闭环。</p>
+          <div class="topic-meta">
+            <span class="tag">Dataset Permission</span>
+            <span class="tag">Marking</span>
+            <span class="tag">MAC / DAC</span>
+            <span class="tag">Lineage Propagation</span>
+            <span class="tag">Access Debugger</span>
+          </div>
+        </section>
+
+        <div class="detail-layout">
+          <aside class="section-nav">
+            <strong>本页导航</strong>
+            <a href="#conclusion">结论</a>
+            <a href="#permission-map">权限全景</a>
+            <a href="#access-model">访问判定</a>
+            <a href="#marking-model">Marking 机制</a>
+            <a href="#architecture">架构设计</a>
+            <a href="#implementation">实现链路</a>
+            <a href="#build-your-own">自建建议</a>
+            <a href="#sources">相关来源</a>
+          </aside>
+
+          <div class="detail-main">
+            <section class="section-card" id="conclusion">
+              <p class="section-kicker">Conclusions</p>
+              <h2>
+                <span class="title-row"><svg class="icon lg" aria-hidden="true"><use href="#i-spark"></use></svg><span>结论</span></span>
+              </h2>
+              <div class="detail-grid conclusion-grid">
+                <article class="detail-card">
+                  <h3>Dataset 权限不是单一 RBAC</h3>
+                  <p class="muted">完整判定由 resource role、organization、marking、classification、lineage-derived data requirements 和可选行级 / 属性级策略共同决定。</p>
+                </article>
+                <article class="detail-card">
+                  <h3>Role 和 Marking 必须分开</h3>
+                  <p class="muted">Role 决定能做什么，Marking 决定有没有资格接触某类敏感数据。Owner / Viewer 不能绕过 Marking。</p>
+                </article>
+                <article class="detail-card">
+                  <h3>血缘传播是核心分水岭</h3>
+                  <p class="muted">敏感要求会沿资源层级和直接数据依赖传播；只做 Dataset ACL 会漏掉派生数据的治理风险。</p>
+                </article>
+              </div>
+            </section>
+
+            <section class="section-card" id="permission-map">
+              <p class="section-kicker">Permission Map</p>
+              <h2>
+                <span class="title-row"><svg class="icon lg" aria-hidden="true"><use href="#i-map"></use></svg><span>Dataset 权限全景</span></span>
+              </h2>
+              <div class="permission-matrix">
+                <article>
+                  <span class="tag">DAC</span>
+                  <h3>Project / Resource Roles</h3>
+                  <p>Owner、Editor、Viewer、Discoverer 等角色决定用户能否发现、打开、编辑或管理资源。</p>
+                </article>
+                <article>
+                  <span class="tag">MAC</span>
+                  <h3>Organizations</h3>
+                  <p>组织边界应用于 Project / Space，用户通常满足至少一个相关 Organization 即可通过组织要求。</p>
+                </article>
+                <article>
+                  <span class="tag">MAC</span>
+                  <h3>Markings</h3>
+                  <p>敏感数据资格要求，普通 Marking 按 all-of 理解，用户必须满足资源或数据上的所有 Marking。</p>
+                </article>
+                <article>
+                  <span class="tag">CBAC</span>
+                  <h3>Classifications</h3>
+                  <p>高密级场景的 mandatory controls，支持层级密级和分类类别，通常需要平台级配置。</p>
+                </article>
+                <article>
+                  <span class="tag">Policy</span>
+                  <h3>Restricted Views</h3>
+                  <p>在 Dataset 下游建立行级访问视图，适合“同一 Dataset 不同用户看到不同行”的场景。</p>
+                </article>
+                <article>
+                  <span class="tag">Ontology</span>
+                  <h3>Object / Property Security</h3>
+                  <p>把 Dataset 要求延伸到对象和属性访问，让应用层也能执行数据安全边界。</p>
+                </article>
+              </div>
+            </section>
+
+            <section class="section-card" id="access-model">
+              <p class="section-kicker">Access Decision</p>
+              <h2>
+                <span class="title-row"><svg class="icon lg" aria-hidden="true"><use href="#i-layers"></use></svg><span>访问判定模型</span></span>
+              </h2>
+              <div class="access-equation" aria-label="Dataset 访问判定公式">
+                <strong>can_read_dataset_view</strong>
+                <span>= role_ok</span>
+                <span>AND organization_ok</span>
+                <span>AND file_markings_ok</span>
+                <span>AND data_markings_ok</span>
+                <span>AND classification_ok</span>
+                <span>AND row_or_property_policy_ok</span>
+              </div>
+              <div class="detail-grid mechanism-grid">
+                <article class="detail-card mechanism-card">
+                  <h3>Resource access</h3>
+                  <p class="muted">判断用户能否看到、打开或管理这个 Dataset 资源，主要受 Project / folder / resource role、file marking 和 organization 控制。</p>
+                </article>
+                <article class="detail-card mechanism-card">
+                  <h3>Data access</h3>
+                  <p class="muted">判断用户能否读取 Dataset view 的实际内容，主要受上游 Dataset 通过 lineage 继承下来的 data requirement 控制。</p>
+                </article>
+                <article class="detail-card mechanism-card">
+                  <h3>可解释拒绝</h3>
+                  <p class="muted">权限系统要返回缺少 role、marking、organization 还是 classification，而不是只给一个通用 forbidden。</p>
+                </article>
+                <article class="detail-card mechanism-card">
+                  <h3>服务端强制</h3>
+                  <p class="muted">UI 可以展示 pill、badge 和提示，但真正的 allow / deny 必须在服务端 PDP 和查询执行层完成。</p>
+                </article>
+              </div>
+            </section>
+
+            <section class="section-card" id="marking-model">
+              <p class="section-kicker">Marking Model</p>
+              <h2>
+                <span class="title-row"><svg class="icon lg" aria-hidden="true"><use href="#i-nodes"></use></svg><span>Marking 的设计和传播</span></span>
+              </h2>
+              <div class="lineage-map-panel">
+                <div class="permission-flow" aria-label="Marking 传播链路">
+                  <div class="lineage-node source"><span>Project / Folder</span><strong>资源层级 Marking</strong></div>
+                  <div class="lineage-arrow" aria-hidden="true">→</div>
+                  <div class="lineage-node dataset"><span>Dataset Resource</span><strong>file requirements</strong></div>
+                  <div class="lineage-arrow" aria-hidden="true">→</div>
+                  <div class="lineage-node build"><span>Transform Build</span><strong>读取 input requirements</strong></div>
+                  <div class="lineage-arrow" aria-hidden="true">→</div>
+                  <div class="lineage-node dataset"><span>Output Transaction</span><strong>data requirements</strong></div>
+                  <div class="lineage-arrow" aria-hidden="true">→</div>
+                  <div class="lineage-node ontology"><span>Consumer</span><strong>query-time enforcement</strong></div>
+                </div>
+              </div>
+              <div class="detail-grid mechanism-grid">
+                <article class="detail-card mechanism-card">
+                  <h3>对象模型</h3>
+                  <p class="muted">MarkingCategory、Marking、MarkingMember、MarkingRoleAssignment、ResourceRequirement 和 DataRequirement 要分开建模。</p>
+                </article>
+                <article class="detail-card mechanism-card">
+                  <h3>权限分离</h3>
+                  <p class="muted">管理 Marking、应用 Marking、移除 Marking、成为 Marking member 是不同权限，不能默认互相包含。</p>
+                </article>
+                <article class="detail-card mechanism-card">
+                  <h3>两类传播</h3>
+                  <p class="muted">文件层级传播保护资源本身，数据血缘传播保护派生内容。后者是防止下游绕权的关键。</p>
+                </article>
+                <article class="detail-card mechanism-card">
+                  <h3>传播中断</h3>
+                  <p class="muted"><code>stop_propagating</code> / <code>stop_requiring</code> 应绑定 protected branch、required approver 和具体 Marking 权限。</p>
+                </article>
+              </div>
+            </section>
+
+            <section class="section-card" id="architecture">
+              <p class="section-kicker">Architecture</p>
+              <h2>
+                <span class="title-row"><svg class="icon lg" aria-hidden="true"><use href="#i-cpu"></use></svg><span>平台架构设计</span></span>
+              </h2>
+              <div class="architecture-chain">
+                <div>IAM / Group</div>
+                <div>Entitlement Resolver</div>
+                <div>Resource Catalog</div>
+                <div>Dataset Version Store</div>
+                <div>Marking Admin Service</div>
+                <div>Access Requirement Service</div>
+                <div>Lineage Graph</div>
+                <div>Propagation Engine</div>
+                <div>Policy Decision Point</div>
+                <div>Query / Build Enforcement</div>
+                <div>Approval Workflow</div>
+                <div>Audit / Access Debugger</div>
+              </div>
+              <div class="split-callout">
+                <div class="detail-card">
+                  <h3>控制面</h3>
+                  <ul>
+                    <li>维护 Project、folder、Dataset、branch、transaction 和 lineage 元数据。</li>
+                    <li>维护 Marking category、member、apply/remove/manage 权限。</li>
+                    <li>提供 getAccessRequirements、whyDenied 和 simulateMarkingImpact。</li>
+                  </ul>
+                </div>
+                <div class="detail-card">
+                  <h3>执行面</h3>
+                  <ul>
+                    <li>Build 时读取 input requirements 并计算 output transaction requirements。</li>
+                    <li>Query 时统一检查 role、resource requirement 和 data requirement。</li>
+                    <li>审批通过的 unmarking rule 只影响后续新 transaction。</li>
+                  </ul>
+                </div>
+              </div>
+            </section>
+
+            <section class="section-card" id="implementation">
+              <p class="section-kicker">Implementation Chain</p>
+              <h2>
+                <span class="title-row"><svg class="icon lg" aria-hidden="true"><use href="#i-wrench"></use></svg><span>端到端实现链路</span></span>
+              </h2>
+              <div class="implementation-chain">
+                <article>
+                  <span>01</span>
+                  <h3>创建 Marking</h3>
+                  <p>DPO / 平台管理员创建 category 和 marking，分配 members、apply/remove/manage 权限并写审计。</p>
+                </article>
+                <article>
+                  <span>02</span>
+                  <h3>应用到 Dataset</h3>
+                  <p>校验资源 Owner 权限和 apply marking 权限，写入 ResourceRequirement，触发下游影响分析。</p>
+                </article>
+                <article>
+                  <span>03</span>
+                  <h3>Pipeline 构建传播</h3>
+                  <p>BuildRun 解析 input transaction，合并 input requirements，写入 output transaction data requirements。</p>
+                </article>
+                <article>
+                  <span>04</span>
+                  <h3>读取时强制判定</h3>
+                  <p>PDP 解析用户 entitlement，加载 resource 和 data requirements，拒绝时返回 missing requirements。</p>
+                </article>
+                <article>
+                  <span>05</span>
+                  <h3>脱敏后移除继承</h3>
+                  <p>transform 声明 unmarking intent，protected branch 和安全审批人校验后，新 output transaction 才生效。</p>
+                </article>
+                <article>
+                  <span>06</span>
+                  <h3>审计与模拟</h3>
+                  <p>记录成员变更、资源打标、读取、审批和移除动作，并支持 Marking 变更影响模拟。</p>
+                </article>
+              </div>
+            </section>
+
+            <section class="section-card" id="build-your-own">
+              <p class="section-kicker">Build Your Own</p>
+              <h2>
+                <span class="title-row"><svg class="icon lg" aria-hidden="true"><use href="#i-map"></use></svg><span>自建平台建议</span></span>
+              </h2>
+              <div class="lineage-version-grid">
+                <article class="mechanism-card">
+                  <h3>L0 / L1</h3>
+                  <p class="muted">Dataset ACL、Project role 和 group 授权只能解决协作访问，不能治理敏感数据传播。</p>
+                </article>
+                <article class="mechanism-card">
+                  <h3>L2</h3>
+                  <p class="muted">Marking 管理、Dataset direct marking 和 query-time enforcement 可以限制直接访问，但下游仍可能绕过。</p>
+                </article>
+                <article class="mechanism-card">
+                  <h3>L3 / L4</h3>
+                  <p class="muted">Lineage-aware propagation、transaction-level requirements、审批、Restricted View、SDS 和 Audit 才接近生产级闭环。</p>
+                </article>
+              </div>
+              <div class="detail-grid mechanism-grid">
+                <article class="detail-card mechanism-card">
+                  <h3>优先做</h3>
+                  <ul>
+                    <li>Resource / Dataset / Transaction / Lineage 元模型。</li>
+                    <li>Marking 与 Marking 权限分离。</li>
+                    <li>Build-time propagation 和 query-time enforcement。</li>
+                    <li>Access debugger 和 audit log。</li>
+                  </ul>
+                </article>
+                <article class="detail-card mechanism-card">
+                  <h3>不要先做错</h3>
+                  <ul>
+                    <li>不要把 Marking 做成普通标签。</li>
+                    <li>不要让 Owner 绕过敏感数据要求。</li>
+                    <li>不要让 unmarking 只靠代码声明生效。</li>
+                    <li>不要把历史 transaction 权限和最新权限混在一起。</li>
+                  </ul>
+                </article>
+              </div>
+            </section>
+
+            <section class="section-card" id="sources">
+              <p class="section-kicker">Sources</p>
+              <h2>
+                <span class="title-row"><svg class="icon lg" aria-hidden="true"><use href="#i-file"></use></svg><span>相关来源</span></span>
+              </h2>
+              <div class="source-list">
+                <a class="source-link" href="../../docs/synthesis/dataset-permission-marking-architecture-summary.md"
+                  ><svg class="icon sm" aria-hidden="true"><use href="#i-file"></use></svg><span>docs/synthesis/dataset-permission-marking-architecture-summary.md</span></a
+                >
+                <a class="source-link" href="../../docs/raw/30-dataset-permission-marking-architecture.md"
+                  ><svg class="icon sm" aria-hidden="true"><use href="#i-file"></use></svg><span>docs/raw/30-dataset-permission-marking-architecture.md</span></a
+                >
+                <a class="source-link" href="../../docs/raw/06-security-and-permissions.md"
+                  ><svg class="icon sm" aria-hidden="true"><use href="#i-file"></use></svg><span>docs/raw/06-security-and-permissions.md</span></a
+                >
+                <a class="source-link" href="../../docs/raw/11-marking-mechanism-deep-dive.md"
+                  ><svg class="icon sm" aria-hidden="true"><use href="#i-file"></use></svg><span>docs/raw/11-marking-mechanism-deep-dive.md</span></a
+                >
+                <a class="source-link" href="../../docs/raw/12-dataset-marking-implementation.md"
+                  ><svg class="icon sm" aria-hidden="true"><use href="#i-file"></use></svg><span>docs/raw/12-dataset-marking-implementation.md</span></a
+                >
+                <a class="source-link" href="../../docs/raw/13-marking-advanced-deep-dive.md"
+                  ><svg class="icon sm" aria-hidden="true"><use href="#i-file"></use></svg><span>docs/raw/13-marking-advanced-deep-dive.md</span></a
+                >
+              </div>
+            </section>
+          </div>
+        </div>
+      </main>
+
+      <footer class="site-footer">
+        <div class="page-footer">
+          <div>Palantir Foundry / Pipeline 调研材料库</div>
+          <div class="footer-note">统一入口：首页 / 总览 / 高码 / 蓝图 / 算子总览 / 六个技术专题</div>
+        </div>
+      </footer>
+    </div>
+  </body>
+</html>

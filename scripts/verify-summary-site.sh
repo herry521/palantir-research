@@ -13,6 +13,7 @@ required_files=(
   "$ROOT/pages/execution-and-incremental.html"
   "$ROOT/pages/streaming-architecture.html"
   "$ROOT/pages/lineage-ontology-governance.html"
+  "$ROOT/pages/dataset-permission-marking.html"
   "$ROOT/pages/engineering-and-ecosystem.html"
 )
 
@@ -62,6 +63,15 @@ check_contains "$ROOT/pages/lineage-ontology-governance.html" "Ontology"
 check_contains "$ROOT/pages/lineage-ontology-governance.html" "血缘关系图"
 check_contains "$ROOT/pages/lineage-ontology-governance.html" "自建 Dataset 血缘建设方案"
 check_contains "$ROOT/pages/lineage-ontology-governance.html" "docs/raw/29-lineage-branch-version-pipeline-sync.md"
+check_contains "$ROOT/pages/dataset-permission-marking.html" "Dataset 权限与 Marking 架构"
+check_contains "$ROOT/pages/dataset-permission-marking.html" "Dataset 权限全景"
+check_contains "$ROOT/pages/dataset-permission-marking.html" "Marking 的设计和传播"
+check_contains "$ROOT/pages/dataset-permission-marking.html" "端到端实现链路"
+check_contains "$ROOT/pages/dataset-permission-marking.html" "docs/synthesis/dataset-permission-marking-architecture-summary.md"
+check_contains "$ROOT/styles.css" ".permission-matrix"
+check_contains "$ROOT/styles.css" ".access-equation"
+check_contains "$ROOT/styles.css" ".architecture-chain"
+check_contains "$ROOT/styles.css" ".implementation-chain"
 check_contains "$ROOT/pages/engineering-and-ecosystem.html" "工程化"
 check_contains "$ROOT/pages/engineering-and-ecosystem.html" "Media Set 如何把非结构化数据纳入平台"
 check_contains "$ROOT/pages/engineering-and-ecosystem.html" "docs/raw/31-media-set-implementation-deep-dive.md"
@@ -89,13 +99,13 @@ for file in "${required_files[@]}"; do
   fi
 
   nav_count="$(grep -o 'data-nav href=' "$file" | wc -l | tr -d ' ')"
-  [[ "$nav_count" == "9" ]] || {
-    echo "Expected 9 primary nav links in $file, found $nav_count"
+  [[ "$nav_count" == "10" ]] || {
+    echo "Expected 10 primary nav links in $file, found $nav_count"
     exit 1
   }
 
   check_contains "$file" "Palantir Foundry / Pipeline 调研材料库"
-  check_contains "$file" "统一入口：首页 / 总览 / 高码 / 蓝图 / 算子总览 / 五个技术专题"
+  check_contains "$file" "统一入口：首页 / 总览 / 高码 / 蓝图 / 算子总览 / 六个技术专题"
 done
 
 grep -q 'href="pages/overview.html"' "$ROOT/index.html" || {
@@ -110,6 +120,11 @@ grep -q 'href="pages/data-engineering-platform-map.html"' "$ROOT/index.html" || 
 
 grep -q 'href="pages/pro-code-capability.html"' "$ROOT/index.html" || {
   echo "Homepage must link to pro-code capability page"
+  exit 1
+}
+
+grep -q 'href="pages/dataset-permission-marking.html"' "$ROOT/index.html" || {
+  echo "Homepage must link to dataset permission marking page"
   exit 1
 }
 

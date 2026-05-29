@@ -34,7 +34,7 @@ const pages = [
     path: "index.html",
     slug: "home",
     title: "Palantir 调研总结一页纸",
-    requiredText: ["三个管理判断", "高码能力研究", "Pipeline Builder 算子总览", "Media Set"],
+    requiredText: ["三个管理判断", "高码能力研究", "Pipeline Builder 算子总览", "Dataset 权限与 Marking 架构", "Media Set"],
   },
   {
     path: "pages/pro-code-capability.html",
@@ -46,7 +46,7 @@ const pages = [
     path: "pages/overview.html",
     slug: "overview",
     title: "Palantir 研发技术总览",
-    requiredText: ["完整阅读路径", "高码能力研究", "能力建设关注点", "Media Set 资产模型", "算子主线如何嵌入平台图", "Pipeline Builder 算子总览页"],
+    requiredText: ["完整阅读路径", "高码能力研究", "能力建设关注点", "Dataset 权限与 Marking 架构", "Media Set 资产模型", "算子主线如何嵌入平台图", "Pipeline Builder 算子总览页"],
     iframeSelector: 'iframe[title="Pipeline Builder 算子总览页预览"]',
     iframeRequiredText: ["算子总览", "transform 清单", "expression 清单"],
     iframeSrc: "pipeline-builder-operators-overview.html",
@@ -86,6 +86,12 @@ const pages = [
     slug: "lineage-ontology-governance",
     title: "血缘、Ontology 与治理",
     requiredText: ["Ontology", "Lineage", "治理"],
+  },
+  {
+    path: "pages/dataset-permission-marking.html",
+    slug: "dataset-permission-marking",
+    title: "Dataset 权限与 Marking 架构",
+    requiredText: ["Dataset 权限与 Marking 架构", "Dataset 权限全景", "访问判定模型", "Marking 的设计和传播", "端到端实现链路"],
   },
   {
     path: "pages/engineering-and-ecosystem.html",
