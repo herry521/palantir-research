@@ -84,7 +84,11 @@
             <strong>本页导航</strong>
             <a href="#strength">强在哪里</a>
             <a href="#implementation">怎么实现</a>
+            <a href="#runtime">运行时</a>
+            <a href="#governance">治理闭环</a>
+            <a href="#interop">低码互操作</a>
             <a href="#borrow">怎么借鉴</a>
+            <a href="#poc">PoC 路线</a>
             <a href="#confidence">可信度</a>
             <a href="#sources">来源</a>
           </aside>
@@ -97,7 +101,7 @@
                 <article class="detail-card">
                   <span class="tag confidence-live">【实时】</span>
                   <h3>Code Repositories 是平台内 Git 工程环境</h3>
-                  <p class="muted">官方文档确认其支持 Git 分支、提交、tag、PR/code review、权限、IntelliSense、lint 和 error checking，并支持 Python、Java、SQL transform repositories。</p>
+                  <p class="muted">官方文档确认其支持 Git 分支、提交、tag、PR/code review、权限、IntelliSense、lint、error checking、preview、debug、impact analysis 和 repository upgrades。</p>
                 </article>
                 <article class="detail-card">
                   <span class="tag confidence-infer">【推断】</span>
@@ -106,8 +110,8 @@
                 </article>
                 <article class="detail-card">
                   <span class="tag confidence-live">【实时】</span>
-                  <h3>增量语义由 Dataset Transaction 承载</h3>
-                  <p class="muted">官方增量文档说明，append-only 输入通常可增量；full rewrite、update/delete 文件等会触发 snapshot 路径。</p>
+                  <h3>低码到高码有升级路径但不可逆</h3>
+                  <p class="muted">Pipeline Builder 可导出到 Java transforms repository，但部分转换不可导出，导出后不能自动回到 Builder，部分优化回退到 native Spark 后可能产生差异。</p>
                 </article>
               </div>
             </section>
@@ -125,13 +129,13 @@
               <div class="detail-grid mechanism-grid">
                 <article class="detail-card mechanism-card">
                   <span class="tag confidence-live">【实时】</span>
-                  <h3>多语言不是平铺能力</h3>
-                  <p class="muted">Python 最完整，支持 batch、incremental、共享库、data expectations 和多种 compute engine；Java 支持 batch、incremental、unit testing；SQL 基于 Spark SQL，但不支持 incremental transforms。</p>
+                  <h3>Transform Contract 让代码进入 Dataset graph</h3>
+                  <p class="muted">Python、Java、SQL transform 都围绕输入输出声明组织生产关系；平台可据此生成血缘、影响分析和构建范围。</p>
                 </article>
                 <article class="detail-card mechanism-card">
                   <span class="tag confidence-live">【实时】</span>
-                  <h3>Pipeline Builder 可导出 Java code，但不可逆</h3>
-                  <p class="muted">官方明确导出会写入 Java transforms repository，部分转换无法导出，部分优化回退到 native Spark 后语义可能不同。</p>
+                  <h3>增量语义由 Dataset Transaction 承载</h3>
+                  <p class="muted">append-only 输入通常可增量；full rewrite、update/delete 文件、retention 边界和 snapshot 路径会影响增量可行性。</p>
                 </article>
                 <article class="detail-card mechanism-card">
                   <span class="tag confidence-infer">【推断】</span>
@@ -142,6 +146,87 @@
                   <span class="tag confidence-guess">【猜测】</span>
                   <h3>内部依赖索引服务边界未公开</h3>
                   <p class="muted">公开文档能确认效果与入口，但跨 repository 依赖索引、事件传播延迟和内部 IR 细节仍需真实环境或更多资料验证。</p>
+                </article>
+              </div>
+            </section>
+
+            <section class="section-card" id="runtime">
+              <p class="section-kicker">Runtime</p>
+              <h2>运行时、计算引擎与依赖</h2>
+              <div class="detail-grid mechanism-grid">
+                <article class="detail-card mechanism-card">
+                  <span class="tag confidence-live">【实时】</span>
+                  <h3>Python 路径最完整</h3>
+                  <p class="muted">Python transforms 支持 batch、incremental、共享库、data expectations，并可使用 Spark、DuckDB、pandas、Polars 等计算路径。</p>
+                </article>
+                <article class="detail-card mechanism-card">
+                  <span class="tag confidence-live">【实时】</span>
+                  <h3>Java 与 SQL 有明确边界</h3>
+                  <p class="muted">Java 支持 batch、incremental、unit testing 和共享库；SQL 基于 Spark SQL，但官方文档明确 SQL transforms 不支持 incremental transforms。</p>
+                </article>
+                <article class="detail-card mechanism-card">
+                  <span class="tag confidence-infer">【推断】</span>
+                  <h3>需要 Engine Router</h3>
+                  <p class="muted">自建平台应根据数据规模、增量需求、依赖库、资源规格和治理要求选择 Spark 或轻量引擎，避免把引擎选择变成用户自由拼装。</p>
+                </article>
+                <article class="detail-card mechanism-card">
+                  <span class="tag confidence-infer">【推断】</span>
+                  <h3>依赖管理属于平台能力</h3>
+                  <p class="muted">共享库、artifact、运行时版本和 repository upgrades 应进入高码生命周期，否则会退化成每个项目自行维护的环境问题。</p>
+                </article>
+              </div>
+            </section>
+
+            <section class="section-card" id="governance">
+              <p class="section-kicker">Governance</p>
+              <h2>质量、血缘、权限与可观测性</h2>
+              <div class="detail-grid mechanism-grid">
+                <article class="detail-card mechanism-card">
+                  <span class="tag confidence-live">【实时】</span>
+                  <h3>质量检查靠近代码入口</h3>
+                  <p class="muted">unit tests、data expectations、lint、error checking、preview 和 debug 能在进入生产构建前缩短反馈环。</p>
+                </article>
+                <article class="detail-card mechanism-card">
+                  <span class="tag confidence-live">【实时】</span>
+                  <h3>血缘与权限绑定 Dataset</h3>
+                  <p class="muted">Data Lineage、markings、roles 与 Dataset 生产关系关联，使代码变更能被映射到数据资产、下游影响和访问控制。</p>
+                </article>
+                <article class="detail-card mechanism-card">
+                  <span class="tag confidence-infer">【推断】</span>
+                  <h3>治理不能只放在外部 CI</h3>
+                  <p class="muted">外部 CI 能验证代码，但缺少 Dataset graph、权限继承和下游消费者上下文，难以形成 Foundry 式闭环。</p>
+                </article>
+                <article class="detail-card mechanism-card">
+                  <span class="tag confidence-live">【实时】</span>
+                  <h3>调度围绕数据新鲜度与链路范围</h3>
+                  <p class="muted">Scheduling 可按时间、数据更新、逻辑更新触发，并构建单个 Dataset、依赖、下游或两个 Dataset 之间的链路。</p>
+                </article>
+              </div>
+            </section>
+
+            <section class="section-card" id="interop">
+              <p class="section-kicker">Interop</p>
+              <h2>低码与高码互操作</h2>
+              <div class="detail-grid mechanism-grid">
+                <article class="detail-card mechanism-card">
+                  <span class="tag confidence-live">【实时】</span>
+                  <h3>Pipeline Builder 后端会写 transform code</h3>
+                  <p class="muted">公开文档显示 Builder 会生成后端 transform code，并在构建前执行 pipeline integrity checks。</p>
+                </article>
+                <article class="detail-card mechanism-card">
+                  <span class="tag confidence-live">【实时】</span>
+                  <h3>导出是单向升级路径</h3>
+                  <p class="muted">导出到 Java transforms repository 后不可逆，部分转换不可导出，目标文件可能被覆盖，部分优化回退到 native Spark。</p>
+                </article>
+                <article class="detail-card mechanism-card">
+                  <span class="tag confidence-live">【实时】</span>
+                  <h3>分支可以协作</h3>
+                  <p class="muted">Pipeline Builder branch 可与 Code Repositories branch 同名，使 Builder transform 从匹配 branch 读取输入 Dataset；缺失时可配置 fallback branches。</p>
+                </article>
+                <article class="detail-card mechanism-card">
+                  <span class="tag confidence-infer">【推断】</span>
+                  <h3>共享 Contract 优先于共享代码</h3>
+                  <p class="muted">低码和高码应生产同一套平台 Contract；代码导出只是迁移手段，平台治理应消费 Contract / Dataset graph。</p>
                 </article>
               </div>
             </section>
@@ -161,6 +246,33 @@
                 <article class="roadmap-step">
                   <strong>P2：统一低码和高码底座</strong>
                   <p>低码 Builder 应生成同一套 contract；代码导出作为升级路径，不承诺双向同步。【推断】</p>
+                </article>
+              </div>
+            </section>
+
+            <section class="section-card" id="poc">
+              <p class="section-kicker">PoC</p>
+              <h2>建议验证路线</h2>
+              <div class="detail-grid mechanism-grid">
+                <article class="detail-card mechanism-card">
+                  <span class="tag confidence-infer">【推断】</span>
+                  <h3>1. 最小 Transform SDK</h3>
+                  <p class="muted">提供 <code>@transform(input=..., output=...)</code> 风格声明，生成 JSON Contract，并支持 graph resolver。</p>
+                </article>
+                <article class="detail-card mechanism-card">
+                  <span class="tag confidence-infer">【推断】</span>
+                  <h3>2. Dataset Transaction 原型</h3>
+                  <p class="muted">实现 append、replace、snapshot、atomic commit 和 version pointer，为增量和回滚提供数据层依据。</p>
+                </article>
+                <article class="detail-card mechanism-card">
+                  <span class="tag confidence-infer">【推断】</span>
+                  <h3>3. Spark + lightweight 双运行时</h3>
+                  <p class="muted">建立 Engine Router 能力矩阵，明确哪些路径支持增量、质量规则、大规模分布式和快速 preview。</p>
+                </article>
+                <article class="detail-card mechanism-card">
+                  <span class="tag confidence-infer">【推断】</span>
+                  <h3>4. Builder IR 与导出报告</h3>
+                  <p class="muted">低码 Builder 生成同一 Contract，并在导出时明确不可逆、不可导出算子、语义差异和所有权切换。</p>
                 </article>
               </div>
             </section>
@@ -189,6 +301,13 @@
               <h2>来源与文档</h2>
               <div class="source-list">
                 <a class="source-link" href="../../docs/raw/21-pro-code-capability-deep-dive.md"><svg class="icon sm" aria-hidden="true"><use href="#i-file"></use></svg><span>docs/raw/21-pro-code-capability-deep-dive.md</span></a>
+                <a class="source-link" href="../../docs/raw/22-pro-code-source-map.md"><svg class="icon sm" aria-hidden="true"><use href="#i-file"></use></svg><span>#6 docs/raw/22-pro-code-source-map.md</span></a>
+                <a class="source-link" href="../../docs/raw/23-code-repositories-engineering-entry.md"><svg class="icon sm" aria-hidden="true"><use href="#i-file"></use></svg><span>#7 docs/raw/23-code-repositories-engineering-entry.md</span></a>
+                <a class="source-link" href="../../docs/raw/24-pro-code-runtime-compute-engines.md"><svg class="icon sm" aria-hidden="true"><use href="#i-file"></use></svg><span>#8 docs/raw/24-pro-code-runtime-compute-engines.md</span></a>
+                <a class="source-link" href="../../docs/raw/25-transform-contract-dag.md"><svg class="icon sm" aria-hidden="true"><use href="#i-file"></use></svg><span>#9 docs/raw/25-transform-contract-dag.md</span></a>
+                <a class="source-link" href="../../docs/raw/26-pro-code-governance-quality-observability.md"><svg class="icon sm" aria-hidden="true"><use href="#i-file"></use></svg><span>#10 docs/raw/26-pro-code-governance-quality-observability.md</span></a>
+                <a class="source-link" href="../../docs/raw/27-incremental-scheduling-transaction.md"><svg class="icon sm" aria-hidden="true"><use href="#i-file"></use></svg><span>#11 docs/raw/27-incremental-scheduling-transaction.md</span></a>
+                <a class="source-link" href="../../docs/raw/28-pipeline-builder-pro-code-interop.md"><svg class="icon sm" aria-hidden="true"><use href="#i-file"></use></svg><span>#14 docs/raw/28-pipeline-builder-pro-code-interop.md</span></a>
                 <a class="source-link" href="../../docs/synthesis/palantir-pro-code-capability-research.md"><svg class="icon sm" aria-hidden="true"><use href="#i-file"></use></svg><span>docs/synthesis/palantir-pro-code-capability-research.md</span></a>
                 <a class="source-link" href="https://www.palantir.com/docs/foundry/code-repositories/overview/index.html"><svg class="icon sm" aria-hidden="true"><use href="#i-file"></use></svg><span>Palantir Code Repositories</span></a>
                 <a class="source-link" href="https://www.palantir.com/docs/foundry/transforms-python/overview"><svg class="icon sm" aria-hidden="true"><use href="#i-file"></use></svg><span>Palantir Python transforms</span></a>
