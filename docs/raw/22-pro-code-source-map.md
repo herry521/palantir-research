@@ -19,11 +19,11 @@
 
 | 标签 | 判定标准 | 使用边界 |
 |---|---|---|
-| 【实时】 | 本轮调研已通过 Palantir 官方文档或当前仓库资料直接确认 | 可作为事实陈述进入结论 |
-| 【推断】 | 由多个【实时】事实组合得出的工程判断，逻辑链明确，但官方没有直接给出同一句结论 | 可作为架构建议，但需要说明推导依据 |
+| 【事实】 | 本轮调研已通过 Palantir 官方文档或当前仓库资料直接确认 | 可作为事实陈述进入结论 |
+| 【推断】 | 由多个【事实】事实组合得出的工程判断，逻辑链明确，但官方没有直接给出同一句结论 | 可作为架构建议，但需要说明推导依据 |
 | 【猜测】 | 公开资料未披露，或只有间接迹象，尚不能形成稳定判断 | 只能作为待验证问题，不应直接进入设计决策 |
 
-注意：这里沿用用户指定的“实时”标签名，实际含义是“当前已验证事实”，不是实时数据流能力。
+注意：这里使用“事实”标签表示“当前已验证事实”，不是实时数据流能力。
 
 ---
 
@@ -31,21 +31,21 @@
 
 | 编号 | 资料源 | URL | 覆盖主题 | 可支撑结论 |
 |---|---|---|---|---|
-| S01 | Code Repositories Overview | https://www.palantir.com/docs/foundry/code-repositories/overview/index.html | Web IDE、Git、PR、权限、lint、preview/debug、repository 类型 | Code Repositories 是 Foundry 内置工程入口，而不是普通脚本上传入口。【实时】 |
-| S02 | Create transforms | https://www.palantir.com/docs/foundry/code-repositories/create-transforms | Transform repository 创建、语言选择、pipeline 开发入口 | 高码 Pipeline 可通过 Code Repositories 创建和管理 transform。【实时】 |
-| S03 | Repository upgrades | https://www.palantir.com/docs/foundry/code-repositories/repository-upgrades | Repository 模板升级、upgrade PR、impact analysis | 高码工程生命周期包含平台升级与影响分析，不只包含代码提交。【实时】 |
-| S04 | Python transforms Overview | https://www.palantir.com/docs/foundry/transforms-python/overview | Python transform 能力概览、batch、incremental、共享库、expectations、compute engines | Python 是 Foundry transform 中能力最完整的高码路径之一。【实时】 |
-| S05 | Python incremental transforms | https://www.palantir.com/docs/foundry/transforms-python/incremental-usage | `@incremental`、read/write mode、snapshot、retention | Palantir 增量语义依赖 Dataset 变化历史和 transform read/write mode，而不是只依赖业务字段。【实时】 |
-| S06 | Python compute engine selection | https://www.palantir.com/docs/foundry/transforms-python/compute-engines | Spark、DuckDB、pandas、Polars、single-node/distributed 能力矩阵 | 高码运行时不是 Spark 单一路径，而是按能力和规模选择执行引擎。【实时】 |
-| S07 | Python unit tests | https://www.palantir.com/docs/foundry/transforms-python/unit-tests | pytest、repository checks、batch pipeline 测试限制 | 高码测试进入 Code Repository 生命周期，但 streaming pipeline 测试能力存在边界。【实时】 |
-| S08 | Python data expectations reference | https://www.palantir.com/docs/foundry/transforms-python/data-expectations-reference | Data expectations API、质量规则声明 | 高码质量规则可通过 Python transform 声明并进入构建链路。【实时】 |
-| S09 | Java transforms Overview | https://www.palantir.com/docs/foundry/transforms-java/overview | Java transform、Dataset API、batch/incremental、unit testing | Java 是高码路径之一，尤其适合强类型、Java 生态和 Pipeline Builder 导出链路。【实时】 |
-| S10 | SQL transforms Overview | https://www.palantir.com/docs/foundry/transforms-sql/overview | SQL transform、Spark SQL、SQL 适用边界 | SQL 是高码路径之一，但不是完整替代 Python/Java 的通用 transform 路径。【实时】 |
-| S11 | Pipeline Builder Overview | https://www.palantir.com/docs/foundry/pipeline-builder/overview | 可视化 Pipeline、integrity checks、低码入口 | Pipeline Builder 是低码入口，但其能力与 transform code 后端存在联系。【实时】 |
-| S12 | Export pipeline code | https://www.palantir.com/docs/foundry/pipeline-builder/export-pipeline | 导出到 Java transforms repository、不可逆、转换限制 | 低码到高码存在代码导出路径，但不是无损双向同步。【实时】 |
-| S13 | Scheduling Overview | https://www.palantir.com/docs/foundry/building-pipelines/scheduling-overview | 时间触发、数据更新触发、逻辑更新触发、Dataset 依赖构建 | Foundry 调度围绕 Dataset 和依赖图组织，而不是只围绕任务节点组织。【实时】 |
-| S14 | Supported languages | https://www.palantir.com/docs/foundry/building-pipelines/supported-languages | Pipeline 支持语言与不同开发入口 | 高码路径需要按语言、入口和运行时能力分层看待。【实时】 |
-| S15 | Define data expectations | https://www.palantir.com/docs/foundry/maintaining-pipelines/define-data-expectations | Pipeline 维护、Data expectations、构建断路 | 数据质量不是事后监控，能进入 pipeline build 生命周期。【实时】 |
+| S01 | Code Repositories Overview | https://www.palantir.com/docs/foundry/code-repositories/overview/index.html | Web IDE、Git、PR、权限、lint、preview/debug、repository 类型 | Code Repositories 是 Foundry 内置工程入口，而不是普通脚本上传入口。【事实】 |
+| S02 | Create transforms | https://www.palantir.com/docs/foundry/code-repositories/create-transforms | Transform repository 创建、语言选择、pipeline 开发入口 | 高码 Pipeline 可通过 Code Repositories 创建和管理 transform。【事实】 |
+| S03 | Repository upgrades | https://www.palantir.com/docs/foundry/code-repositories/repository-upgrades | Repository 模板升级、upgrade PR、impact analysis | 高码工程生命周期包含平台升级与影响分析，不只包含代码提交。【事实】 |
+| S04 | Python transforms Overview | https://www.palantir.com/docs/foundry/transforms-python/overview | Python transform 能力概览、batch、incremental、共享库、expectations、compute engines | Python 是 Foundry transform 中能力最完整的高码路径之一。【事实】 |
+| S05 | Python incremental transforms | https://www.palantir.com/docs/foundry/transforms-python/incremental-usage | `@incremental`、read/write mode、snapshot、retention | Palantir 增量语义依赖 Dataset 变化历史和 transform read/write mode，而不是只依赖业务字段。【事实】 |
+| S06 | Python compute engine selection | https://www.palantir.com/docs/foundry/transforms-python/compute-engines | Spark、DuckDB、pandas、Polars、single-node/distributed 能力矩阵 | 高码运行时不是 Spark 单一路径，而是按能力和规模选择执行引擎。【事实】 |
+| S07 | Python unit tests | https://www.palantir.com/docs/foundry/transforms-python/unit-tests | pytest、repository checks、batch pipeline 测试限制 | 高码测试进入 Code Repository 生命周期，但 streaming pipeline 测试能力存在边界。【事实】 |
+| S08 | Python data expectations reference | https://www.palantir.com/docs/foundry/transforms-python/data-expectations-reference | Data expectations API、质量规则声明 | 高码质量规则可通过 Python transform 声明并进入构建链路。【事实】 |
+| S09 | Java transforms Overview | https://www.palantir.com/docs/foundry/transforms-java/overview | Java transform、Dataset API、batch/incremental、unit testing | Java 是高码路径之一，尤其适合强类型、Java 生态和 Pipeline Builder 导出链路。【事实】 |
+| S10 | SQL transforms Overview | https://www.palantir.com/docs/foundry/transforms-sql/overview | SQL transform、Spark SQL、SQL 适用边界 | SQL 是高码路径之一，但不是完整替代 Python/Java 的通用 transform 路径。【事实】 |
+| S11 | Pipeline Builder Overview | https://www.palantir.com/docs/foundry/pipeline-builder/overview | 可视化 Pipeline、integrity checks、低码入口 | Pipeline Builder 是低码入口，但其能力与 transform code 后端存在联系。【事实】 |
+| S12 | Export pipeline code | https://www.palantir.com/docs/foundry/pipeline-builder/export-pipeline | 导出到 Java transforms repository、不可逆、转换限制 | 低码到高码存在代码导出路径，但不是无损双向同步。【事实】 |
+| S13 | Scheduling Overview | https://www.palantir.com/docs/foundry/building-pipelines/scheduling-overview | 时间触发、数据更新触发、逻辑更新触发、Dataset 依赖构建 | Foundry 调度围绕 Dataset 和依赖图组织，而不是只围绕任务节点组织。【事实】 |
+| S14 | Supported languages | https://www.palantir.com/docs/foundry/building-pipelines/supported-languages | Pipeline 支持语言与不同开发入口 | 高码路径需要按语言、入口和运行时能力分层看待。【事实】 |
+| S15 | Define data expectations | https://www.palantir.com/docs/foundry/maintaining-pipelines/define-data-expectations | Pipeline 维护、Data expectations、构建断路 | 数据质量不是事后监控，能进入 pipeline build 生命周期。【事实】 |
 
 ---
 
@@ -66,13 +66,13 @@
 
 ## 4. 第一批可稳定使用的结论
 
-1. Code Repositories 是 Foundry 的平台内工程入口，覆盖 Git、PR、权限、lint、preview/debug、transform repository 等能力。【实时】
-2. Palantir 高码能力不是单一路径：Python、Java、SQL 分别覆盖不同 transform 场景，且 Python 文档明确覆盖 batch、incremental、shared libraries、data expectations 和 compute engines。【实时】
-3. Python transform 的 compute engine 包含 Spark 与 lightweight 路径；因此“高码能力 = Spark 作业平台”是不完整表述。【实时】
+1. Code Repositories 是 Foundry 的平台内工程入口，覆盖 Git、PR、权限、lint、preview/debug、transform repository 等能力。【事实】
+2. Palantir 高码能力不是单一路径：Python、Java、SQL 分别覆盖不同 transform 场景，且 Python 文档明确覆盖 batch、incremental、shared libraries、data expectations 和 compute engines。【事实】
+3. Python transform 的 compute engine 包含 Spark 与 lightweight 路径；因此“高码能力 = Spark 作业平台”是不完整表述。【事实】
 4. Incremental transform 的核心不只是函数装饰器，而是 read/write mode、snapshot、retention 和 Dataset 变化历史共同形成的运行语义。【推断】
 5. Scheduling 文档围绕 Dataset 及其依赖触发 build，说明 Foundry 的调度心智更接近 Dataset graph，而不是传统任务 DAG。【推断】
-6. Pipeline Builder 可以导出到 Java transforms repository，但导出不可逆且存在转换限制；因此低码/高码互操作不能假设为无损双向转换。【实时】
-7. 高码质量与测试不是外围治理：unit tests、repository checks、data expectations 都能进入开发或构建生命周期。【实时】
+6. Pipeline Builder 可以导出到 Java transforms repository，但导出不可逆且存在转换限制；因此低码/高码互操作不能假设为无损双向转换。【事实】
+7. 高码质量与测试不是外围治理：unit tests、repository checks、data expectations 都能进入开发或构建生命周期。【事实】
 
 ---
 

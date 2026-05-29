@@ -40,7 +40,7 @@ const pages = [
     path: "pages/pro-code-capability.html",
     slug: "pro-code-capability",
     title: "高码能力研究",
-    requiredText: ["Palantir 高码能力研究", "【实时】", "【推断】", "【猜测】"],
+    requiredText: ["Palantir 高码能力研究", "【事实 ref】", "【推断】", "【猜测】"],
   },
 ];
 const viewports = [

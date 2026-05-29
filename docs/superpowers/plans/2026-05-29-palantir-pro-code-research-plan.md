@@ -4,7 +4,7 @@
 
 **Goal:** Produce a traceable research artifact and human-readable HTML page explaining where Palantir's pro-code capability is strong, how it is implemented, and what can be borrowed.
 
-**Architecture:** Keep raw research in `docs/raw`, synthesis in `docs/synthesis`, and user-facing presentation in `deliverables/pages`. Use confidence labels requested by the user: 【实时】 for officially verified/currently checked facts, 【推断】 for reasoned conclusions from facts, and 【猜测】 for low-evidence hypotheses.
+**Architecture:** Keep raw research in `docs/raw`, synthesis in `docs/synthesis`, and user-facing presentation in `deliverables/pages`. Use confidence labels requested by the user: 【事实】 for officially verified/currently checked facts, 【推断】 for reasoned conclusions from facts, and 【猜测】 for low-evidence hypotheses.
 
 **Tech Stack:** Markdown research documents, static HTML/CSS site, shell verification script.
 
@@ -22,7 +22,7 @@ Use Palantir official docs for Code Repositories, Python transforms, Java transf
 - [x] **Step 2: Define confidence labels**
 
 Document the labels exactly:
-- 【实时】: official/currently verified by this research pass.
+- 【事实】: official/currently verified by this research pass.
 - 【推断】: derived from multiple verified facts or existing repository analysis.
 - 【猜测】: plausible but not directly verified.
 
