@@ -46,10 +46,16 @@ const pages = [
     path: "pages/overview.html",
     slug: "overview",
     title: "Palantir 研发技术总览",
-    requiredText: ["完整阅读路径", "高码能力研究", "能力建设关注点", "算子调研结论", "表达层与算子平台专题页"],
-    iframeSelector: 'iframe[title="表达层与算子平台专题页预览"]',
-    iframeRequiredText: ["表达层与算子平台", "结论", "算子平台"],
-    iframeSrc: "expression-and-operators.html?embed=1#conclusion",
+    requiredText: ["完整阅读路径", "高码能力研究", "能力建设关注点", "算子调研结论", "Pipeline Builder 算子总览页"],
+    iframeSelector: 'iframe[title="Pipeline Builder 算子总览页预览"]',
+    iframeRequiredText: ["算子总览", "transform 清单", "expression 清单"],
+    iframeSrc: "pipeline-builder-operators-overview.html",
+  },
+  {
+    path: "pages/pipeline-builder-operators-overview.html",
+    slug: "pipeline-builder-operators-overview",
+    title: "Pipeline Builder 算子总览",
+    requiredText: ["一页总结", "Transform 主线", "Expression 主线", "证据边界"],
   },
   {
     path: "pages/data-engineering-platform-map.html",
@@ -149,7 +155,6 @@ async function checkPage(browser, pageSpec, viewport) {
   if (pageSpec.iframeSelector) {
     const frame = page.frameLocator(pageSpec.iframeSelector);
     await frame.locator("body").waitFor({ state: "visible", timeout: 5000 });
-    await frame.locator("body.is-embedded").waitFor({ state: "attached", timeout: 5000 });
     const frameText = await frame.locator("body").innerText({ timeout: 5000 });
     for (const text of pageSpec.iframeRequiredText || []) {
       if (!frameText.includes(text)) {
@@ -177,7 +182,7 @@ async function checkPage(browser, pageSpec, viewport) {
     const iframePage = await browser.newPage({ viewport });
     const iframeUrl = new URL(pageSpec.iframeSrc, fileUrl).href;
     await iframePage.goto(iframeUrl, { waitUntil: "networkidle" });
-    await iframePage.locator("body.is-embedded").waitFor({ state: "attached", timeout: 5000 });
+    await iframePage.locator("body").waitFor({ state: "visible", timeout: 5000 });
     const iframeScreenshot = await iframePage.screenshot({ fullPage: false });
     const iframeScreenshotName = `${pageSpec.slug}-${viewport.name}-iframe.png`;
     const iframeScreenshotPath = path.join(screenshotDir, iframeScreenshotName);

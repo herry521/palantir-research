@@ -1,0 +1,893 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light">
+  <meta name="description" content="Pipeline Builder transform / expression 算子总览页">
+  <title>Pipeline Builder 算子总览</title>
+  <style>
+    :root {
+      --bg: #eef5ed;
+      --bg-2: #dfece2;
+      --panel: rgba(255, 255, 255, 0.78);
+      --panel-strong: #ffffff;
+      --text: #16231c;
+      --muted: #5b6b61;
+      --line: rgba(31, 35, 40, 0.11);
+      --shadow: 0 22px 48px rgba(15, 39, 27, 0.12);
+      --shadow-soft: 0 12px 28px rgba(15, 39, 27, 0.08);
+      --brand: #0b4f35;
+      --brand-2: #63c35b;
+      --brand-3: #1f7a4d;
+      --brand-4: #d7f0c2;
+      --ok: #1f7a4d;
+      --warn: #8b6f1f;
+      --radius-xl: 30px;
+      --radius-lg: 22px;
+      --radius-md: 16px;
+      --radius-sm: 12px;
+      --container: 1180px;
+    }
+
+    * { box-sizing: border-box; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      margin: 0;
+      font-family: "PingFang SC", "Hiragino Sans GB", "Noto Sans CJK SC", "Microsoft YaHei", sans-serif;
+      color: var(--text);
+      line-height: 1.7;
+      letter-spacing: 0.01em;
+      background:
+        radial-gradient(circle at 12% 10%, rgba(99, 195, 91, 0.18), transparent 28%),
+        radial-gradient(circle at 86% 8%, rgba(11, 79, 53, 0.12), transparent 25%),
+        radial-gradient(circle at 18% 84%, rgba(31, 122, 77, 0.12), transparent 22%),
+        linear-gradient(180deg, var(--bg) 0%, #f6fbf4 44%, #fbfcf8 100%);
+      min-height: 100vh;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    a:hover { text-decoration: underline; }
+
+    .page {
+      width: min(var(--container), calc(100vw - 32px));
+      margin: 0 auto;
+      padding: 18px 0 56px;
+    }
+
+    .hero {
+      position: relative;
+      overflow: hidden;
+      border: 1px solid rgba(31, 35, 40, 0.10);
+      border-radius: calc(var(--radius-xl) + 4px);
+      background:
+        linear-gradient(135deg, rgba(7, 54, 35, 0.98) 0%, rgba(12, 82, 50, 0.97) 54%, rgba(38, 129, 66, 0.93) 100%);
+      color: #fff;
+      padding: 28px 36px 34px;
+      box-shadow: var(--shadow);
+    }
+
+    .hero::before,
+    .hero::after {
+      content: "";
+      position: absolute;
+      border-radius: 999px;
+      pointer-events: none;
+      opacity: 0.25;
+    }
+
+    .hero::before {
+      width: 280px;
+      height: 280px;
+      right: -80px;
+      top: -100px;
+      background: radial-gradient(circle, rgba(189, 237, 164, 0.68) 0%, transparent 70%);
+    }
+
+    .hero::after {
+      width: 220px;
+      height: 220px;
+      left: -80px;
+      bottom: -110px;
+      background: radial-gradient(circle, rgba(130, 225, 141, 0.72) 0%, transparent 72%);
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 14px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.14);
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      font-size: 13px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .hero-grid {
+      position: relative;
+      z-index: 1;
+      display: grid;
+      grid-template-columns: 1.45fr 0.95fr;
+      gap: 28px;
+      align-items: start;
+    }
+
+    .hero-copy {
+      display: grid;
+      justify-items: start;
+      gap: 18px;
+      max-width: 720px;
+    }
+
+    .hero h1 {
+      margin: 10px 0 14px;
+      max-width: 100%;
+      color: #fff;
+      font-size: clamp(3rem, 5.4vw, 4.9rem);
+      font-weight: 780;
+      letter-spacing: -0.05em;
+      line-height: 0.96;
+      white-space: nowrap;
+    }
+
+    .hero p {
+      margin: 0;
+      max-width: 60ch;
+      color: rgba(255, 255, 255, 0.88);
+      font-size: 1.03rem;
+    }
+
+    .hero-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 4px;
+    }
+
+    .icon {
+      width: 16px;
+      height: 16px;
+      flex: 0 0 auto;
+      stroke: currentColor;
+      stroke-width: 1.9;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      fill: none;
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 14px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.12);
+      border: 1px solid rgba(255, 255, 255, 0.16);
+      font-size: 13px;
+      backdrop-filter: blur(12px);
+    }
+
+    .pill .icon {
+      color: rgba(221, 255, 201, 0.94);
+    }
+
+    .hero-aside {
+      display: grid;
+      gap: 12px;
+      align-self: start;
+    }
+
+    .hero-quote,
+    .quick-facts {
+      border-radius: var(--radius-lg);
+      padding: 18px;
+      background: rgba(255, 255, 255, 0.12);
+      border: 1px solid rgba(255, 255, 255, 0.16);
+      backdrop-filter: blur(14px);
+    }
+
+    .hero-quote {
+      font-size: 0.98rem;
+      color: rgba(255, 255, 255, 0.92);
+    }
+
+    .hero-quote strong {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 8px;
+      font-size: 1.08rem;
+    }
+
+    .hero-quote strong .icon {
+      color: rgba(221, 255, 201, 0.94);
+    }
+
+    .quick-facts {
+      display: grid;
+      gap: 10px;
+      font-size: 0.95rem;
+    }
+
+    .quick-facts .row {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      padding-bottom: 10px;
+      border-bottom: 1px dashed rgba(255, 255, 255, 0.18);
+    }
+
+    .quick-facts .row:last-child {
+      padding-bottom: 0;
+      border-bottom: 0;
+    }
+
+    .quick-facts .label {
+      color: rgba(255, 255, 255, 0.76);
+    }
+
+    .quick-facts .value {
+      text-align: right;
+      font-weight: 600;
+    }
+
+    .section {
+      margin-top: 22px;
+      background: var(--panel);
+      border: 1px solid rgba(31, 35, 40, 0.08);
+      border-radius: var(--radius-xl);
+      box-shadow: var(--shadow-soft);
+      backdrop-filter: blur(14px);
+      overflow: hidden;
+    }
+
+    .section-header {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 22px 24px 16px;
+      border-bottom: 1px solid rgba(31, 35, 40, 0.08);
+      background: linear-gradient(180deg, rgba(255,255,255,0.72), rgba(255,255,255,0.4));
+    }
+
+    .section-header h2 {
+      margin: 0;
+      font-size: 1.1rem;
+      letter-spacing: 0.02em;
+    }
+
+    .section-header .hint {
+      color: var(--muted);
+      font-size: 0.92rem;
+      text-align: right;
+    }
+
+    .section-body {
+      padding: 22px 24px 24px;
+    }
+
+    .summary-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .stat {
+      background: var(--panel-strong);
+      border: 1px solid rgba(31, 35, 40, 0.08);
+      border-radius: var(--radius-lg);
+      padding: 18px 18px 16px;
+      box-shadow: 0 8px 18px rgba(23, 28, 32, 0.05);
+      min-height: 132px;
+    }
+
+    .stat .label {
+      color: var(--muted);
+      font-size: 0.92rem;
+      margin-bottom: 10px;
+    }
+
+    .stat .value {
+      font-size: clamp(1.6rem, 2.8vw, 2.35rem);
+      line-height: 1.05;
+      font-weight: 700;
+      letter-spacing: -0.03em;
+    }
+
+    .stat .note {
+      margin-top: 10px;
+      color: var(--muted);
+      font-size: 0.92rem;
+    }
+
+    .callout {
+      margin-top: 16px;
+      padding: 18px 20px;
+      border-radius: var(--radius-lg);
+      background: linear-gradient(135deg, rgba(15, 76, 92, 0.08), rgba(185, 90, 53, 0.06));
+      border: 1px solid rgba(31, 35, 40, 0.09);
+    }
+
+    .callout strong {
+      display: block;
+      margin-bottom: 8px;
+      font-size: 1.02rem;
+    }
+
+    .subgrid {
+      margin-top: 18px;
+      display: grid;
+      grid-template-columns: 1.1fr 0.9fr;
+      gap: 14px;
+    }
+
+    .panel {
+      background: rgba(255, 255, 255, 0.72);
+      border: 1px solid rgba(31, 35, 40, 0.08);
+      border-radius: var(--radius-lg);
+      padding: 18px;
+    }
+
+    .panel h3 {
+      margin: 0 0 10px;
+      font-size: 1rem;
+    }
+
+    .panel p {
+      margin: 0;
+      color: var(--muted);
+    }
+
+    .list {
+      margin: 0;
+      padding-left: 18px;
+    }
+
+    .list li + li {
+      margin-top: 8px;
+    }
+
+    .evidence-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .evidence-card {
+      background: rgba(255, 255, 255, 0.76);
+      border: 1px solid rgba(31, 35, 40, 0.08);
+      border-radius: var(--radius-lg);
+      padding: 18px;
+      min-height: 168px;
+    }
+
+    .evidence-card h3 {
+      margin: 0 0 10px;
+      font-size: 1rem;
+    }
+
+    .evidence-card p {
+      margin: 0;
+      color: var(--muted);
+    }
+
+    .tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 10px;
+      border-radius: 999px;
+      font-size: 12px;
+      margin-bottom: 10px;
+      background: rgba(15, 76, 92, 0.10);
+      color: var(--brand);
+    }
+
+    .tag.ok { background: rgba(43, 122, 74, 0.12); color: var(--ok); }
+    .tag.warn { background: rgba(169, 100, 25, 0.14); color: var(--warn); }
+    .tag.brand { background: rgba(15, 76, 92, 0.10); color: var(--brand); }
+
+    .map-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .map-card {
+      background: rgba(255, 255, 255, 0.76);
+      border: 1px solid rgba(31, 35, 40, 0.08);
+      border-radius: var(--radius-lg);
+      padding: 18px;
+    }
+
+    .map-card h3 {
+      margin: 0 0 8px;
+      font-size: 1rem;
+    }
+
+    .map-card p {
+      margin: 0;
+      color: var(--muted);
+    }
+
+    .timeline {
+      margin: 0;
+      padding: 0;
+      list-style: none;
+      display: grid;
+      gap: 12px;
+    }
+
+    .timeline li {
+      display: grid;
+      grid-template-columns: 40px 1fr;
+      gap: 12px;
+      align-items: start;
+      padding: 16px;
+      background: rgba(255, 255, 255, 0.74);
+      border: 1px solid rgba(31, 35, 40, 0.08);
+      border-radius: var(--radius-lg);
+    }
+
+    .step-no {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      font-weight: 700;
+      color: #fff;
+      background: linear-gradient(135deg, var(--brand), var(--brand-2));
+      box-shadow: 0 8px 18px rgba(15, 76, 92, 0.24);
+    }
+
+    .timeline h3 {
+      margin: 0 0 6px;
+      font-size: 1rem;
+    }
+
+    .timeline p {
+      margin: 0;
+      color: var(--muted);
+    }
+
+    .file-table {
+      width: 100%;
+      border-collapse: collapse;
+      overflow: hidden;
+      border-radius: var(--radius-lg);
+      background: rgba(255, 255, 255, 0.76);
+      border: 1px solid rgba(31, 35, 40, 0.08);
+    }
+
+    .file-table th,
+    .file-table td {
+      text-align: left;
+      vertical-align: top;
+      padding: 14px 16px;
+      border-bottom: 1px solid rgba(31, 35, 40, 0.08);
+    }
+
+    .file-table th {
+      background: rgba(15, 76, 92, 0.06);
+      color: var(--muted);
+      font-weight: 600;
+    }
+
+    .file-table tr:last-child td {
+      border-bottom: 0;
+    }
+
+    .file-table code {
+      background: rgba(15, 76, 92, 0.08);
+      padding: 2px 6px;
+      border-radius: 8px;
+      font-size: 0.92em;
+    }
+
+    .recommendations {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .recommendation {
+      background: rgba(255, 255, 255, 0.76);
+      border: 1px solid rgba(31, 35, 40, 0.08);
+      border-radius: var(--radius-lg);
+      padding: 18px;
+    }
+
+    .recommendation h3 {
+      margin: 0 0 10px;
+      font-size: 1rem;
+    }
+
+    .recommendation p {
+      margin: 0;
+      color: var(--muted);
+    }
+
+    .footer-note {
+      margin-top: 22px;
+      padding: 18px 20px;
+      border-radius: var(--radius-lg);
+      background: rgba(255, 255, 255, 0.68);
+      border: 1px solid rgba(31, 35, 40, 0.08);
+      color: var(--muted);
+    }
+
+    .footer-note strong {
+      color: var(--text);
+    }
+
+    @media (max-width: 980px) {
+      .hero-grid,
+      .summary-grid,
+      .subgrid,
+      .evidence-grid,
+      .map-grid,
+      .recommendations {
+        grid-template-columns: 1fr;
+      }
+
+      .hero {
+        padding: 28px;
+      }
+
+      .section-header {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+    }
+
+    @media (max-width: 720px) {
+      .page {
+        width: min(var(--container), calc(100vw - 20px));
+        padding: 10px 0 28px;
+      }
+
+      .hero,
+      .section {
+        border-radius: 22px;
+      }
+
+      .section-body,
+      .section-header {
+        padding-left: 16px;
+        padding-right: 16px;
+      }
+
+      .hero h1 {
+        margin: 18px 0 16px;
+        font-size: clamp(2.7rem, 17vw, 4rem);
+      }
+
+      .timeline li {
+        grid-template-columns: 1fr;
+      }
+
+      .step-no {
+        width: 36px;
+        height: 36px;
+      }
+
+      .file-table th,
+      .file-table td {
+        padding: 12px 10px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <section class="hero">
+      <div class="hero-grid">
+        <div class="hero-copy">
+          <span class="eyebrow">Pipeline Builder · 算子知识入口</span>
+          <h1>算子总览</h1>
+          <p>
+            这份页面是新人了解 Palantir Foundry Pipeline Builder 算子的主入口。它把 transform
+            与 expression 两条主线放在同一张认知图里：先解释两类算子分别解决什么问题，再指向正式清单、
+            场景文档和证据边界。
+          </p>
+          <div class="hero-meta">
+            <span class="pill">
+              <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M4 7h16"></path>
+                <path d="M8 12h8"></path>
+                <path d="M6 17h12"></path>
+              </svg>
+              Transform：数据集级转换
+            </span>
+            <span class="pill">
+              <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M8 6l-4 6 4 6"></path>
+                <path d="M16 6l4 6-4 6"></path>
+                <path d="M11 19l2-14"></path>
+              </svg>
+              Expression：列和值级表达
+            </span>
+            <span class="pill">
+              <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M12 5v14"></path>
+                <path d="M5 12h14"></path>
+                <path d="M7 7l10 10"></path>
+              </svg>
+              入口：总览、场景、清单
+            </span>
+          </div>
+        </div>
+
+        <div class="hero-aside">
+          <div class="hero-quote">
+            <strong>
+              <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M12 3l7 4v6c0 4-3 7-7 8-4-1-7-4-7-8V7l7-4z"></path>
+                <path d="M9 12l2 2 4-5"></path>
+              </svg>
+              先建立判断框架
+            </strong>
+            看 Pipeline Builder 算子时，先区分“改变数据集形态”的 transform 和“计算字段表达”的 expression，再进入具体场景。
+          </div>
+          <div class="quick-facts">
+            <div class="row"><span class="label">transform 清单</span><span class="value">89 条</span></div>
+            <div class="row"><span class="label">expression 清单</span><span class="value">335 条</span></div>
+            <div class="row"><span class="label">正式产物</span><span class="value">2 套 final bundle</span></div>
+            <div class="row"><span class="label">核心读法</span><span class="value">先场景，后字段</span></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="section-header">
+        <h2>一页总结</h2>
+        <div class="hint">先回答新人最容易混淆的几个问题</div>
+      </div>
+      <div class="section-body">
+        <div class="summary-grid">
+          <article class="stat">
+            <div class="label">算子分层</div>
+            <div class="value">2 类</div>
+            <div class="note">transform 管数据集流转，expression 管字段和值的计算。</div>
+          </article>
+          <article class="stat">
+            <div class="label">transform</div>
+            <div class="value">89</div>
+            <div class="note">覆盖聚合、连接、窗口、文件解析、地理处理等场景。</div>
+          </article>
+          <article class="stat">
+            <div class="label">expression</div>
+            <div class="value">335</div>
+            <div class="note">覆盖数值、字符串、时间、数组、结构体、map 等表达能力。</div>
+          </article>
+          <article class="stat">
+            <div class="label">证据基线</div>
+            <div class="value">final</div>
+            <div class="note">正式阅读以两套 final bundle 和主文档为准。</div>
+          </article>
+        </div>
+
+        <div class="callout">
+          <strong>核心理解</strong>
+          transform 更像 Pipeline Builder 中的“步骤”：它接收一个或多个数据集，完成聚合、连接、窗口、解析、展开、去重等数据处理逻辑，并输出新的数据集。expression 更像步骤里的“表达式”：它描述某个字段、某个值或某个结构该如何计算，常作为 transform 的参数或列级逻辑出现。
+        </div>
+
+        <div class="subgrid">
+          <div class="panel">
+            <h3>什么时候看 transform</h3>
+            <p>当问题是“这批数据要怎样变形、合并、解析、聚合或排序”时，优先进入 transform 主线。典型例子包括 Aggregate、Pivot、Window、Mapping join、Parse Excel 和 Key by。</p>
+          </div>
+          <div class="panel">
+            <h3>什么时候看 expression</h3>
+            <p>当问题是“某一列该怎样计算、转换、清洗、判断或构造结构”时，优先进入 expression 主线。典型例子包括算术运算、条件分支、字符串处理、时间转换、JSON 解析和结构体更新。</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="section-header">
+        <h2>算子认知框架</h2>
+        <div class="hint">先看层级关系，再看具体函数</div>
+      </div>
+      <div class="section-body">
+        <div class="evidence-grid">
+          <article class="evidence-card">
+            <span class="tag ok">第一层</span>
+            <h3>数据集级转换</h3>
+            <p>transform 关注输入数据集和输出数据集之间的变化，适合描述数据管道里的处理步骤。</p>
+          </article>
+          <article class="evidence-card">
+            <span class="tag brand">第二层</span>
+            <h3>字段和值级表达</h3>
+            <p>expression 关注单个表达式如何计算结果，常被 transform 引用，用来描述列、条件、聚合表达式或结构化字段。</p>
+          </article>
+          <article class="evidence-card">
+            <span class="tag warn">证据层</span>
+            <h3>清单与场景并读</h3>
+            <p>正式清单适合查字段，场景文档适合理解用法；两者结合，才能避免只看参数而不理解业务语义。</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="section-header">
+        <h2>Transform 主线</h2>
+        <div class="hint">理解数据集如何被处理成新的数据集</div>
+      </div>
+      <div class="section-body">
+        <div class="map-grid">
+          <article class="map-card">
+            <h3>它解决什么问题</h3>
+            <p>transform 描述 Pipeline Builder 中的数据处理步骤。它通常围绕数据集输入、参数配置和输出结果组织，用来表达聚合、连接、窗口、文件解析、地理处理、流式处理等场景。</p>
+          </article>
+          <article class="map-card">
+            <h3>怎样入门</h3>
+            <p>先读 <code>docs/transform-usage-examples.md</code>，建立典型场景认知；需要查完整字段时，再读 <code>artifacts/transform-final/README.md</code> 指向的 JSONL、CSV 和 summary。</p>
+          </article>
+          <article class="map-card">
+            <h3>重点场景</h3>
+            <p>Aggregate、Pivot、Window、Mapping join、Geometry intersection join、Parse Excel、Parse KML、First union by name、Key by 和 Rollup 是当前文档里的代表性入口。</p>
+          </article>
+          <article class="map-card">
+            <h3>清单特点</h3>
+            <p><code>transform_inventory.csv</code> 中的 <code>supported_in</code>、<code>categories</code> 和 <code>declared_arguments</code> 都按 JSON 结构序列化，便于人工查阅和程序处理。</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="section-header">
+        <h2>Expression 主线</h2>
+        <div class="hint">理解字段、值和结构如何被计算出来</div>
+      </div>
+      <div class="section-body">
+        <div class="map-grid">
+          <article class="map-card">
+            <h3>它解决什么问题</h3>
+            <p>expression 描述列级或值级计算逻辑。它可以完成数值运算、条件判断、空值兜底、字符串清洗、时间解析、类型转换、数组处理、结构体构造和 map 取值。</p>
+          </article>
+          <article class="map-card">
+            <h3>怎样入门</h3>
+            <p>先读 <code>docs/expression-usage-examples.md</code>，理解常见表达式类别；需要查全量函数时，再读 <code>artifacts/pb-expression-final/README.md</code> 指向的 JSON、CSV 和 summary。</p>
+          </article>
+          <article class="map-card">
+            <h3>重点类别</h3>
+            <p>Numeric、Boolean、Data preparation、String、Datetime、Cast、Array、Struct、JSON 和 Map 构成当前最值得先掌握的表达式地图。</p>
+          </article>
+          <article class="map-card">
+            <h3>清单特点</h3>
+            <p><code>expression_inventory.csv</code> 中的 category、supported_in、arguments 和 notes 都以 JSON 结构表达，适合快速筛选类别、参数和返回类型。</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="section-header">
+        <h2>推荐阅读路径</h2>
+        <div class="hint">新人可以按这个顺序建立完整认知</div>
+      </div>
+      <div class="section-body">
+        <ul class="timeline">
+          <li>
+            <div class="step-no">1</div>
+            <div>
+              <h3>先读当前总览页</h3>
+              <p>先建立 transform 与 expression 的区别，理解“数据集级转换”和“字段级表达”这两个基本层级。</p>
+            </div>
+          </li>
+          <li>
+            <div class="step-no">2</div>
+            <div>
+              <h3>再读机制对比</h3>
+              <p>通过 <code>docs/transform-expression-comparison.md</code> 把两类算子放在同一张图里对照，避免把 transform 参数和 expression 函数混在一起。</p>
+            </div>
+          </li>
+          <li>
+            <div class="step-no">3</div>
+            <div>
+              <h3>进入场景文档</h3>
+              <p>通过 <code>docs/transform-usage-examples.md</code> 和 <code>docs/expression-usage-examples.md</code> 理解代表性用法。</p>
+            </div>
+          </li>
+          <li>
+            <div class="step-no">4</div>
+            <div>
+              <h3>查正式清单</h3>
+              <p>在需要核对字段、参数、支持环境或返回类型时，进入两个 final bundle 查看结构化清单。</p>
+            </div>
+          </li>
+        </ul>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="section-header">
+        <h2>内容入口与文件清单</h2>
+        <div class="hint">只列正式入口和最终产物</div>
+      </div>
+      <div class="section-body">
+        <table class="file-table">
+          <thead>
+            <tr>
+              <th style="width: 27%">路径</th>
+              <th style="width: 27%">内容角色</th>
+              <th>阅读价值</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>docs/pipeline-builder-operators-overview.html</code></td>
+              <td>算子总览入口</td>
+              <td>当前页面，用来建立 transform / expression 的总体认知。</td>
+            </tr>
+            <tr>
+              <td><code>docs/transform-expression-comparison.md</code></td>
+              <td>机制对比</td>
+              <td>解释 transform 与 expression 的边界、联系和组合方式。</td>
+            </tr>
+            <tr>
+              <td><code>docs/transform-usage-examples.md</code></td>
+              <td>transform 场景</td>
+              <td>通过代表性场景理解数据集级算子的使用方式。</td>
+            </tr>
+            <tr>
+              <td><code>docs/expression-usage-examples.md</code></td>
+              <td>expression 场景</td>
+              <td>通过类别和场景理解字段级表达式的使用方式。</td>
+            </tr>
+            <tr>
+              <td><code>artifacts/transform-final/README.md</code></td>
+              <td>transform 清单入口</td>
+              <td>查看 transform 的最终 JSONL、CSV 与 summary。</td>
+            </tr>
+            <tr>
+              <td><code>artifacts/pb-expression-final/README.md</code></td>
+              <td>expression 清单入口</td>
+              <td>查看 expression 的最终 JSON、CSV 与 summary。</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="section-header">
+        <h2>证据边界</h2>
+        <div class="hint">读清楚哪些内容可直接引用，哪些内容需要回到来源核对</div>
+      </div>
+      <div class="section-body">
+        <div class="recommendations">
+          <article class="recommendation">
+            <h3>可以作为正式入口的内容</h3>
+            <p>总览页、机制对比文档、两个场景文档，以及 expression / transform 的 final bundle，构成当前新人理解算子的主要材料。</p>
+          </article>
+          <article class="recommendation">
+            <h3>需要带着边界阅读的内容</h3>
+            <p>自动解析、历史 stage、verify 和渲染产物只适合作为追溯材料。正式表述应回到 Palantir 官方材料、主文档和 final bundle。</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <div class="footer-note">
+      <strong>页面定位：</strong>
+      这里不是任务进展页，而是 Pipeline Builder 算子知识入口。读者可以从这里理解两类算子的关系，再进入场景文档和结构化清单继续查阅。
+    </div>
+  </main>
+</body>
+</html>

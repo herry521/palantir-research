@@ -164,7 +164,7 @@
               </h2>
             </div>
             <p>
-              算子专题已经不只是表达层的附属内容，而是全局平台底座的一部分：它连接低代码 Builder、高码 SDK、执行路由、Schema 传播和治理闭环。
+              这里嵌入的是 <code>/Users/huyongqiang/code/li/pipeline-transform-research</code> 中的算子总览页。它把 Pipeline Builder 的 transform 与 expression 两条主线合并成一个可阅读入口。
             </p>
           </div>
 
@@ -172,23 +172,23 @@
             <div class="operator-conclusion-stack">
               <article class="operator-conclusion-card">
                 <span>01</span>
-                <h3>算子不是函数库，是平台契约</h3>
-                <p>输入输出、参数、Schema 推导、资源、版本和治理元数据必须被平台索引，才能支撑复用、校验和影响分析。</p>
+                <h3>Transform 是数据集级转换</h3>
+                <p>外部总结确认 transform 侧已收口 89 条，覆盖聚合、连接、窗口、文件解析、地理处理和流式处理等数据集级步骤。</p>
               </article>
               <article class="operator-conclusion-card">
                 <span>02</span>
-                <h3>Registry 是低码和高码的交汇点</h3>
-                <p>低代码节点面板、高码自定义算子、调度器和治理系统应消费同一套算子目录，而不是各自维护能力清单。</p>
+                <h3>Expression 是字段和值级表达</h3>
+                <p>expression 侧已收口 335 条，覆盖数值、布尔、字符串、时间、类型转换、数组、结构体、JSON 和 Map 等表达能力。</p>
               </article>
               <article class="operator-conclusion-card">
                 <span>03</span>
-                <h3>执行引擎应按能力路由</h3>
-                <p>轻量引擎、Spark、Flink 和 Container 各有边界，输出统一通过 Dataset Transaction 提交，避免绕开增量和血缘。</p>
+                <h3>正式证据以 final bundle 为准</h3>
+                <p>transform 与 expression 各自有最终统一产物，自动解析、stage、verify 和临时渲染文件只作为追溯线索。</p>
               </article>
               <article class="operator-conclusion-card">
                 <span>04</span>
-                <h3>P0 算子要和底座一起建设</h3>
-                <p>Filter、Select、Join、Union、Aggregate、Read/Write Dataset 等基础算子不足时，业务会回到自由代码，治理能力会提前分叉。</p>
+                <h3>平台化需要注册中心和类型化 IR</h3>
+                <p>概要设计给出的落地架构是算子注册中心、类型化中间表示和执行适配器，而不是把清单直接变成函数库。</p>
               </article>
             </div>
 
@@ -196,16 +196,16 @@
               <div class="embedded-page-top">
                 <div>
                   <span class="tag">Embedded HTML</span>
-                  <h3>表达层与算子平台专题页</h3>
+                  <h3>Pipeline Builder 算子总览页</h3>
                 </div>
-                <a class="source-link" href="expression-and-operators.html"
+                <a class="source-link" href="pipeline-builder-operators-overview.html"
                   ><svg class="icon sm" aria-hidden="true"><use href="#i-file"></use></svg><span>打开完整页面</span></a
                 >
               </div>
               <iframe
                 class="embedded-page-frame"
-                title="表达层与算子平台专题页预览"
-                src="expression-and-operators.html?embed=1#conclusion"
+                title="Pipeline Builder 算子总览页预览"
+                src="pipeline-builder-operators-overview.html"
               ></iframe>
             </article>
           </div>
