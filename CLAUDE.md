@@ -30,6 +30,11 @@ diagrams/       # 架构图（draw.io 源文件 + PNG 导出）
 
 ## 工作流程
 
+### 项目级约束
+
+- 所有工作项必须有 GitLab Issue 跟进；如果用户未提供 issue，先查询是否已有对应 issue，没有则创建后再推进。
+- 调研结论输出后，必须立即完成验证、commit 和 push；不得只交付结论而把相关文档或 HTML 产物长期留在本地未提交状态。
+
 每完成一轮调研后必须执行 commit + push（见全局 `knowledge-capture.md` 规则）：
 ```bash
 git add docs/ diagrams/
