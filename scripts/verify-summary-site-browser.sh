@@ -34,7 +34,7 @@ const pages = [
     path: "index.html",
     slug: "home",
     title: "Palantir 调研总结一页纸",
-    requiredText: ["三个管理判断", "高码能力研究", "Pipeline Builder 算子总览"],
+    requiredText: ["三个管理判断", "高码能力研究", "Pipeline Builder 算子总览", "Media Set"],
   },
   {
     path: "pages/pro-code-capability.html",
@@ -46,7 +46,7 @@ const pages = [
     path: "pages/overview.html",
     slug: "overview",
     title: "Palantir 研发技术总览",
-    requiredText: ["完整阅读路径", "高码能力研究", "能力建设关注点", "算子主线如何嵌入平台图", "Pipeline Builder 算子总览页"],
+    requiredText: ["完整阅读路径", "高码能力研究", "能力建设关注点", "Media Set 资产模型", "算子主线如何嵌入平台图", "Pipeline Builder 算子总览页"],
     iframeSelector: 'iframe[title="Pipeline Builder 算子总览页预览"]',
     iframeRequiredText: ["算子总览", "transform 清单", "expression 清单"],
     iframeSrc: "pipeline-builder-operators-overview.html",
@@ -61,7 +61,7 @@ const pages = [
     path: "pages/data-engineering-platform-map.html",
     slug: "data-engineering-platform-map",
     title: "数据工程能力建设蓝图",
-    requiredText: ["能力建设关注点", "Dataset Control Plane", "Engine Router", "算子注册中心"],
+    requiredText: ["能力建设关注点", "Dataset Control Plane", "Media Set 资产模型", "Engine Router", "算子注册中心"],
   },
   {
     path: "pages/expression-and-operators.html",
@@ -91,7 +91,7 @@ const pages = [
     path: "pages/engineering-and-ecosystem.html",
     slug: "engineering-and-ecosystem",
     title: "工程化与生态边界",
-    requiredText: ["工程化", "测试", "生态"],
+    requiredText: ["工程化", "测试", "生态", "Media Set 如何把非结构化数据纳入平台"],
   },
 ];
 const viewports = [

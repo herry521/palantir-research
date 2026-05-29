@@ -42,6 +42,7 @@ check_contains "$ROOT/pages/data-engineering-platform-map.html" "Faster / 轻量
 check_contains "$ROOT/pages/data-engineering-platform-map.html" "Engine Router"
 check_contains "$ROOT/pages/data-engineering-platform-map.html" "Spark fallback"
 check_contains "$ROOT/pages/data-engineering-platform-map.html" "DataFusion"
+check_contains "$ROOT/pages/data-engineering-platform-map.html" "Media Set 资产模型"
 check_contains "$ROOT/pages/pro-code-capability.html" "高码能力研究"
 check_contains "$ROOT/pages/pro-code-capability.html" "【事实 <a class=\"confidence-ref\""
 check_contains "$ROOT/pages/pro-code-capability.html" "href=\"https://www.palantir.com/docs/foundry/code-repositories/overview/index.html\""
@@ -62,6 +63,8 @@ check_contains "$ROOT/pages/lineage-ontology-governance.html" "血缘关系图"
 check_contains "$ROOT/pages/lineage-ontology-governance.html" "自建 Dataset 血缘建设方案"
 check_contains "$ROOT/pages/lineage-ontology-governance.html" "docs/raw/29-lineage-branch-version-pipeline-sync.md"
 check_contains "$ROOT/pages/engineering-and-ecosystem.html" "工程化"
+check_contains "$ROOT/pages/engineering-and-ecosystem.html" "Media Set 如何把非结构化数据纳入平台"
+check_contains "$ROOT/pages/engineering-and-ecosystem.html" "docs/raw/31-media-set-implementation-deep-dive.md"
 check_contains "$ROOT/styles.css" ".split-stack"
 check_contains "$ROOT/pages/expression-and-operators.html" "split-stack"
 check_contains "$ROOT/pages/execution-and-incremental.html" "split-stack"
@@ -92,7 +95,7 @@ for file in "${required_files[@]}"; do
   }
 
   check_contains "$file" "Palantir Foundry / Pipeline 调研材料库"
-  check_contains "$file" "统一入口：首页 / 总览 / 高码 / 蓝图 / 五个技术专题"
+  check_contains "$file" "统一入口：首页 / 总览 / 高码 / 蓝图 / 算子总览 / 五个技术专题"
 done
 
 grep -q 'href="pages/overview.html"' "$ROOT/index.html" || {

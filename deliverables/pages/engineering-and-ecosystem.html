@@ -103,6 +103,7 @@
             <strong>本页导航</strong>
             <a href="#conclusion">结论</a>
             <a href="#mechanism">关键机制</a>
+            <a href="#media-set">Media Set</a>
             <a href="#implication">对我们的启发</a>
             <a href="#sources">相关来源</a>
           </aside>
@@ -131,6 +132,12 @@
                     <span class="title-row"><svg class="icon sm" aria-hidden="true"><use href="#i-spark"></use></svg><span>Palantir 的开放性边界同样明显</span></span>
                   </h3>
                   <p class="muted">私有血缘模型、封闭事务位点和较强的平台绑定，意味着它在跨平台互通上存在天然摩擦。</p>
+                </article>
+                <article class="detail-card">
+                  <h3>
+                    <span class="title-row"><svg class="icon sm" aria-hidden="true"><use href="#i-file"></use></svg><span>Media Set 是非结构化 AI 的资产入口</span></span>
+                  </h3>
+                  <p class="muted">PDF、图片、音频、视频和 DICOM 不应只是附件，而应通过 Media Reference、Pipeline 转换和 Ontology 属性进入平台闭环。</p>
                 </article>
               </div>
             </section>
@@ -172,6 +179,56 @@
               </div>
             </section>
 
+            <section class="section-card" id="media-set">
+              <p class="section-kicker">Media Set Deep Dive</p>
+              <h2>
+                <span class="title-row"><svg class="icon lg" aria-hidden="true"><use href="#i-file"></use></svg><span>Media Set 如何把非结构化数据纳入平台</span></span>
+              </h2>
+              <div class="split-stack">
+                <div>
+                  <p class="muted">
+                    Media Set 不是 Dataset 的一个文件列，而是面向 PDF、图片、音频、视频、DICOM、邮件和表格文件的独立资产类型。它的核心链路是：
+                    <code>Media Set -> Media Item -> Media Reference -> Dataset / Ontology / Application</code>。
+                  </p>
+                  <div class="detail-grid mechanism-grid">
+                    <article class="detail-card mechanism-card">
+                      <h3>1. 文件资产化</h3>
+                      <p class="muted">Media Set 管理媒体 schema、path、RID、版本历史、retention 和上传策略；文件本体由 backing object store 或 virtual external source 承载。</p>
+                    </article>
+                    <article class="detail-card mechanism-card">
+                      <h3>2. 引用而非复制</h3>
+                      <p class="muted">Dataset 和 Ontology 保存 <code>media_reference</code>，下游应用通过引用解析文件，避免在 Pipeline、对象和应用中反复复制二进制内容。</p>
+                    </article>
+                    <article class="detail-card mechanism-card">
+                      <h3>3. Pipeline 批量转换</h3>
+                      <p class="muted">Pipeline Builder 和 Code Repository 可执行 OCR、PDF render、图片裁剪缩放、音频转写、DICOM 转表等转换，输出 Dataset rows 或新的 Media Set。</p>
+                    </article>
+                    <article class="detail-card mechanism-card">
+                      <h3>4. Ontology 展示与操作</h3>
+                      <p class="muted">业务对象通过 media reference property 挂载文档、影像、录音或视频；Workshop / Object Explorer / OSDK 读取同一个受控引用。</p>
+                    </article>
+                  </div>
+                </div>
+                <div class="lineage-map-panel">
+                  <h3>实现视角</h3>
+                  <div class="lineage-flow" aria-label="Media Set 平台链路">
+                    <div class="lineage-node dataset"><span>Object Store</span><small>managed / virtual</small></div>
+                    <div class="lineage-edge"></div>
+                    <div class="lineage-node transform"><span>Media Set</span><small>schema + item index</small></div>
+                    <div class="lineage-edge"></div>
+                    <div class="lineage-node dataset"><span>Media Reference</span><small>stable RID pointer</small></div>
+                    <div class="lineage-edge"></div>
+                    <div class="lineage-node ontology"><span>Ontology / AI</span><small>object + VLM / OCR</small></div>
+                  </div>
+                  <ul>
+                    <li><strong>关键决策：</strong>path 只能做业务定位键，稳定引用必须使用不可变 <code>media_item_id</code>。</li>
+                    <li><strong>事务边界：</strong>生产 Pipeline 输出优先使用 transactional write，避免失败后留下半成品。</li>
+                    <li><strong>AI 边界：</strong>OCR、转写、VLM 和 embedding 应作为可审计的 Media Transform，而不是让模型直接读对象存储路径。</li>
+                  </ul>
+                </div>
+              </div>
+            </section>
+
             <section class="section-card" id="implication">
               <p class="section-kicker">Implications</p>
               <h2>
@@ -180,6 +237,7 @@
               <ul>
                 <li>测试、监控、安全、权限要与平台核心模型一体设计，而不是后置补丁。</li>
                 <li>AI 能力应优先服务平台动作和上下文调用，而不是先追求表面的自然语言演示效果。</li>
+                <li>Media Set 应作为和 Dataset 并列的资产模型预留，先打通 <code>media_reference</code>、转表、OCR 和 Ontology 属性，再扩展 VLM / embedding。</li>
                 <li>在借鉴 Palantir 时，要清楚地区分“值得对标的整合能力”和“需要避免的过度封闭风险”。</li>
                 <li>如果采用开源自建路线，最大的工作量会落在控制面、元数据层和工程化整合，而不是单个引擎接入。</li>
               </ul>
@@ -205,6 +263,9 @@
                 >
                 <a class="source-link" href="../../docs/raw/10-opensource-alternative-stack.md"
                   ><svg class="icon sm" aria-hidden="true"><use href="#i-file"></use></svg><span>docs/raw/10-opensource-alternative-stack.md</span></a
+                >
+                <a class="source-link" href="../../docs/raw/31-media-set-implementation-deep-dive.md"
+                  ><svg class="icon sm" aria-hidden="true"><use href="#i-file"></use></svg><span>docs/raw/31-media-set-implementation-deep-dive.md</span></a
                 >
                 <a class="source-link" href="../../docs/raw/06-security-and-permissions.md"
                   ><svg class="icon sm" aria-hidden="true"><use href="#i-file"></use></svg><span>docs/raw/06-security-and-permissions.md</span></a
