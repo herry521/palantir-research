@@ -93,6 +93,8 @@
           <p class="intro-note">Palantir 最大的平台壁垒，往往不在算子或引擎，而在 Dataset 版本、Lineage、Marking、Ontology 和 Writeback 共同组成的治理闭环。</p>
           <div class="topic-meta">
             <span class="tag">Lineage</span>
+            <span class="tag">Dataset Branch</span>
+            <span class="tag">Transaction</span>
             <span class="tag">Ontology</span>
             <span class="tag">治理</span>
           </div>
@@ -102,6 +104,7 @@
           <aside class="section-nav">
             <strong>本页导航</strong>
             <a href="#conclusion">结论</a>
+            <a href="#lineage-map">血缘关系图</a>
             <a href="#mechanism">关键机制</a>
             <a href="#implication">对我们的启发</a>
             <a href="#sources">相关来源</a>
@@ -118,19 +121,87 @@
                   <h3>
                     <span class="title-row"><svg class="icon sm" aria-hidden="true"><use href="#i-spark"></use></svg><span>数据版本和血缘是治理闭环的基础设施</span></span>
                   </h3>
-                  <p class="muted">没有 Transaction、Branch 和自动注册的依赖关系，血缘、影响分析、重放和审计都无法形成统一能力。</p>
+                  <p class="muted">没有 Transaction、Branch、View 和自动注册的依赖关系，血缘、影响分析、重放和审计都无法形成统一能力。</p>
                 </article>
                 <article class="detail-card">
                   <h3>
-                    <span class="title-row"><svg class="icon sm" aria-hidden="true"><use href="#i-spark"></use></svg><span>Ontology 把数据集提升成业务对象模型</span></span>
+                    <span class="title-row"><svg class="icon sm" aria-hidden="true"><use href="#i-spark"></use></svg><span>血缘的坐标系是分支和版本</span></span>
                   </h3>
-                  <p class="muted">这让平台不再只产出表，而是产出可被业务操作、可回写、可被应用消费的语义对象。</p>
+                  <p class="muted">同一条依赖边在不同 branch 上可能解析到不同的 transaction/view，Lineage 必须能解释“这次到底读了什么”。</p>
                 </article>
                 <article class="detail-card">
                   <h3>
-                    <span class="title-row"><svg class="icon sm" aria-hidden="true"><use href="#i-spark"></use></svg><span>治理价值来自“自动传播”，不是手工登记</span></span>
+                    <span class="title-row"><svg class="icon sm" aria-hidden="true"><use href="#i-spark"></use></svg><span>Sync 和 Pipeline 必须进入同一张版本图</span></span>
                   </h3>
-                  <p class="muted">无论是血缘、标记、权限还是对象映射，都要尽量由平台自动捕获和传播，才能成为规模化能力。</p>
+                  <p class="muted">SyncRun 产出 raw transaction，BuildRun 读写 transaction range，Ontology 再把结果映射到业务对象。</p>
+                </article>
+              </div>
+            </section>
+
+            <section class="section-card" id="lineage-map">
+              <p class="section-kicker">Lineage Map</p>
+              <h2>
+                <span class="title-row"><svg class="icon lg" aria-hidden="true"><use href="#i-nodes"></use></svg><span>血缘关系图</span></span>
+              </h2>
+              <div class="lineage-map-panel">
+                <div class="lineage-flow" aria-label="Foundry 血缘关系链路">
+                  <div class="lineage-node source">
+                    <span>外部源</span>
+                    <strong>ERP / DB / Files / API</strong>
+                  </div>
+                  <div class="lineage-arrow" aria-hidden="true">→</div>
+                  <div class="lineage-node sync">
+                    <span>Data Connection</span>
+                    <strong>SyncRun 提交 Transaction</strong>
+                  </div>
+                  <div class="lineage-arrow" aria-hidden="true">→</div>
+                  <div class="lineage-node dataset">
+                    <span>Raw Dataset</span>
+                    <strong>Branch + Transaction / View</strong>
+                  </div>
+                  <div class="lineage-arrow" aria-hidden="true">→</div>
+                  <div class="lineage-node build">
+                    <span>Pipeline / Build</span>
+                    <strong>读取版本范围，写输出版本</strong>
+                  </div>
+                  <div class="lineage-arrow" aria-hidden="true">→</div>
+                  <div class="lineage-node dataset">
+                    <span>Curated Dataset</span>
+                    <strong>Schema Version + Producer Run</strong>
+                  </div>
+                  <div class="lineage-arrow" aria-hidden="true">→</div>
+                  <div class="lineage-node ontology">
+                    <span>Ontology</span>
+                    <strong>Object / Link / Action</strong>
+                  </div>
+                </div>
+                <div class="lineage-branch-strip">
+                  <div>
+                    <span class="tag">Global Branch</span>
+                    <p>承载 Pipeline Builder、Code Repository、Ontology、Workshop 的逻辑/配置变更。</p>
+                  </div>
+                  <div>
+                    <span class="tag">Dataset Branch</span>
+                    <p>只是 Dataset transaction 指针，不支持像 Git 那样直接 merge 数据内容。</p>
+                  </div>
+                  <div>
+                    <span class="tag">Data Lineage</span>
+                    <p>按 branch-aware graph 展示资源、build history、staleness 和 dataset-to-ontology link。</p>
+                  </div>
+                </div>
+              </div>
+              <div class="lineage-version-grid">
+                <article class="mechanism-card">
+                  <h3>版本血缘</h3>
+                  <p class="muted">记录某次 SyncRun / BuildRun 实际读取哪个 branch、哪个 transaction/view/range，并产出哪个 transaction。</p>
+                </article>
+                <article class="mechanism-card">
+                  <h3>资源血缘</h3>
+                  <p class="muted">展示 Data Source、Dataset、Transform、Object Type 和应用之间的长期依赖关系，用于影响分析。</p>
+                </article>
+                <article class="mechanism-card">
+                  <h3>分支血缘</h3>
+                  <p class="muted">解释 Global Branch、Dataset Branch 和 fallback resolution 的差异，避免误判开发分支实际读写路径。</p>
                 </article>
               </div>
             </section>
@@ -143,19 +214,20 @@
               <div class="split-callout">
                 <div class="split-stack">
                   <div class="detail-card mechanism-card">
-                    <h3>1. Lineage 的抓手来自 Input / Output 声明</h3>
+                    <h3>1. Lineage 的抓手来自 Input / Output 声明和 Sync 产出版本</h3>
                     <ul>
                       <li>编译期静态分析捕获 Dataset 级依赖。</li>
-                      <li>运行期记录实际读写版本，形成时间点血缘。</li>
+                      <li>SyncRun 通过 Dataset Transaction 管理 raw data 版本。</li>
+                      <li>BuildRun 记录实际读写版本，形成时间点血缘。</li>
                       <li>列级血缘对手写代码依然存在天然边界。</li>
                     </ul>
                   </div>
                   <div class="detail-card mechanism-card">
                     <h3>2. Dataset Branch 支持实验，但不支持 Merge</h3>
                     <ul>
-                      <li>分支主要用于隔离试验和开发。</li>
+                      <li>分支本质是 transaction pointer。</li>
                       <li>数据分支不像代码分支那样可以直接合并。</li>
-                      <li>这迫使“回主线”动作必须通过 Transform 或发布流程完成。</li>
+                      <li>Global Branch merge 是逻辑/配置 merge，不是数据 merge。</li>
                     </ul>
                   </div>
                 </div>
@@ -177,8 +249,8 @@
                   <p class="muted">Pipeline 输出 Dataset，经映射进入 Object Type；业务侧修改又可通过 Action / Writeback Dataset 回到数据链路，形成“分析结果可操作”的闭环。</p>
                 </article>
                 <article class="detail-card mechanism-card">
-                  <h3>4. 治理能力还包括 Marking、权限与安全策略传播</h3>
-                  <p class="muted">敏感标记、访问控制和审计如果能沿血缘自动传递，平台才能支撑更高敏感度的数据协作。</p>
+                  <h3>4. Data Lineage 是 branch-aware，但自身不是分支资源</h3>
+                  <p class="muted">选择 Global Branch 后可查看分支上的 Dataset、Ontology 和 link 状态；但图配置不会作为分支资源 merge 回 Main。</p>
                 </article>
               </div>
             </section>
@@ -190,6 +262,7 @@
               </h2>
               <ul>
                 <li>优先建设 Dataset 版本模型和自动血缘注册能力，这是后续治理与回放能力的基础。</li>
+                <li>把 SyncRun、BuildRun、Transaction、Schema Version 纳入同一个版本血缘模型，而不是只记录任务级依赖边。</li>
                 <li>如果希望平台走向业务语义层，就不能只停留在 Dataset，需要逐步建立对象模型和回写入口。</li>
                 <li>治理能力要尽量自动化传播，而不是依赖大量手工配置和人工维护。</li>
                 <li>Branch 的设计要区分“代码/配置分支”和“数据分支”，避免混淆 Git 语义与数据版本语义。</li>
@@ -216,6 +289,9 @@
                 >
                 <a class="source-link" href="../../docs/raw/18-branching-data-connection.md"
                   ><svg class="icon sm" aria-hidden="true"><use href="#i-file"></use></svg><span>docs/raw/18-branching-data-connection.md</span></a
+                >
+                <a class="source-link" href="../../docs/raw/29-lineage-branch-version-pipeline-sync.md"
+                  ><svg class="icon sm" aria-hidden="true"><use href="#i-file"></use></svg><span>docs/raw/29-lineage-branch-version-pipeline-sync.md</span></a
                 >
               </div>
             </section>
