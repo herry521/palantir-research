@@ -74,6 +74,21 @@ check_contains "$ROOT/pages/streaming-architecture.html" "mechanism-card"
 check_contains "$ROOT/pages/lineage-ontology-governance.html" "mechanism-card"
 check_contains "$ROOT/pages/engineering-and-ecosystem.html" "mechanism-card"
 
+for file in "${required_files[@]}"; do
+  if [[ "$file" == "$ROOT/styles.css" || "$file" == "$ROOT/app.js" ]]; then
+    continue
+  fi
+
+  nav_count="$(grep -o 'data-nav href=' "$file" | wc -l | tr -d ' ')"
+  [[ "$nav_count" == "9" ]] || {
+    echo "Expected 9 primary nav links in $file, found $nav_count"
+    exit 1
+  }
+
+  check_contains "$file" "Palantir Foundry / Pipeline 调研材料库"
+  check_contains "$file" "统一入口：首页 / 总览 / 高码 / 蓝图 / 五个技术专题"
+done
+
 grep -q 'href="pages/overview.html"' "$ROOT/index.html" || {
   echo "Homepage must link to overview page"
   exit 1

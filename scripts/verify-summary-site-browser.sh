@@ -42,6 +42,48 @@ const pages = [
     title: "高码能力研究",
     requiredText: ["Palantir 高码能力研究", "【事实 ref】", "【推断】", "【猜测】"],
   },
+  {
+    path: "pages/overview.html",
+    slug: "overview",
+    title: "Palantir 研发技术总览",
+    requiredText: ["完整阅读路径", "高码能力研究", "能力建设关注点"],
+  },
+  {
+    path: "pages/data-engineering-platform-map.html",
+    slug: "data-engineering-platform-map",
+    title: "数据工程能力建设蓝图",
+    requiredText: ["能力建设关注点", "Dataset Control Plane", "Engine Router"],
+  },
+  {
+    path: "pages/expression-and-operators.html",
+    slug: "expression-and-operators",
+    title: "表达层与算子平台",
+    requiredText: ["表达层", "Transform DSL", "算子"],
+  },
+  {
+    path: "pages/execution-and-incremental.html",
+    slug: "execution-and-incremental",
+    title: "执行引擎与增量链路",
+    requiredText: ["执行引擎", "增量", "Transaction"],
+  },
+  {
+    path: "pages/streaming-architecture.html",
+    slug: "streaming-architecture",
+    title: "流式架构",
+    requiredText: ["流式架构", "Flink", "Streaming"],
+  },
+  {
+    path: "pages/lineage-ontology-governance.html",
+    slug: "lineage-ontology-governance",
+    title: "血缘、Ontology 与治理",
+    requiredText: ["Ontology", "Lineage", "治理"],
+  },
+  {
+    path: "pages/engineering-and-ecosystem.html",
+    slug: "engineering-and-ecosystem",
+    title: "工程化与生态边界",
+    requiredText: ["工程化", "测试", "生态"],
+  },
 ];
 const viewports = [
   { name: "desktop", width: 1440, height: 1100 },
