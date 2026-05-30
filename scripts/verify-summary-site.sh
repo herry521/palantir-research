@@ -69,6 +69,7 @@ check_contains "$ROOT/pages/dataset-permission-marking.html" "Marking 的设计�
 check_contains "$ROOT/pages/dataset-permission-marking.html" "端到端实现链路"
 check_contains "$ROOT/pages/dataset-permission-marking.html" "Marking 传递与计算设计"
 check_contains "$ROOT/pages/dataset-permission-marking.html" "carried_requirements"
+check_contains "$ROOT/pages/dataset-permission-marking.html" "不等于都被 direct marking"
 check_contains "$ROOT/pages/dataset-permission-marking.html" "docs/synthesis/dataset-permission-marking-architecture-summary.md"
 check_contains "$ROOT/styles.css" ".permission-matrix"
 check_contains "$ROOT/styles.css" ".access-equation"

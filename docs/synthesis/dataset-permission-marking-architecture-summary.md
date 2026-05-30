@@ -867,7 +867,445 @@ def normalize_requirements(requirements):
 
 否则 Access Debugger 无法回答“这个 PII requirement 是哪个 input 带来的”。
 
-### 12.5 Unmarking：传播中断计算
+### 12.5 下游是否都被打上具体 Marking
+
+结论：Marking 沿血缘传递时，每一个下游数据版本都会继承对应访问要求；但这不等于每个下游 Dataset 都被写入一条 direct marking。
+
+正确拆法是：
+
+```text
+Direct marking
+  人工或系统直接应用在 Project / Folder / Dataset 上的 Marking。
+
+Inherited resource requirement
+  从父级 Project / Folder 继承到资源上的要求。
+
+Inherited data requirement
+  从上游 Dataset / transaction 经 lineage 传播到下游 transaction / view 的要求。
+```
+
+例如：
+
+```text
+Dataset A: customer_raw
+  direct marking: PII
+
+Dataset B: customer_clean
+  direct marking: none
+  transaction requirement: PII
+  source: A.transaction_001
+
+Dataset C: customer_city_count
+  direct marking: none
+  transaction requirement: PII
+  source: B.transaction_001
+```
+
+因此页面或 API 上应该能表达：
+
+```text
+B requires PII
+source = lineage from A
+direct = false
+```
+
+而不是把 B 简化成：
+
+```text
+B.direct_markings = [PII]
+```
+
+这样做有三个好处：
+
+- 可以解释 Marking 来源。
+- 可以区分资源直接打标和数据血缘继承。
+- 可以让新 transaction 移除继承要求，而不改写历史 transaction。
+
+### 12.6 案例一：普通血缘传播
+
+数据链路：
+
+```text
+A: customer_raw
+  direct marking: PII
+
+B: customer_clean = clean(A)
+
+C: customer_city_count = aggregate(B)
+```
+
+没有 `stop_propagating` 时：
+
+```text
+A.tx1 requires PII
+B.tx1 inherits PII from A.tx1
+C.tx1 inherits PII from B.tx1
+```
+
+结果：
+
+| Dataset | Direct Marking | Transaction Requirement | 用户读取要求 |
+|---|---|---|---|
+| A | PII | PII 或 resource PII | Viewer + PII |
+| B | 无 | PII | Viewer + PII |
+| C | 无 | PII | Viewer + PII |
+
+注意：即使 C 只是城市级聚合，如果没有显式声明并审批移除 PII，系统也应保守继承 PII。
+
+### 12.7 案例二：多输入合并
+
+数据链路：
+
+```text
+A: customer_raw
+  Marking: PII
+
+F: finance_raw
+  Marking: FINANCE
+
+J: customer_finance_join = join(A, F)
+```
+
+计算：
+
+```text
+carried(A) = {PII}
+carried(F) = {FINANCE}
+
+J.tx1 = {PII} ∪ {FINANCE}
+      = {PII, FINANCE}
+```
+
+读取 J 需要：
+
+```text
+Viewer + PII + FINANCE
+```
+
+普通 Marking 按 all-of 处理，所以用户必须同时满足 PII 和 FINANCE。
+
+### 12.8 案例三：脱敏后停止传播
+
+数据链路：
+
+```text
+A: customer_raw
+  Marking: PII
+
+B: customer_deidentified = drop(name, phone, id_card) from A
+  stop_propagating PII approved
+```
+
+计算：
+
+```text
+carried(A) = {PII}
+approved_unmarking_rules(A -> B) = {PII}
+
+B.tx1 = carried(A) - {PII}
+      = {}
+```
+
+结果：
+
+| Dataset / Transaction | Requirement |
+|---|---|
+| A.tx1 | PII |
+| B.tx1 | 无 PII |
+
+这只影响新 output transaction，不应改写 B 的旧 transaction。
+
+### 12.9 案例四：多输入 stop 一个不够
+
+数据链路：
+
+```text
+A: customer_raw
+  Marking: PII
+
+B: support_ticket_raw
+  Marking: PII
+
+C = transform(A, B)
+
+只声明：
+  stop_propagating PII on A -> C
+```
+
+计算：
+
+```text
+carried(A) = {PII}
+carried(B) = {PII}
+
+remove(A -> C) = {PII}
+remove(B -> C) = {}
+
+C.tx1 = (carried(A) - {PII})
+      ∪ (carried(B) - {})
+      = {}
+      ∪ {PII}
+      = {PII}
+```
+
+所以 C 仍然要求 PII。要让 C 不带 PII，必须对所有携带 PII 的 input 都声明并审批：
+
+```text
+stop_propagating PII on A -> C
+stop_propagating PII on B -> C
+```
+
+### 12.10 示例代码：简化版 Marking 传播引擎
+
+下面代码演示 resource requirement、transaction requirement、多输入合并和 input-specific unmarking 的计算方式：
+
+```python
+from dataclasses import dataclass, field
+from typing import Dict, List, Set, Tuple
+
+
+Requirement = str
+DatasetId = str
+TxId = str
+
+
+@dataclass
+class Dataset:
+    id: DatasetId
+    resource_requirements: Set[Requirement] = field(default_factory=set)
+
+
+@dataclass
+class Transaction:
+    id: TxId
+    dataset_id: DatasetId
+    requirements: Set[Requirement] = field(default_factory=set)
+
+
+@dataclass
+class InputRef:
+    dataset_id: DatasetId
+    tx_id: TxId
+
+
+@dataclass
+class BuildRun:
+    output_dataset_id: DatasetId
+    output_tx_id: TxId
+    inputs: List[InputRef]
+
+
+class MarkingEngine:
+    def __init__(self):
+        self.datasets: Dict[DatasetId, Dataset] = {}
+        self.transactions: Dict[Tuple[DatasetId, TxId], Transaction] = {}
+        self.approved_unmarking_rules: Dict[
+            Tuple[DatasetId, DatasetId],
+            Set[Requirement],
+        ] = {}
+
+    def add_dataset(self, dataset_id: DatasetId, resource_requirements=None):
+        self.datasets[dataset_id] = Dataset(
+            id=dataset_id,
+            resource_requirements=set(resource_requirements or []),
+        )
+
+    def add_transaction(self, dataset_id: DatasetId, tx_id: TxId, requirements=None):
+        self.transactions[(dataset_id, tx_id)] = Transaction(
+            id=tx_id,
+            dataset_id=dataset_id,
+            requirements=set(requirements or []),
+        )
+
+    def approve_unmarking(
+        self,
+        input_dataset_id: DatasetId,
+        output_dataset_id: DatasetId,
+        markings: Set[Requirement],
+    ):
+        self.approved_unmarking_rules[
+            (input_dataset_id, output_dataset_id)
+        ] = set(markings)
+
+    def carried_requirements(self, input_ref: InputRef) -> Set[Requirement]:
+        dataset = self.datasets[input_ref.dataset_id]
+        tx = self.transactions[(input_ref.dataset_id, input_ref.tx_id)]
+        return dataset.resource_requirements | tx.requirements
+
+    def compute_output_requirements(self, build: BuildRun) -> Set[Requirement]:
+        output_dataset = self.datasets[build.output_dataset_id]
+        output_requirements = set(output_dataset.resource_requirements)
+
+        for input_ref in build.inputs:
+            carried = self.carried_requirements(input_ref)
+            stopped = self.approved_unmarking_rules.get(
+                (input_ref.dataset_id, build.output_dataset_id),
+                set(),
+            )
+            output_requirements |= carried - stopped
+
+        return output_requirements
+
+    def commit_build(self, build: BuildRun):
+        requirements = self.compute_output_requirements(build)
+        self.add_transaction(
+            dataset_id=build.output_dataset_id,
+            tx_id=build.output_tx_id,
+            requirements=requirements,
+        )
+        return requirements
+```
+
+运行普通传播：
+
+```python
+engine = MarkingEngine()
+
+engine.add_dataset("customer_raw", resource_requirements={"PII"})
+engine.add_transaction("customer_raw", "tx1")
+
+engine.add_dataset("customer_clean")
+build_clean = BuildRun(
+    output_dataset_id="customer_clean",
+    output_tx_id="tx1",
+    inputs=[InputRef("customer_raw", "tx1")],
+)
+
+print(engine.commit_build(build_clean))
+```
+
+输出：
+
+```text
+{'PII'}
+```
+
+运行多输入合并：
+
+```python
+engine.add_dataset("finance_raw", resource_requirements={"FINANCE"})
+engine.add_transaction("finance_raw", "tx1")
+
+engine.add_dataset("customer_finance_join")
+build_join = BuildRun(
+    output_dataset_id="customer_finance_join",
+    output_tx_id="tx1",
+    inputs=[
+        InputRef("customer_clean", "tx1"),
+        InputRef("finance_raw", "tx1"),
+    ],
+)
+
+print(engine.commit_build(build_join))
+```
+
+输出：
+
+```text
+{'PII', 'FINANCE'}
+```
+
+运行脱敏后停止传播：
+
+```python
+engine.add_dataset("customer_deidentified")
+engine.approve_unmarking(
+    input_dataset_id="customer_raw",
+    output_dataset_id="customer_deidentified",
+    markings={"PII"},
+)
+
+build_deid = BuildRun(
+    output_dataset_id="customer_deidentified",
+    output_tx_id="tx1",
+    inputs=[InputRef("customer_raw", "tx1")],
+)
+
+print(engine.commit_build(build_deid))
+```
+
+输出：
+
+```text
+set()
+```
+
+运行多输入 stop 一个不够：
+
+```python
+engine.add_dataset("support_ticket_raw", resource_requirements={"PII"})
+engine.add_transaction("support_ticket_raw", "tx1")
+
+engine.add_dataset("combined_clean")
+engine.approve_unmarking(
+    input_dataset_id="customer_raw",
+    output_dataset_id="combined_clean",
+    markings={"PII"},
+)
+
+build_combined = BuildRun(
+    output_dataset_id="combined_clean",
+    output_tx_id="tx1",
+    inputs=[
+        InputRef("customer_raw", "tx1"),
+        InputRef("support_ticket_raw", "tx1"),
+    ],
+)
+
+print(engine.commit_build(build_combined))
+```
+
+输出：
+
+```text
+{'PII'}
+```
+
+读取时计算：
+
+```python
+def can_read(user_markings: Set[str], dataset: Dataset, tx: Transaction) -> bool:
+    required = dataset.resource_requirements | tx.requirements
+    return required.issubset(user_markings)
+
+
+tx = engine.transactions[("customer_finance_join", "tx1")]
+
+print(can_read({"PII"}, engine.datasets["customer_finance_join"], tx))
+print(can_read({"PII", "FINANCE"}, engine.datasets["customer_finance_join"], tx))
+```
+
+输出：
+
+```text
+False
+True
+```
+
+结论：
+
+```text
+每个下游数据版本都会继承 required markings，
+但这些 markings 不一定是 direct markings。
+```
+
+实现上应落成：
+
+```text
+direct marking
+  -> resource_direct_requirement
+
+父级继承
+  -> resource_effective_requirement
+
+血缘继承
+  -> transaction_requirement
+
+读取判定
+  -> resource_effective_requirement ∪ transaction_requirement
+```
+
+### 12.11 Unmarking：传播中断计算
 
 传播中断不能设计成“从 output 上删除某个 Marking”。它必须是 input-specific 规则：
 
@@ -941,7 +1379,7 @@ def remove_requirements(carried, approved_rules):
     }
 ```
 
-### 12.6 Query-time：读取时 Marking 计算
+### 12.12 Query-time：读取时 Marking 计算
 
 读取路径不要重新推导 lineage。读取时应只读取已经物化好的 requirements：
 
@@ -1008,7 +1446,7 @@ def authorize_dataset_read(user, dataset_view):
 - 权限判定不能信任前端 UI 的显示状态。
 - scoped session 只能收窄用户当前可用 Markings，不能扩大访问。
 
-### 12.7 事件流
+### 12.13 事件流
 
 推荐把计算拆成事件驱动链路：
 
@@ -1036,7 +1474,7 @@ DatasetReadRequested
   -> Audit
 ```
 
-### 12.8 容易做错的边界
+### 12.14 容易做错的边界
 
 | 错误设计 | 风险 | 正确做法 |
 |---|---|---|

@@ -355,6 +355,12 @@
                   <code>dataset.resource_effective_requirements ∪ dataset_view.transaction_requirements</code>
                 </div>
               </div>
+              <div class="detail-card marking-case-note">
+                <h3>下游会继承要求，但不等于都被 direct marking</h3>
+                <p class="muted">
+                  A 带 PII，B = clean(A)，C = aggregate(B) 时，B 和 C 的 transaction 会继承 PII requirement；但它们的 direct marking 可以为空，来源应记录为 lineage。多输入场景下，A 停止传播 PII 不代表 B 不再贡献 PII，所有携带该 Marking 的 input 都需要分别声明并审批。
+                </p>
+              </div>
               <div class="detail-grid mechanism-grid">
                 <article class="detail-card mechanism-card">
                   <h3>Unmarking 必须 input-specific</h3>

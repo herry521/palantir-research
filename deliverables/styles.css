@@ -1085,6 +1085,14 @@ img {
   overflow-wrap: anywhere;
 }
 
+.marking-case-note {
+  margin-top: 18px;
+}
+
+.marking-case-note p {
+  margin-bottom: 0;
+}
+
 .map-layers {
   display: grid;
   gap: 14px;
