@@ -34,6 +34,7 @@ diagrams/       # 架构图（draw.io 源文件 + PNG 导出）
 
 - 所有工作项必须有 GitLab Issue 跟进；如果用户未提供 issue，先查询是否已有对应 issue，没有则创建后再推进。
 - 调研结论输出后，必须立即完成验证、commit 和 push；不得只交付结论而把相关文档或 HTML 产物长期留在本地未提交状态。
+- 所有调研输出必须在开头附近提供 3～5 条总结或洞察，并在必要时区分【事实】、【推断】或【猜测】。
 
 每完成一轮调研后必须执行 commit + push（见全局 `knowledge-capture.md` 规则）：
 ```bash
