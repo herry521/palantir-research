@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Foundry Schedule 运行模式</title>
+    <link rel="stylesheet" href="../styles.css" />
+    <script defer src="../app.js"></script>
+  </head>
+  <body class="detail-body">
+    <div class="site-shell">
+      <svg class="icon-sprite" xmlns="http://www.w3.org/2000/svg">
+        <symbol id="i-home" viewBox="0 0 24 24">
+          <path d="M12 3l8 6v11a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V9l8-6Z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" />
+          <path d="M9 21v-8h6v8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" />
+        </symbol>
+        <symbol id="i-map" viewBox="0 0 24 24">
+          <path d="M9 4 3 6v14l6-2 6 2 6-2V4l-6 2-6-2Z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" />
+          <path d="M9 4v14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
+          <path d="M15 6v14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
+        </symbol>
+        <symbol id="i-brackets" viewBox="0 0 24 24">
+          <path d="M9 6 5 12l4 6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" />
+          <path d="M15 6l4 6-4 6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" />
+          <path d="M13 6l-2 12" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
+        </symbol>
+        <symbol id="i-cpu" viewBox="0 0 24 24">
+          <path d="M9 9h6v6H9V9Z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" />
+          <path d="M9 2v3M15 2v3M9 19v3M15 19v3M2 9h3M2 15h3M19 9h3M19 15h3" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
+          <path d="M7 7h10v10H7V7Z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" />
+        </symbol>
+        <symbol id="i-wave" viewBox="0 0 24 24">
+          <path d="M3 14c2 0 2-4 4-4s2 4 4 4 2-4 4-4 2 4 4 4 2-4 4-4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" />
+        </symbol>
+        <symbol id="i-nodes" viewBox="0 0 24 24">
+          <path d="M7 7h0M17 7h0M12 17h0" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
+          <path d="M7 7 12 17 17 7" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" />
+        </symbol>
+        <symbol id="i-wrench" viewBox="0 0 24 24">
+          <path d="M14 7a4 4 0 0 0-6 3.5l-5 5a2 2 0 1 0 2.8 2.8l5-5A4 4 0 0 0 17 9l-3 3-2-2 2-3Z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" />
+        </symbol>
+        <symbol id="i-layers" viewBox="0 0 24 24">
+          <path d="M12 3 2.5 8 12 13l9.5-5L12 3Z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" />
+          <path d="M2.5 12 12 17l9.5-5M2.5 16 12 21l9.5-5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round" />
+        </symbol>
+        <symbol id="i-file" viewBox="0 0 24 24">
+          <path d="M7 3h7l3 3v15a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1Z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" />
+          <path d="M14 3v4h4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" />
+        </symbol>
+      </svg>
+      <header class="site-nav">
+        <div class="nav-inner">
+          <a class="brand-mark" href="../index.html">
+            <span class="brand-dot"></span>
+            <span>Palantir Research Summary</span>
+          </a>
+          <nav class="nav-links">
+            <a data-nav href="../index.html"><svg class="icon sm" aria-hidden="true"><use href="#i-home"></use></svg><span>首页</span></a>
+            <a data-nav href="overview.html"><svg class="icon sm" aria-hidden="true"><use href="#i-map"></use></svg><span>总览</span></a>
+            <a data-nav href="pro-code-capability.html"><svg class="icon sm" aria-hidden="true"><use href="#i-brackets"></use></svg><span>高码</span></a>
+            <a data-nav href="data-engineering-platform-map.html"><svg class="icon sm" aria-hidden="true"><use href="#i-layers"></use></svg><span>蓝图</span></a>
+            <a data-nav href="expression-and-operators.html"><svg class="icon sm" aria-hidden="true"><use href="#i-brackets"></use></svg><span>表达</span></a>
+            <a data-nav href="execution-and-incremental.html"><svg class="icon sm" aria-hidden="true"><use href="#i-cpu"></use></svg><span>执行</span></a>
+            <a data-nav href="foundry-schedule-module.html"><svg class="icon sm" aria-hidden="true"><use href="#i-nodes"></use></svg><span>调度</span></a>
+            <a data-nav href="streaming-architecture.html"><svg class="icon sm" aria-hidden="true"><use href="#i-wave"></use></svg><span>流式</span></a>
+            <a data-nav href="lineage-ontology-governance.html"><svg class="icon sm" aria-hidden="true"><use href="#i-nodes"></use></svg><span>治理</span></a>
+            <a data-nav href="dataset-permission-marking.html"><svg class="icon sm" aria-hidden="true"><use href="#i-file"></use></svg><span>权限</span></a>
+            <a data-nav href="engineering-and-ecosystem.html"><svg class="icon sm" aria-hidden="true"><use href="#i-wrench"></use></svg><span>工程</span></a>
+          </nav>
+        </div>
+      </header>
+
+      <main>
+        <section class="topic-header">
+          <p class="eyebrow">Foundry Scheduling</p>
+          <h1>Foundry Schedule 运行模式</h1>
+          <p class="intro-note">
+            本页把最新调研结论压缩成一个可决策版本：Foundry Schedule 的主语是 Dataset graph freshness，而不是 DataWorks 式业务周期实例。业务周期对齐调度与 freshness 调度必须拆开设计。
+          </p>
+          <div class="topic-meta">
+            <span class="tag">Trigger State</span>
+            <span class="tag">Build Resolution</span>
+            <span class="tag">Freshness</span>
+            <span class="tag">Business Cycle</span>
+          </div>
+        </section>
+
+        <div class="detail-layout">
+          <aside class="section-nav">
+            <strong>本页导航</strong>
+            <a href="#conclusion">结论</a>
+            <a href="#model">运行模型</a>
+            <a href="#triggers">触发器</a>
+            <a href="#build">Build 与 freshness</a>
+            <a href="#sync">Data Connection</a>
+            <a href="#decision">架构决策</a>
+            <a href="#sources">来源</a>
+          </aside>
+
+          <div class="detail-main">
+            <section class="section-card" id="conclusion">
+              <p class="section-kicker">Conclusions</p>
+              <h2>核心结论</h2>
+              <div class="detail-grid conclusion-grid">
+                <article class="detail-card">
+                  <span class="tag confidence-fact">【事实】</span>
+                  <h3>Schedule 的主语是 Dataset graph build</h3>
+                  <p class="muted">Trigger 满足后，平台动态解析 build 范围、branch、scope、staleness 和 build locking，再决定是否真正创建 build。</p>
+                </article>
+                <article class="detail-card">
+                  <span class="tag confidence-fact">【事实】</span>
+                  <h3>Trigger 是状态机，不是业务时间 join</h3>
+                  <p class="muted">Time trigger 是瞬时墙钟条件；event trigger 是锁存 satisfied 状态；AND/OR 只组合 satisfied 状态。</p>
+                </article>
+                <article class="detail-card">
+                  <span class="tag confidence-fact">【事实】</span>
+                  <h3>Run 成功不等于 Build 成功</h3>
+                  <p class="muted"><code>Succeeded</code> 只表示 build 被成功发起；<code>Ignored</code> 通常表示目标 up-to-date，没有创建 build。</p>
+                </article>
+              </div>
+            </section>
+
+            <section class="section-card" id="model">
+              <p class="section-kicker">Runtime Model</p>
+              <h2>Schedule 到 Build 的运行链路</h2>
+              <div class="research-flow">
+                <div><strong>Trigger satisfied</strong><span>time / event / AND / OR 组合满足</span></div>
+                <div><strong>Schedule run</strong><span>记录 run 状态，但不等价于 job 成败</span></div>
+                <div><strong>Graph resolution</strong><span>动态解析 target、scope、branch、excluded</span></div>
+                <div><strong>Staleness check</strong><span>输入版本或逻辑变化决定是否 stale</span></div>
+                <div><strong>Dataset transaction</strong><span>build 写入输出 transaction 并形成版本血缘</span></div>
+              </div>
+              <div class="detail-grid mechanism-grid">
+                <article class="detail-card mechanism-card">
+                  <h3>它不是固定 job 清单</h3>
+                  <p class="muted">Schedule 保存的是触发条件和 graph selection rule。每次触发时，Foundry 会重新评估 included datasets，以适应 pipeline 变化。</p>
+                </article>
+                <article class="detail-card mechanism-card">
+                  <h3>它不是业务周期实例</h3>
+                  <p class="muted">Foundry 原生只知道 Dataset transaction、JobSpec logic 和 branch/scope；不天然知道 <code>$bizdate</code>、账期或同周期依赖。</p>
+                </article>
+              </div>
+            </section>
+
+            <section class="section-card" id="triggers">
+              <p class="section-kicker">Trigger Semantics</p>
+              <h2>触发器语义</h2>
+              <div class="detail-grid mechanism-grid">
+                <article class="detail-card mechanism-card">
+                  <h3>Time trigger 是瞬时条件</h3>
+                  <ul>
+                    <li>按 cron 与 timezone 匹配。</li>
+                    <li>匹配时刻满足，过后不继续保持 satisfied。</li>
+                    <li>DST 跳过的本地时间不会触发，重复的本地时间会触发两次。</li>
+                  </ul>
+                </article>
+                <article class="detail-card mechanism-card">
+                  <h3>Event trigger 会锁存</h3>
+                  <ul>
+                    <li>Data updated 表示 Dataset committed transaction。</li>
+                    <li>事件发生后保持 satisfied，直到整个 compound trigger 满足并 run。</li>
+                    <li>公开文档没有说明多个同类事件会按次数排队。</li>
+                  </ul>
+                </article>
+                <article class="detail-card mechanism-card">
+                  <h3>AND/OR 不是业务日期配对</h3>
+                  <p class="muted"><code>AND(A updated, B updated)</code> 只表示上次 run 后 A/B 都更新过，不表示 A/B 属于同一 <code>business_date</code>。</p>
+                </article>
+                <article class="detail-card mechanism-card">
+                  <h3>运行中触发会保持 triggered</h3>
+                  <p class="muted">前一次 schedule 仍在 action 时，新的触发会保持 triggered，等前一次 finished 后再运行；多个 pending trigger 是否合并，公开文档未说明。</p>
+                </article>
+              </div>
+            </section>
+
+            <section class="section-card" id="build">
+              <p class="section-kicker">Build Resolution</p>
+              <h2>Build、staleness 与 force build</h2>
+              <div class="detail-grid mechanism-grid">
+                <article class="detail-card mechanism-card">
+                  <h3>Staleness 是数据版本判断</h3>
+                  <p class="muted">如果输入 Dataset 和 JobSpec logic 自上次 build 以来没有变化，输出被视为 fresh。fresh output 通常不重算。</p>
+                </article>
+                <article class="detail-card mechanism-card">
+                  <h3>Force build 只绕过 freshness</h3>
+                  <p class="muted">Force build 会绕过 up-to-date 判断，适合外部源不可见的 ingest 层；它不能替代业务日期补数。</p>
+                </article>
+                <article class="detail-card mechanism-card">
+                  <h3>Build range 会动态解析</h3>
+                  <p class="muted">Single、full/upstream、connecting、downstream 等范围都要结合 target、excluded datasets、branch、fallback 和 scope 来解析。</p>
+                </article>
+                <article class="detail-card mechanism-card">
+                  <h3>Incremental 追平是另一层</h3>
+                  <p class="muted">transaction limit 可能让一次成功 build 后 target 仍 stale；<code>Re-trigger upon successful build</code> 负责继续追平 backlog。</p>
+                </article>
+              </div>
+            </section>
+
+            <section class="section-card" id="sync">
+              <p class="section-kicker">Data Connection</p>
+              <h2>Data Connection sync 的特殊边界</h2>
+              <div class="split-callout">
+                <div class="detail-card mechanism-card">
+                  <h3>外部源变化不进入内部 staleness</h3>
+                  <p class="muted">普通 Transform 的输入是 Foundry 内部 Dataset，平台能看到 transaction；Data Connection sync 的输入在外部，Foundry 不知道外部源是否已变化。</p>
+                  <ul>
+                    <li>sync 层建议单独 schedule。</li>
+                    <li>sync 层通常需要 force build。</li>
+                    <li>downstream Transform 再使用普通 dataset update 或 freshness。</li>
+                  </ul>
+                </div>
+                <div class="detail-card mechanism-card">
+                  <h3>推荐分层</h3>
+                  <p class="muted">不要对整条 pipeline force build。只 force raw ingest/sync 层，下游继续由 Dataset transaction 和 staleness 驱动。</p>
+                </div>
+              </div>
+            </section>
+
+            <section class="section-card" id="decision">
+              <p class="section-kicker">Architecture Decision</p>
+              <h2>拆开业务周期调度与 freshness 调度</h2>
+              <div class="detail-grid mechanism-grid">
+                <article class="detail-card mechanism-card">
+                  <span class="tag confidence-infer">Business-cycle scheduler</span>
+                  <h3>负责业务周期是否 eligible</h3>
+                  <ul>
+                    <li><code>business_date</code> / <code>data_interval</code></li>
+                    <li>ready manifest / watermark barrier</li>
+                    <li>补数、重跑、同周期依赖</li>
+                  </ul>
+                </article>
+                <article class="detail-card mechanism-card">
+                  <span class="tag confidence-fact">Freshness scheduler</span>
+                  <h3>负责数据版本是否 stale</h3>
+                  <ul>
+                    <li>input transaction set</li>
+                    <li>logic version / JobSpec</li>
+                    <li>force build / external unknown</li>
+                  </ul>
+                </article>
+              </div>
+              <div class="detail-grid mechanism-grid">
+                <article class="detail-card mechanism-card">
+                  <h3>执行顺序</h3>
+                  <ol>
+                    <li>ready manifest 判断同一 data interval 是否到齐。</li>
+                    <li>创建 Run Identity。</li>
+                    <li>解析 input transaction vector。</li>
+                    <li>做 freshness/staleness 判断。</li>
+                    <li>build 成功后更新 partition manifest。</li>
+                  </ol>
+                </article>
+                <article class="detail-card mechanism-card">
+                  <h3>禁止混用</h3>
+                  <p class="muted"><code>Data updated</code> 事件只表示 transaction 变化，不表示业务日期完成。任何声明业务日期的输出，都不能只靠 Foundry-style trigger expression 驱动。</p>
+                </article>
+              </div>
+            </section>
+
+            <section class="section-card" id="sources">
+              <p class="section-kicker">Sources</p>
+              <h2>相关来源</h2>
+              <div class="source-list">
+                <a class="source-link" href="../../docs/synthesis/foundry-schedule-module-deep-dive.md">
+                  <svg class="icon sm" aria-hidden="true"><use href="#i-file"></use></svg><span>docs/synthesis/foundry-schedule-module-deep-dive.md</span>
+                </a>
+                <a class="source-link" href="../../docs/synthesis/dataworks-vs-palantir-integration.md">
+                  <svg class="icon sm" aria-hidden="true"><use href="#i-file"></use></svg><span>docs/synthesis/dataworks-vs-palantir-integration.md</span>
+                </a>
+                <a class="source-link" href="../../docs/raw/38-foundry-schedule-module-research-plan.md">
+                  <svg class="icon sm" aria-hidden="true"><use href="#i-file"></use></svg><span>docs/raw/38-foundry-schedule-module-research-plan.md</span>
+                </a>
+                <a class="source-link" href="https://www.palantir.com/docs/foundry/building-pipelines/triggers-reference/">
+                  <svg class="icon sm" aria-hidden="true"><use href="#i-file"></use></svg><span>Palantir Trigger types reference</span>
+                </a>
+                <a class="source-link" href="https://www.palantir.com/docs/foundry/data-integration/schedules/">
+                  <svg class="icon sm" aria-hidden="true"><use href="#i-file"></use></svg><span>Palantir Schedules core concepts</span>
+                </a>
+                <a class="source-link" href="https://www.palantir.com/docs/foundry/data-integration/builds/">
+                  <svg class="icon sm" aria-hidden="true"><use href="#i-file"></use></svg><span>Palantir Builds core concepts</span>
+                </a>
+              </div>
+            </section>
+          </div>
+        </div>
+      </main>
+
+      <footer class="site-footer">
+        <div class="page-footer">
+          <div>Palantir Foundry / Pipeline 调研材料库</div>
+          <div class="footer-note">统一入口：首页 / 总览 / 高码 / 蓝图 / 算子总览 / 八个技术专题</div>
+        </div>
+      </footer>
+    </div>
+  </body>
+</html>

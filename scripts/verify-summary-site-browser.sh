@@ -34,7 +34,7 @@ const pages = [
     path: "index.html",
     slug: "home",
     title: "Palantir 调研总结一页纸",
-    requiredText: ["三个管理判断", "高码能力研究", "Pipeline Builder 算子总览", "Dataset 权限与 Marking 架构", "Media Set"],
+    requiredText: ["三个管理判断", "高码能力研究", "Pipeline Builder 算子总览", "Dataset 权限与 Marking 架构", "Media Set", "Foundry Schedule 运行模式"],
   },
   {
     path: "pages/pro-code-capability.html",
@@ -46,7 +46,7 @@ const pages = [
     path: "pages/overview.html",
     slug: "overview",
     title: "Palantir 研发技术总览",
-    requiredText: ["完整阅读路径", "高码能力研究", "能力建设关注点", "Dataset 权限与 Marking 架构", "Media Set 资产模型", "算子主线如何嵌入平台图", "Pipeline Builder 算子总览页"],
+    requiredText: ["完整阅读路径", "高码能力研究", "能力建设关注点", "Dataset 权限与 Marking 架构", "Media Set 资产模型", "Foundry Schedule 运行模式", "算子主线如何嵌入平台图", "Pipeline Builder 算子总览页"],
     iframeSelector: 'iframe[title="Pipeline Builder 算子总览页预览"]',
     iframeRequiredText: ["算子总览", "transform 清单", "expression 清单"],
     iframeSrc: "pipeline-builder-operators-overview.html",
@@ -74,6 +74,12 @@ const pages = [
     slug: "execution-and-incremental",
     title: "执行引擎与增量链路",
     requiredText: ["执行引擎", "增量", "Transaction"],
+  },
+  {
+    path: "pages/foundry-schedule-module.html",
+    slug: "foundry-schedule-module",
+    title: "Foundry Schedule 运行模式",
+    requiredText: ["Foundry Schedule 运行模式", "Schedule 到 Build 的运行链路", "Trigger 是状态机", "Build、staleness 与 force build", "拆开业务周期调度与 freshness 调度"],
   },
   {
     path: "pages/streaming-architecture.html",

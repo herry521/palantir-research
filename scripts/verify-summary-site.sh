@@ -11,6 +11,7 @@ required_files=(
   "$ROOT/pages/pro-code-capability.html"
   "$ROOT/pages/expression-and-operators.html"
   "$ROOT/pages/execution-and-incremental.html"
+  "$ROOT/pages/foundry-schedule-module.html"
   "$ROOT/pages/streaming-architecture.html"
   "$ROOT/pages/lineage-ontology-governance.html"
   "$ROOT/pages/dataset-permission-marking.html"
@@ -29,8 +30,10 @@ check_contains() {
 
 check_contains "$ROOT/index.html" "Palantir"
 check_contains "$ROOT/index.html" "三个管理判断"
+check_contains "$ROOT/index.html" "Foundry Schedule 运行模式"
 check_contains "$ROOT/pages/overview.html" "技术总览"
 check_contains "$ROOT/pages/overview.html" "map-layers"
+check_contains "$ROOT/pages/overview.html" "Foundry Schedule 运行模式"
 check_contains "$ROOT/pages/data-engineering-platform-map.html" "能力建设关注点"
 check_contains "$ROOT/pages/data-engineering-platform-map.html" "Dataset 版本模型"
 check_contains "$ROOT/pages/data-engineering-platform-map.html" "Ontology / Writeback"
@@ -58,6 +61,12 @@ check_contains "$ROOT/pages/pro-code-capability.html" "#7 docs/raw/23-code-repos
 check_contains "$ROOT/pages/pro-code-capability.html" "#14 docs/raw/28-pipeline-builder-pro-code-interop.md"
 check_contains "$ROOT/pages/expression-and-operators.html" "表达层"
 check_contains "$ROOT/pages/execution-and-incremental.html" "增量"
+check_contains "$ROOT/pages/foundry-schedule-module.html" "Foundry Schedule 运行模式"
+check_contains "$ROOT/pages/foundry-schedule-module.html" "Trigger 是状态机"
+check_contains "$ROOT/pages/foundry-schedule-module.html" "Schedule 到 Build 的运行链路"
+check_contains "$ROOT/pages/foundry-schedule-module.html" "Build、staleness 与 force build"
+check_contains "$ROOT/pages/foundry-schedule-module.html" "拆开业务周期调度与 freshness 调度"
+check_contains "$ROOT/pages/foundry-schedule-module.html" "docs/synthesis/foundry-schedule-module-deep-dive.md"
 check_contains "$ROOT/pages/streaming-architecture.html" "流式"
 check_contains "$ROOT/pages/lineage-ontology-governance.html" "Ontology"
 check_contains "$ROOT/pages/lineage-ontology-governance.html" "血缘关系图"
@@ -104,13 +113,13 @@ for file in "${required_files[@]}"; do
   fi
 
   nav_count="$(grep -o 'data-nav href=' "$file" | wc -l | tr -d ' ')"
-  [[ "$nav_count" == "10" ]] || {
-    echo "Expected 10 primary nav links in $file, found $nav_count"
+  [[ "$nav_count" == "11" ]] || {
+    echo "Expected 11 primary nav links in $file, found $nav_count"
     exit 1
   }
 
   check_contains "$file" "Palantir Foundry / Pipeline 调研材料库"
-  check_contains "$file" "统一入口：首页 / 总览 / 高码 / 蓝图 / 算子总览 / 六个技术专题"
+  check_contains "$file" "统一入口：首页 / 总览 / 高码 / 蓝图 / 算子总览 / 八个技术专题"
 done
 
 grep -q 'href="pages/overview.html"' "$ROOT/index.html" || {
@@ -130,6 +139,11 @@ grep -q 'href="pages/pro-code-capability.html"' "$ROOT/index.html" || {
 
 grep -q 'href="pages/dataset-permission-marking.html"' "$ROOT/index.html" || {
   echo "Homepage must link to dataset permission marking page"
+  exit 1
+}
+
+grep -q 'href="pages/foundry-schedule-module.html"' "$ROOT/index.html" || {
+  echo "Homepage must link to Foundry schedule module page"
   exit 1
 }
 
