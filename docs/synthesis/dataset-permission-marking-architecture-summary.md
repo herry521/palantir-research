@@ -328,9 +328,323 @@ Transform 声明 stop_propagating
 
 ---
 
-## 11. Marking 传递与计算详细设计
+## 11. Palantir Marking 实现机制口径
 
-### 11.1 三个计算时机
+Palantir 没有公开 Foundry Marking 的内部表结构和代码实现。本节把公开文档/API 能确认的事实，与基于公开行为可合理推断的内部实现拆开描述。
+
+### 11.1 公开事实：Marking 是 Access Requirement
+
+Palantir 官方语义里，Marking 是应用在 files、folders、projects 等资源上的额外访问控制。用户必须满足资源上的 Markings 才能访问资源。它不是描述数据的普通 tag，而是平台强制执行的访问要求。
+
+更合适的抽象是：
+
+```text
+AccessRequirement {
+  type: MARKING
+  id: PII
+}
+```
+
+不是：
+
+```text
+Tag {
+  name: PII
+}
+```
+
+这一区别决定了实现方式：
+
+- Marking 必须进入服务端鉴权链路。
+- Marking 必须能被查询、解释、审计。
+- Marking 变更必须能触发下游影响分析。
+- Marking 不能只作为 Dataset metadata 展示。
+
+### 11.2 公开事实：对象层分成 Marking、Member、Role Assignment
+
+Palantir 公开 API 暴露了这些对象：
+
+```text
+MarkingCategory
+Marking
+MarkingMember
+MarkingRoleAssignment
+ResourceAccessRequirements
+```
+
+它至少表达了两组关系：
+
+```text
+MarkingMember
+  谁具备访问该 Marking 数据的资格
+
+MarkingRoleAssignment
+  谁可以管理、应用、移除该 Marking
+```
+
+因此自建时不要把这几件事合并：
+
+| 权限关系 | 含义 | 是否应自动互相包含 |
+|---|---|---|
+| Marking member | 用户具备访问该类敏感数据的资格 | 否 |
+| Apply marking | 用户可以把 Marking 应用到资源 | 否 |
+| Remove marking | 用户可以从资源或继承链路中移除 Marking 要求 | 否 |
+| Manage marking | 用户可以管理 Marking metadata、members、roles | 否 |
+
+这说明 Palantir 的 Marking 实现不是简单的 `marking_id -> users`，而是将“数据访问资格”和“治理操作权限”拆开。
+
+### 11.3 公开事实：Marking 有两条传播路径
+
+Palantir 文档明确说明 Markings 会通过 file hierarchy 和 direct dependencies 继承，并通过 transform / analysis logic 传播。
+
+可以拆成两条路径：
+
+```text
+路径 A：资源层级传播
+Project / Folder Marking
+  -> Child Folder
+  -> Dataset / Code Repository / Analysis / File
+
+路径 B：数据依赖传播
+Dataset A with PII
+  -> Transform reads A
+  -> Dataset B inherits PII
+  -> Dataset C derived from B inherits PII
+```
+
+这也是 Foundry Marking 的关键点：敏感要求不仅跟着资源位置走，也跟着数据派生关系走。
+
+### 11.4 公开事实：读取时区分 resource access 与 data access
+
+Foundry 的 Data Lineage 权限排查区分两类访问：
+
+```text
+Resource access
+  用户能否发现、打开、管理这个资源。
+
+Data access
+  用户能否读取 Dataset view 中的实际数据。
+```
+
+因此用户可能满足 Dataset resource 的 role 和 file requirements，但不满足上游继承来的 data requirements，结果是能看到 Dataset metadata，却不能读取数据内容。
+
+这意味着内部实现不能只有一张资源 ACL。至少要能表达：
+
+```text
+resource requirements
+data / transaction / view requirements
+```
+
+### 11.5 推断：内部大概率有 Requirement Service 和 Propagation Engine
+
+基于公开 API 和行为，可以合理推断 Foundry 内部存在类似组件：
+
+```text
+Marking Service
+  管 marking、category、members、role assignments
+
+Resource Requirement Service
+  管资源 direct / inherited access requirements
+
+Dataset / Transaction Service
+  管 dataset branch、transaction、view、schema、build metadata
+
+Lineage Service
+  管 transform input/output、analysis dependency、dataset-to-dataset graph
+
+Propagation Engine
+  在 build 和 marking change 时计算下游 effective requirements
+
+Authorization Gateway / PDP
+  在 preview、query、export、API、OSDK 等入口统一鉴权
+
+Approval Service
+  管 protected branch、required approver、remove marking / expand access 审批
+
+Audit Service
+  记录 apply、remove、member change、approval、read allowed/denied
+```
+
+这不是官方披露的内部模块名，而是从能力边界推出的工程分层。
+
+### 11.6 推断：内部数据结构可能接近 requirement 图
+
+为了支持直接应用、父级继承、血缘传播、停止传播、访问解释和影响模拟，内部数据结构大概率不是单个 `dataset.markings` 字段，而更像 requirement graph：
+
+```text
+resource_requirement
+  resource_rid
+  requirement_type        # MARKING / ORGANIZATION / CLASSIFICATION
+  requirement_id
+  source_type             # DIRECT / PARENT
+  source_resource_rid
+
+dataset_view_requirement 或 transaction_requirement
+  dataset_rid
+  transaction_rid / view_rid
+  requirement_type
+  requirement_id
+  source_type             # LINEAGE / OUTPUT_DIRECT
+  source_input_dataset_rid
+  source_input_transaction_rid
+```
+
+是否真的叫 `transaction_requirement` 不确定，但必须存在某种等价机制，否则无法同时支持：
+
+- 历史 transaction 保留旧访问要求。
+- 新 transaction 应用 unmarking 后访问要求变化。
+- Data Lineage 解释上游哪个 Dataset 限制了当前数据读取。
+- Marking change simulation 判断哪些下游资源会受影响。
+
+### 11.7 推断：Build-time propagation 的实现形态
+
+Transform 构建输出 Dataset 时，Marking 传播大概率发生在 output transaction commit 前后：
+
+```text
+Build starts
+  -> Resolve input dataset views / transactions
+  -> Read input effective resource requirements
+  -> Read input data requirements
+  -> Read output resource requirements
+  -> Apply approved stop_propagating / stop_requiring rules
+  -> Commit output transaction
+  -> Persist output data requirements
+  -> Persist lineage edges
+  -> Emit audit / lineage update events
+```
+
+抽象公式：
+
+```text
+output_requirements =
+    output_resource_requirements
+  ∪ input_1_requirements
+  ∪ input_2_requirements
+  ∪ ...
+  - approved_removed_requirements
+```
+
+多输入场景是关键边界：
+
+```text
+A carries PII
+B carries PII
+Transform(A, B) -> C
+
+Only A stop_propagating PII
+=> B still contributes PII
+=> C still requires PII
+```
+
+因此 Palantir 的 `stop_propagating` 从语义上更像“停止某个 input 对 output 的 requirement 贡献”，而不是“从 output 全局删除某个 Marking”。
+
+### 11.8 公开事实：停止传播必须走受控审批
+
+Palantir 支持：
+
+```text
+stop_propagating
+  移除 inherited Markings
+
+stop_requiring
+  移除 inherited Organizations
+```
+
+但这类操作会扩大访问范围，所以不是普通代码变更。公开文档要求 protected branch、required approver，并且移除 Marking 需要 Remove marking 权限，移除 Organization 需要 Expand access 权限。
+
+抽象流程：
+
+```text
+Engineer creates branch
+  -> Declares stop_propagating / stop_requiring
+  -> Opens PR or branch change
+  -> Security approver reviews
+  -> Approver permission checked
+  -> Protected branch build runs
+  -> New output transaction no longer inherits selected requirement
+  -> Audit event recorded
+```
+
+### 11.9 推断：Query-time enforcement 读取物化结果
+
+查询时不适合临时重算全量 lineage。更合理的实现是读取已物化的 requirements：
+
+```text
+required_for_read =
+    resource_effective_requirements(dataset_resource)
+  ∪ data_requirements(dataset_view)
+```
+
+然后和用户上下文比较：
+
+```text
+user_context =
+    resource roles
+  + marking memberships
+  + group-derived marking memberships
+  + organization memberships
+  + classification clearance
+  + scoped session
+```
+
+普通 Marking 判定可抽象为：
+
+```text
+required_markings ⊆ user_markings
+```
+
+完整读取判定：
+
+```text
+can_read =
+    has_view_role
+AND all_required_markings_satisfied
+AND organization_requirement_satisfied
+AND classification_requirement_satisfied
+AND scoped_session_satisfied
+```
+
+### 11.10 设计启示
+
+如果基于 Dataset 自己实现类似能力，核心不是照搬 Palantir 页面，而是复刻它的控制闭环：
+
+```text
+Marking 管理
+  -> Apply Marking
+  -> Resource requirement 物化
+  -> Build-time lineage propagation
+  -> Transaction / view requirement 持久化
+  -> Query-time enforcement
+  -> Unmarking approval
+  -> Audit + WhyDenied + Impact Simulation
+```
+
+最低实现不要停在：
+
+```text
+dataset.markings = [...]
+```
+
+而要做到：
+
+```text
+resource_requirement + transaction_requirement + lineage propagation + query-time PDP
+```
+
+### 11.11 公开来源
+
+- Palantir Markings: `https://www.palantir.com/docs/foundry/security/markings/`
+- Manage markings: `https://www.palantir.com/docs/foundry/platform-security-management/manage-markings`
+- Remove inherited Markings and Organizations: `https://www.palantir.com/docs/foundry/building-pipelines/remove-inherited-markings`
+- Guidance on removing markings: `https://www.palantir.com/docs/foundry/building-pipelines/remove-markings`
+- Data Lineage - Check resource permissions: `https://www.palantir.com/docs/foundry/data-lineage/check-permissions`
+- API - Get Access Requirements: `https://www.palantir.com/docs/foundry/api/filesystem-v2-resources/resources/get-access-requirements`
+
+---
+
+## 12. Marking 传递与计算详细设计
+
+### 12.1 三个计算时机
 
 Marking 计算不要放进一个大函数里。更稳妥的拆法是按时机分成三类：
 
@@ -348,7 +662,7 @@ Build-time：这个 output transaction 从上游继承了什么访问要求。
 Query-time：这个用户是否满足当前 resource + data requirements。
 ```
 
-### 11.2 Apply-time：Marking 应用过程
+### 12.2 Apply-time：Marking 应用过程
 
 给资源应用 Marking 时，本质是新增一条 direct requirement，而不是写普通标签。
 
@@ -398,7 +712,7 @@ def apply_marking(user, resource_id, marking_id):
 - Marking admin 不等于自动拥有该 Marking 的数据访问资格。
 - 变更后要能解释 direct requirement 和 inherited requirement 的来源。
 
-### 11.3 Resource hierarchy：资源层传递
+### 12.3 Resource hierarchy：资源层传递
 
 资源层传播沿 Project / folder / resource 父子树生效。
 
@@ -458,7 +772,7 @@ Parent requirement changed
   -> 标记 downstream data requirements 需要 impact scan 或 rebuild
 ```
 
-### 11.4 Build-time：数据血缘传递
+### 12.4 Build-time：数据血缘传递
 
 数据血缘传播是防止下游绕权的核心。构建 output transaction 前，需要把每个 input 的访问要求合并到 output。
 
@@ -553,7 +867,7 @@ def normalize_requirements(requirements):
 
 否则 Access Debugger 无法回答“这个 PII requirement 是哪个 input 带来的”。
 
-### 11.5 Unmarking：传播中断计算
+### 12.5 Unmarking：传播中断计算
 
 传播中断不能设计成“从 output 上删除某个 Marking”。它必须是 input-specific 规则：
 
@@ -627,7 +941,7 @@ def remove_requirements(carried, approved_rules):
     }
 ```
 
-### 11.6 Query-time：读取时 Marking 计算
+### 12.6 Query-time：读取时 Marking 计算
 
 读取路径不要重新推导 lineage。读取时应只读取已经物化好的 requirements：
 
@@ -694,7 +1008,7 @@ def authorize_dataset_read(user, dataset_view):
 - 权限判定不能信任前端 UI 的显示状态。
 - scoped session 只能收窄用户当前可用 Markings，不能扩大访问。
 
-### 11.7 事件流
+### 12.7 事件流
 
 推荐把计算拆成事件驱动链路：
 
@@ -722,7 +1036,7 @@ DatasetReadRequested
   -> Audit
 ```
 
-### 11.8 容易做错的边界
+### 12.8 容易做错的边界
 
 | 错误设计 | 风险 | 正确做法 |
 |---|---|---|
@@ -735,7 +1049,7 @@ DatasetReadRequested
 
 ---
 
-## 12. 自建平台成熟度分层
+## 13. 自建平台成熟度分层
 
 | 层级 | 能力 | 结果 |
 |---|---|---|
@@ -749,7 +1063,7 @@ DatasetReadRequested
 
 ---
 
-## 13. 常见误区
+## 14. 常见误区
 
 | 误区 | 风险 | 修正 |
 |---|---|---|
@@ -763,7 +1077,7 @@ DatasetReadRequested
 
 ---
 
-## 14. 对我们的建设建议
+## 15. 对我们的建设建议
 
 1. 先统一 Dataset、Resource、Branch、Transaction、Lineage 的元模型，再补 Marking。
 2. Marking 不要做成普通标签字段，必须进入鉴权、构建、查询、审批和审计链路。
@@ -775,7 +1089,7 @@ DatasetReadRequested
 
 ---
 
-## 15. HTML 展示口径
+## 16. HTML 展示口径
 
 站点页面应突出五个阅读重点：
 
