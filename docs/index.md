@@ -16,52 +16,67 @@
 | 计划/设计层 | `docs/superpowers/` | 保存研究计划、规格设计、执行拆解和评审记录。 |
 | 元数据层 | `docs/catalog.yml` | 连接文档、主题、issue、canonical 状态和证据关系。 |
 | 阅读层 | `docs/library/` | 规划中；用于“像书一样读”的导读和章节，不复制 raw 正文。 |
-| 主题索引层 | `docs/topics/` | 规划中；用于按 Dataset、Pipeline、Data Quality 等主题聚合入口。 |
+| 主题索引层 | `docs/topics/` | 已建立首批多轴入口；用于按 Dataset、Pipeline、Data Quality 等主题聚合结论和证据链。 |
 
 设计基线见 [调研文档库体系化组织设计](superpowers/specs/2026-05-31-research-doc-library-design.md)，父 issue 为 [#42](https://gitlabee.chehejia.com/huyongqiang/palantir-research/-/issues/42)。
+
+## 主题索引
+
+| 主题 | 入口 | 适合回答的问题 |
+|---|---|---|
+| Dataset | [docs/topics/dataset.md](topics/dataset.md) | Dataset、transaction/view、无 `dt` 分区、版本坐标和迁移风险。 |
+| Pipeline | [docs/topics/pipeline.md](topics/pipeline.md) | Pipeline Builder、Transform、执行引擎、增量和算子平台。 |
+| Scheduling | [docs/topics/scheduling.md](topics/scheduling.md) | Schedule trigger、graph build、staleness、freshness 与业务周期边界。 |
+| Lineage and Catalog | [docs/topics/lineage-and-catalog.md](topics/lineage-and-catalog.md) | 血缘坐标、branch/version、catalog 元数据和文档库索引。 |
+| Security and Marking | [docs/topics/security-and-marking.md](topics/security-and-marking.md) | 权限、Marking、传播、审计和外部通知安全。 |
+| Ontology | [docs/topics/ontology.md](topics/ontology.md) | Object Type、Property、Link、Action、语义层和业务操作模型。 |
+| Data Quality | [docs/topics/data-quality.md](topics/data-quality.md) | Data Expectations、Health Checks、Monitoring Views、告警和 issue 闭环。 |
+| Pro-Code | [docs/topics/pro-code.md](topics/pro-code.md) | Code Repositories、Transform Contract、运行时、CI 和工程治理。 |
+| AI FDE | [docs/topics/ai-fde.md](topics/ai-fde.md) | AI FDE 定位、context/tool/approval、branch、验证和自建边界。 |
+| Self-build Roadmap | [docs/topics/self-build-roadmap.md](topics/self-build-roadmap.md) | 自研平台路线、能力优先级、双坐标迁移和 AI 工程执行面。 |
 
 ## 推荐阅读路径
 
 ### Dataset、事务与无 `dt` 分区
 
-1. 先读 [Palantir Dataset 无默认 dt 分区模型的数据模型差异分析](synthesis/palantir-dataset-no-dt-partition-impact.md)。
-2. 再查证据链：`docs/raw/39` 到 `docs/raw/43`。
+1. 先从 [Dataset 主题索引](topics/dataset.md) 明确核心坐标和开放问题。
+2. 再读 [Palantir Dataset 无默认 dt 分区模型的数据模型差异分析](synthesis/palantir-dataset-no-dt-partition-impact.md)。
 3. 对比背景可读 [Palantir Dataset 与传统数据仓库建模对比](synthesis/palantir-dataset-vs-data-warehouse.md)。
 
 ### Pipeline 与执行体系
 
-1. 先读 [Palantir Pipeline 技术实现深度分析](synthesis/palantir-pipeline-deep-dive.md)。
-2. 再读 Pipeline 表达、执行、流批、增量和调度相关 raw：`docs/raw/01`、`02`、`03`、`06-incremental`、`15`、`27`。
+1. 先从 [Pipeline 主题索引](topics/pipeline.md) 看表达、执行、流批、增量和互操作的证据分布。
+2. 再读 [Palantir Pipeline 技术实现深度分析](synthesis/palantir-pipeline-deep-dive.md)。
 3. 如果目标是自建算子平台，继续读 [算子平台建设方案](synthesis/operator-platform-design.md)。
 
 ### 安全、权限与 Marking
 
-1. 先读 [Palantir Dataset 权限体系与 Marking 机制沉淀](synthesis/dataset-permission-marking-architecture-summary.md)。
-2. 再读全量证据 [Dataset 权限体系与 Marking 架构](raw/30-dataset-permission-marking-architecture.md)。
+1. 先从 [Security and Marking 主题索引](topics/security-and-marking.md) 明确权限判定层次和待验证边界。
+2. 再读 [Palantir Dataset 权限体系与 Marking 机制沉淀](synthesis/dataset-permission-marking-architecture-summary.md)。
 3. 按需回查 Marking 机制、实现方案和进阶机制：`docs/raw/11`、`12`、`13`。
 
 ### Data Quality
 
-1. 先读 [Palantir Data Quality 模块调研综合报告](synthesis/palantir-data-quality-module-research.md)。
-2. 再按证据域读取 `docs/raw/44` 到 `docs/raw/49`。
-3. 重点关注三层边界：Data Expectations 构建期门禁、Data Health/Health Checks 运行期监控、Monitoring Views 规模化告警。
+1. 先从 [Data Quality 主题索引](topics/data-quality.md) 明确构建期、运行期、监控视图和外部通知边界。
+2. 再读 [Palantir Data Quality 模块调研综合报告](synthesis/palantir-data-quality-module-research.md)。
+3. 按证据域读取 `docs/raw/44` 到 `docs/raw/49`。
 
 ### Pro-Code 与工程治理
 
-1. 先读 [Palantir 高码能力研究综合结论](synthesis/palantir-pro-code-capability-research.md)。
-2. 再读 `docs/raw/22` 到 `docs/raw/28`。
+1. 先从 [Pro-Code 主题索引](topics/pro-code.md) 看高码 Contract、工程入口和治理证据链。
+2. 再读 [Palantir 高码能力研究综合结论](synthesis/palantir-pro-code-capability-research.md)。
 3. 对质量、测试、血缘和权限治理，结合 [高码质量、测试、血缘、权限与可观测性调研](raw/26-pro-code-governance-quality-observability.md)。
 
 ### AI FDE
 
-1. 先读 [Palantir AI FDE 综合结论、证据校验与自建方案](synthesis/palantir-ai-fde-research.md)。
-2. 再读 `docs/raw/32` 到 `docs/raw/37`。
-3. 重点看功能边界、上下文/工具模型、治理分支和自建 PoC 路线。
+1. 先从 [AI FDE 主题索引](topics/ai-fde.md) 明确产品边界、治理门禁和未公开实现细节。
+2. 再读 [Palantir AI FDE 综合结论、证据校验与自建方案](synthesis/palantir-ai-fde-research.md)。
+3. 按需回查 `docs/raw/32` 到 `docs/raw/37`。
 
 ### 自建平台路线
 
-1. 从 [算子平台建设方案](synthesis/operator-platform-design.md) 和 [Data Quality 综合报告](synthesis/palantir-data-quality-module-research.md) 提取可落地模块。
-2. 结合 Dataset、Pipeline、权限、AI FDE 四条阅读路径构建平台能力图。
+1. 先从 [Self-build Roadmap 主题索引](topics/self-build-roadmap.md) 建立能力域优先级。
+2. 从 [算子平台建设方案](synthesis/operator-platform-design.md) 和 [Data Quality 综合报告](synthesis/palantir-data-quality-module-research.md) 提取可落地模块。
 3. 使用 `docs/catalog.yml` 查看 canonical 文档和对应证据层。
 
 ## 追踪与维护

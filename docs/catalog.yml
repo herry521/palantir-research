@@ -36,6 +36,187 @@ documents:
     canonical: true
     updated: 2026-05-31
 
+  - id: topic-dataset
+    path: docs/topics/dataset.md
+    title: "Dataset"
+    type: topic
+    status: reviewed
+    topics: [dataset, self-build-roadmap]
+    source_layer: topic
+    issue_refs: [19, 28, 29, 30, 31, 32, 33, 34, 46]
+    source_refs: [docs/synthesis/palantir-dataset-no-dt-partition-impact.md, docs/synthesis/palantir-dataset-vs-data-warehouse.md, docs/synthesis/dataset-permission-marking-architecture-summary.md, docs/raw/39-foundry-dataset-transaction-view-evidence.md, docs/raw/40-traditional-dt-partition-production-semantics.md, docs/raw/41-lakehouse-layout-partition-cost-model.md, docs/raw/42-governance-lineage-audit-contracts.md, docs/raw/43-migration-risk-dual-coordinate-patterns.md, docs/raw/30-dataset-permission-marking-architecture.md]
+    related_docs: [docs/topics/security-and-marking.md, docs/topics/lineage-and-catalog.md, docs/topics/self-build-roadmap.md]
+    canonical: false
+    created: 2026-05-31
+    updated: 2026-05-31
+    last_reviewed: 2026-05-31
+    confidence: high
+    evidence_strength: strong
+    owner: codex
+    reviewers: [topic-agent]
+  - id: topic-pipeline
+    path: docs/topics/pipeline.md
+    title: "Pipeline"
+    type: topic
+    status: reviewed
+    topics: [pipeline, execution-runtime, operator-platform]
+    source_layer: topic
+    issue_refs: [2, 3, 9, 11, 12, 14, 40, 46]
+    source_refs: [docs/synthesis/palantir-pipeline-deep-dive.md, docs/synthesis/operator-platform-design.md, docs/synthesis/palantir-pro-code-capability-research.md, docs/raw/01-pipeline-expression-dsl.md, docs/raw/02-execution-engine-spark.md, docs/raw/03-streaming-batch-architecture.md, docs/raw/14-transform-operator-library.md, docs/raw/25-transform-contract-dag.md, docs/raw/28-pipeline-builder-pro-code-interop.md, docs/raw/45-data-expectations-build-gates.md]
+    related_docs: [docs/topics/pro-code.md, docs/topics/scheduling.md, docs/topics/data-quality.md]
+    canonical: false
+    created: 2026-05-31
+    updated: 2026-05-31
+    last_reviewed: 2026-05-31
+    confidence: high
+    evidence_strength: strong
+    owner: codex
+    reviewers: [topic-agent]
+  - id: topic-scheduling
+    path: docs/topics/scheduling.md
+    title: "Scheduling"
+    type: topic
+    status: reviewed
+    topics: [scheduling, incremental]
+    source_layer: topic
+    issue_refs: [11, 46]
+    source_refs: [docs/synthesis/foundry-schedule-module-deep-dive.md, docs/raw/38-foundry-schedule-module-research-plan.md, docs/raw/27-incremental-scheduling-transaction.md, docs/raw/15-job-execution-guarantee.md, docs/synthesis/dataworks-vs-palantir-integration.md]
+    related_docs: [docs/topics/dataset.md, docs/topics/pipeline.md, docs/topics/self-build-roadmap.md]
+    canonical: false
+    created: 2026-05-31
+    updated: 2026-05-31
+    last_reviewed: 2026-05-31
+    confidence: medium
+    evidence_strength: medium
+    owner: codex
+    reviewers: [topic-agent]
+  - id: topic-lineage-and-catalog
+    path: docs/topics/lineage-and-catalog.md
+    title: "Lineage And Catalog"
+    type: topic
+    status: reviewed
+    topics: [lineage-and-catalog, library, governance]
+    source_layer: topic
+    issue_refs: [30, 42, 44, 45, 46, 47, 48]
+    source_refs: [docs/raw/29-lineage-branch-version-pipeline-sync.md, docs/superpowers/specs/2026-05-31-research-doc-library-design.md, docs/catalog.yml, docs/index.md, docs/raw/04-lineage-ontology-integration.md, docs/raw/42-governance-lineage-audit-contracts.md, docs/synthesis/palantir-pipeline-deep-dive.md, docs/superpowers/plans/2026-05-31-research-doc-library-phase1-plan.md]
+    related_docs: [docs/topics/dataset.md, docs/topics/pipeline.md]
+    canonical: false
+    created: 2026-05-31
+    updated: 2026-05-31
+    last_reviewed: 2026-05-31
+    confidence: medium
+    evidence_strength: medium
+    owner: codex
+    reviewers: [topic-agent]
+  - id: topic-security-and-marking
+    path: docs/topics/security-and-marking.md
+    title: "Security And Marking"
+    type: topic
+    status: reviewed
+    topics: [security-and-marking, governance]
+    source_layer: topic
+    issue_refs: [19, 42, 43, 46]
+    source_refs: [docs/synthesis/dataset-permission-marking-architecture-summary.md, docs/raw/30-dataset-permission-marking-architecture.md, docs/raw/06-security-and-permissions.md, docs/raw/11-marking-mechanism-deep-dive.md, docs/raw/12-dataset-marking-implementation.md, docs/raw/13-marking-advanced-deep-dive.md, docs/raw/49-data-quality-external-notification-security.md, docs/synthesis/palantir-data-quality-module-research.md]
+    related_docs: [docs/topics/dataset.md, docs/topics/data-quality.md, docs/topics/ontology.md]
+    canonical: false
+    created: 2026-05-31
+    updated: 2026-05-31
+    last_reviewed: 2026-05-31
+    confidence: high
+    evidence_strength: strong
+    owner: codex
+    reviewers: [topic-agent]
+  - id: topic-ontology
+    path: docs/topics/ontology.md
+    title: "Ontology"
+    type: topic
+    status: reviewed
+    topics: [ontology, dataset]
+    source_layer: topic
+    issue_refs: [42, 46]
+    source_refs: [docs/superpowers/specs/2026-04-15-ontology-data-model-research.md, docs/synthesis/palantir-dataset-vs-data-warehouse.md, docs/raw/04-lineage-ontology-integration.md, docs/raw/30-dataset-permission-marking-architecture.md, docs/raw/11-marking-mechanism-deep-dive.md, docs/raw/29-lineage-branch-version-pipeline-sync.md, docs/raw/42-governance-lineage-audit-contracts.md]
+    related_docs: [docs/topics/dataset.md, docs/topics/security-and-marking.md, docs/topics/lineage-and-catalog.md]
+    canonical: false
+    created: 2026-05-31
+    updated: 2026-05-31
+    last_reviewed: 2026-05-31
+    confidence: medium
+    evidence_strength: medium
+    owner: codex
+    reviewers: [topic-agent]
+  - id: topic-data-quality
+    path: docs/topics/data-quality.md
+    title: "Data Quality"
+    type: topic
+    status: reviewed
+    topics: [data-quality, observability, governance]
+    source_layer: topic
+    issue_refs: [35, 36, 37, 38, 39, 40, 41, 43, 46]
+    source_refs: [docs/synthesis/palantir-data-quality-module-research.md, docs/raw/44-data-quality-source-map.md, docs/raw/45-data-expectations-build-gates.md, docs/raw/46-data-health-health-checks.md, docs/raw/47-monitoring-views-alert-issue-loop.md, docs/raw/48-data-quality-governance-lifecycle.md, docs/raw/49-data-quality-external-notification-security.md, docs/raw/26-pro-code-governance-quality-observability.md, docs/raw/05-testing-and-data-connection.md, docs/raw/08-monitoring-and-observability.md]
+    related_docs: [docs/topics/pipeline.md, docs/topics/pro-code.md, docs/topics/security-and-marking.md]
+    canonical: false
+    created: 2026-05-31
+    updated: 2026-05-31
+    last_reviewed: 2026-05-31
+    confidence: high
+    evidence_strength: strong
+    owner: codex
+    reviewers: [topic-agent]
+  - id: topic-pro-code
+    path: docs/topics/pro-code.md
+    title: "Pro-Code"
+    type: topic
+    status: reviewed
+    topics: [pro-code, pipeline, governance]
+    source_layer: topic
+    issue_refs: [4, 6, 7, 8, 9, 10, 11, 12, 14, 46]
+    source_refs: [docs/synthesis/palantir-pro-code-capability-research.md, docs/raw/21-pro-code-capability-deep-dive.md, docs/raw/22-pro-code-source-map.md, docs/raw/23-code-repositories-engineering-entry.md, docs/raw/24-pro-code-runtime-compute-engines.md, docs/raw/25-transform-contract-dag.md, docs/raw/26-pro-code-governance-quality-observability.md, docs/raw/27-incremental-scheduling-transaction.md, docs/raw/28-pipeline-builder-pro-code-interop.md, docs/superpowers/plans/2026-05-29-palantir-pro-code-research-plan.md]
+    related_docs: [docs/topics/pipeline.md, docs/topics/data-quality.md, docs/topics/ai-fde.md]
+    canonical: false
+    created: 2026-05-31
+    updated: 2026-05-31
+    last_reviewed: 2026-05-31
+    confidence: high
+    evidence_strength: strong
+    owner: codex
+    reviewers: [topic-agent]
+  - id: topic-ai-fde
+    path: docs/topics/ai-fde.md
+    title: "AI FDE"
+    type: topic
+    status: reviewed
+    topics: [ai-fde, governance, self-build-roadmap]
+    source_layer: topic
+    issue_refs: [20, 21, 22, 23, 24, 25, 26, 27, 46]
+    source_refs: [docs/synthesis/palantir-ai-fde-research.md, docs/raw/32-ai-fde-source-map.md, docs/raw/33-ai-fde-product-positioning.md, docs/raw/34-ai-fde-context-tools-skills.md, docs/raw/35-ai-fde-governance-branching.md, docs/raw/36-ai-fde-architecture-design.md, docs/raw/37-ai-fde-self-build-implementation-blueprint.md, docs/superpowers/plans/2026-05-30-palantir-ai-fde-research-plan.md]
+    related_docs: [docs/topics/pro-code.md, docs/topics/security-and-marking.md, docs/topics/self-build-roadmap.md]
+    canonical: false
+    created: 2026-05-31
+    updated: 2026-05-31
+    last_reviewed: 2026-05-31
+    confidence: high
+    evidence_strength: strong
+    owner: codex
+    reviewers: [topic-agent]
+  - id: topic-self-build-roadmap
+    path: docs/topics/self-build-roadmap.md
+    title: "Self-Build Roadmap"
+    type: topic
+    status: reviewed
+    topics: [self-build-roadmap, operator-platform]
+    source_layer: topic
+    issue_refs: [24, 28, 31, 33, 35, 41, 42, 43, 46]
+    source_refs: [docs/synthesis/operator-platform-design.md, docs/synthesis/dataworks-vs-palantir-integration.md, docs/synthesis/palantir-dataset-no-dt-partition-impact.md, docs/synthesis/palantir-data-quality-module-research.md, docs/synthesis/palantir-ai-fde-research.md, docs/superpowers/specs/2026-05-31-research-doc-library-design.md, docs/raw/10-opensource-alternative-stack.md, docs/raw/20-stream-self-build-architecture.md, docs/raw/37-ai-fde-self-build-implementation-blueprint.md, docs/raw/43-migration-risk-dual-coordinate-patterns.md, docs/raw/26-pro-code-governance-quality-observability.md, docs/raw/27-incremental-scheduling-transaction.md, docs/superpowers/specs/2026-04-09-platform-upgrade-design.md, docs/superpowers/specs/2026-04-16-roadmap-product-interpretation.md, docs/superpowers/specs/2026-04-16-roadmap-q2-q3-breakdown.md]
+    related_docs: [docs/topics/dataset.md, docs/topics/pipeline.md, docs/topics/data-quality.md, docs/topics/ai-fde.md]
+    canonical: false
+    created: 2026-05-31
+    updated: 2026-05-31
+    last_reviewed: 2026-05-31
+    confidence: medium
+    evidence_strength: medium
+    owner: codex
+    reviewers: [topic-agent]
+
   - id: raw-01-pipeline-expression-dsl
     path: docs/raw/01-pipeline-expression-dsl.md
     title: "Palantir Pipeline 表达层 DSL 调研"
