@@ -63,7 +63,20 @@ def validate_catalog(data)
     failures << "#{label}: missing superseded_by path #{ref}" if local_path?(ref) && !File.exist?(ref)
   end
 
-  tracked = `git ls-files "docs/raw/*.md" "docs/synthesis/*.md" "docs/superpowers/**/*.md"`.split("\n")
+  docs.each do |doc|
+    label = doc["id"] || doc["path"] || "unknown document"
+
+    %w[source_refs related_docs supersedes].each do |field|
+      array(doc[field]).each do |ref|
+        failures << "#{label}: uncataloged #{field} path #{ref}" if local_path?(ref) && File.exist?(ref) && !paths.key?(ref)
+      end
+    end
+
+    ref = doc["superseded_by"]
+    failures << "#{label}: uncataloged superseded_by path #{ref}" if local_path?(ref) && File.exist?(ref) && !paths.key?(ref)
+  end
+
+  tracked = `git ls-files "docs/catalog.yml" "docs/index.md" "docs/topics/*.md" "docs/raw/*.md" "docs/synthesis/*.md" "docs/superpowers/**/*.md"`.split("\n")
   catalog_paths = docs.map { |doc| doc["path"] }
   missing_tracked = tracked - catalog_paths
   failures << "missing catalog entries for tracked docs: #{missing_tracked.join(", ")}" unless missing_tracked.empty?

@@ -13,12 +13,12 @@
 | 文档 | 用途 |
 | --- | --- |
 | [docs/synthesis/dataset-permission-marking-architecture-summary.md](../synthesis/dataset-permission-marking-architecture-summary.md) | Dataset 权限、Marking、传播和访问控制主结论。 |
-| [docs/raw/30-dataset-permission-marking-architecture.md](../raw/30-dataset-permission-marking-architecture.md) | Dataset 权限体系与 Marking 架构全量证据。 |
 
 ## Supporting Evidence
 
 | 证据 | 精简说明 |
 | --- | --- |
+| [docs/raw/30-dataset-permission-marking-architecture.md](../raw/30-dataset-permission-marking-architecture.md) | Dataset 权限体系与 Marking 架构全量证据。 |
 | [docs/raw/06-security-and-permissions.md](../raw/06-security-and-permissions.md) | 安全与权限全景，区分 Marking、CBAC、Organization、行列级安全、Workspace/Dataset 权限。 |
 | [docs/raw/11-marking-mechanism-deep-dive.md](../raw/11-marking-mechanism-deep-dive.md) | Marking 本质、AND/OR 类别、传播模拟、`stop_propagating`、Ontology 安全叠加和常见问题。 |
 | [docs/raw/12-dataset-marking-implementation.md](../raw/12-dataset-marking-implementation.md) | Dataset Marking 的实现方案背景。 |

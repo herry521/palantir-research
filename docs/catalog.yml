@@ -33,7 +33,21 @@ documents:
     topics: [library, self-build-roadmap]
     source_layer: reading
     issue_refs: [44]
-    canonical: true
+    related_docs: [docs/catalog.yml, docs/topics/dataset.md, docs/topics/pipeline.md, docs/topics/data-quality.md, docs/topics/self-build-roadmap.md]
+    canonical: false
+    updated: 2026-05-31
+
+  - id: docs-catalog
+    path: docs/catalog.yml
+    title: "Palantir Research 文档库元数据目录"
+    type: library
+    status: reviewed
+    topics: [library, lineage-and-catalog]
+    source_layer: metadata
+    issue_refs: [45, 47]
+    source_refs: [docs/superpowers/specs/2026-05-31-research-doc-library-design.md, docs/superpowers/plans/2026-05-31-research-doc-library-phase1-plan.md]
+    related_docs: [docs/index.md, docs/topics/lineage-and-catalog.md]
+    canonical: false
     updated: 2026-05-31
 
   - id: topic-dataset
@@ -829,6 +843,17 @@ documents:
     source_layer: planning
     issue_refs: [42, 44, 45, 46, 47, 48]
     canonical: false
+  - id: plan-research-doc-library-phase1-review
+    path: docs/superpowers/plans/2026-05-31-research-doc-library-phase1-review.md
+    title: "Research Doc Library Phase 1 Integration Review"
+    type: plan
+    status: reviewed
+    topics: [library]
+    source_layer: planning
+    issue_refs: [42, 48]
+    source_refs: [docs/index.md, docs/catalog.yml, docs/superpowers/plans/2026-05-31-research-doc-library-phase1-plan.md, docs/superpowers/specs/2026-05-31-research-doc-library-design.md]
+    related_docs: [docs/topics/lineage-and-catalog.md]
+    canonical: false
   - id: spec-platform-upgrade-design
     path: docs/superpowers/specs/2026-04-09-platform-upgrade-design.md
     title: "大数据平台升级设计文档"
@@ -842,11 +867,11 @@ documents:
     path: docs/superpowers/specs/2026-04-15-ontology-data-model-research.md
     title: "Palantir Foundry Ontology 核心业务对象与数据模型调研"
     type: spec
-    status: reviewed
+    status: canonical
     topics: [ontology]
     source_layer: planning
     issue_refs: []
-    canonical: false
+    canonical: true
   - id: spec-roadmap-product-interpretation
     path: docs/superpowers/specs/2026-04-16-roadmap-product-interpretation.md
     title: "Roadmap 产品视角解读（业务语言版）"

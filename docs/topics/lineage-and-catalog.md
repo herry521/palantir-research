@@ -11,15 +11,15 @@
 
 | 文档 | 用途 |
 | --- | --- |
-| [docs/raw/29-lineage-branch-version-pipeline-sync.md](../raw/29-lineage-branch-version-pipeline-sync.md) | Lineage、branch、version、pipeline、sync 关系的最完整主题证据。 |
-| [docs/superpowers/specs/2026-05-31-research-doc-library-design.md](../superpowers/specs/2026-05-31-research-doc-library-design.md) | 文档库 catalog/topic/library 分层设计基线。 |
-| [docs/catalog.yml](../catalog.yml) | 机器可读文档目录、topic、issue、canonical 和 source_refs 索引。 |
-| [docs/index.md](../index.md) | 人类阅读入口和推荐阅读路径。 |
+| [docs/superpowers/specs/2026-05-31-research-doc-library-design.md](../superpowers/specs/2026-05-31-research-doc-library-design.md) | 文档库 catalog/topic/library 分层设计基线；当前没有 lineage 专属 canonical synthesis。 |
 
 ## Supporting Evidence
 
 | 证据 | 精简说明 |
 | --- | --- |
+| [docs/raw/29-lineage-branch-version-pipeline-sync.md](../raw/29-lineage-branch-version-pipeline-sync.md) | Lineage、branch、version、pipeline、sync 关系的最完整主题证据。 |
+| [docs/catalog.yml](../catalog.yml) | 机器可读文档目录、topic、issue、canonical 和 source_refs 索引。 |
+| [docs/index.md](../index.md) | 人类阅读入口和推荐阅读路径。 |
 | [docs/raw/04-lineage-ontology-integration.md](../raw/04-lineage-ontology-integration.md) | 早期 Data Lineage、Dataset version、Ontology-Pipeline 集成证据。 |
 | [docs/raw/42-governance-lineage-audit-contracts.md](../raw/42-governance-lineage-audit-contracts.md) | coverage lineage、run-to-transaction、权限审计和元数据契约。 |
 | [docs/synthesis/palantir-pipeline-deep-dive.md](../synthesis/palantir-pipeline-deep-dive.md) | Pipeline DAG、Ontology 集成和 OpenLineage 短板的综合引用。 |
