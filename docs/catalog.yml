@@ -1,0 +1,695 @@
+schema_version: 1
+updated: 2026-05-31
+status_vocabulary: [intake, draft, reviewed, canonical, superseded, archived]
+type_vocabulary: [raw, synthesis, library, topic, plan, spec, archive]
+field_definitions:
+  id: stable document identifier
+  path: repository-relative path
+  title: human-readable document title
+  type: raw, synthesis, library, topic, plan, spec, or archive
+  status: intake, draft, reviewed, canonical, superseded, or archived
+  topics: capability-domain tags
+  source_layer: evidence, conclusion, reading, topic, planning, or metadata
+  issue_refs: GitLab issue numbers
+  source_refs: upstream evidence documents
+  related_docs: sibling or downstream documents
+  canonical: current recommended source of truth
+  supersedes: document ids replaced by this document
+  superseded_by: replacement document id, if any
+  created: document or catalog-entry creation date
+  updated: last material update date
+  last_reviewed: last review date
+  confidence: low, medium, or high
+  evidence_strength: weak, medium, or strong
+  owner: current maintainer
+  reviewers: review personas or groups
+
+documents:
+  - id: docs-index
+    path: docs/index.md
+    title: "Palantir Research 文档库入口"
+    type: library
+    status: reviewed
+    topics: [library, self-build-roadmap]
+    source_layer: reading
+    issue_refs: [44]
+    canonical: true
+    updated: 2026-05-31
+
+  - id: raw-01-pipeline-expression-dsl
+    path: docs/raw/01-pipeline-expression-dsl.md
+    title: "Palantir Pipeline 表达层 DSL 调研"
+    type: raw
+    status: reviewed
+    topics: [pipeline, low-code]
+    source_layer: evidence
+    issue_refs: []
+    canonical: false
+  - id: raw-02-execution-engine-spark
+    path: docs/raw/02-execution-engine-spark.md
+    title: "Palantir Pipeline 执行引擎调研"
+    type: raw
+    status: reviewed
+    topics: [pipeline, execution-runtime]
+    source_layer: evidence
+    issue_refs: []
+    canonical: false
+  - id: raw-03-streaming-batch-architecture
+    path: docs/raw/03-streaming-batch-architecture.md
+    title: "Palantir 流批一体架构调研"
+    type: raw
+    status: reviewed
+    topics: [streaming, pipeline]
+    source_layer: evidence
+    issue_refs: []
+    canonical: false
+  - id: raw-04-lineage-ontology-integration
+    path: docs/raw/04-lineage-ontology-integration.md
+    title: "Palantir 数据血缘与 Ontology 集成调研"
+    type: raw
+    status: reviewed
+    topics: [lineage-and-catalog, ontology]
+    source_layer: evidence
+    issue_refs: []
+    canonical: false
+  - id: raw-05-testing-and-data-connection
+    path: docs/raw/05-testing-and-data-connection.md
+    title: "Palantir Pipeline 测试框架与数据接入层调研"
+    type: raw
+    status: reviewed
+    topics: [pipeline, data-quality, data-integration]
+    source_layer: evidence
+    issue_refs: []
+    canonical: false
+  - id: raw-06-incremental-pipeline
+    path: docs/raw/06-incremental-pipeline.md
+    title: "Foundry 增量链路（Incremental Pipeline）"
+    type: raw
+    status: reviewed
+    topics: [incremental, pipeline]
+    source_layer: evidence
+    issue_refs: [2]
+    canonical: false
+  - id: raw-06-security-and-permissions
+    path: docs/raw/06-security-and-permissions.md
+    title: "Palantir Foundry 安全与权限模型调研"
+    type: raw
+    status: reviewed
+    topics: [security-and-marking]
+    source_layer: evidence
+    issue_refs: []
+    canonical: false
+  - id: raw-07-code-pipeline
+    path: docs/raw/07-code-pipeline.md
+    title: "Foundry 高码 Pipeline 实现方案（Code-first Transform）"
+    type: raw
+    status: reviewed
+    topics: [pro-code, pipeline]
+    source_layer: evidence
+    issue_refs: [3]
+    canonical: false
+  - id: raw-07-cicd-and-engineering-practices
+    path: docs/raw/07-cicd-and-engineering-practices.md
+    title: "Palantir Foundry CI/CD 与代码工程实践调研"
+    type: raw
+    status: reviewed
+    topics: [pro-code, governance]
+    source_layer: evidence
+    issue_refs: []
+    canonical: false
+  - id: raw-08-monitoring-and-observability
+    path: docs/raw/08-monitoring-and-observability.md
+    title: "Palantir Foundry 监控、可观测性与 SLA 管理调研"
+    type: raw
+    status: reviewed
+    topics: [observability, data-quality]
+    source_layer: evidence
+    issue_refs: []
+    canonical: false
+  - id: raw-09-aip-and-mcp-integration
+    path: docs/raw/09-aip-and-mcp-integration.md
+    title: "Palantir AIP 与 MCP 协议集成调研"
+    type: raw
+    status: reviewed
+    topics: [ai-fde, aip]
+    source_layer: evidence
+    issue_refs: []
+    canonical: false
+  - id: raw-10-opensource-alternative-stack
+    path: docs/raw/10-opensource-alternative-stack.md
+    title: "开源替代栈：Palantir Foundry Pipeline 能力复刻方案"
+    type: raw
+    status: reviewed
+    topics: [self-build-roadmap, pipeline]
+    source_layer: evidence
+    issue_refs: []
+    canonical: false
+  - id: raw-11-marking-mechanism-deep-dive
+    path: docs/raw/11-marking-mechanism-deep-dive.md
+    title: "Palantir Foundry Marking 机制深度调研"
+    type: raw
+    status: reviewed
+    topics: [security-and-marking]
+    source_layer: evidence
+    issue_refs: []
+    canonical: false
+  - id: raw-12-dataset-marking-implementation
+    path: docs/raw/12-dataset-marking-implementation.md
+    title: "Dataset Marking 实现方案深度调研"
+    type: raw
+    status: reviewed
+    topics: [security-and-marking, self-build-roadmap]
+    source_layer: evidence
+    issue_refs: []
+    canonical: false
+  - id: raw-13-marking-advanced-deep-dive
+    path: docs/raw/13-marking-advanced-deep-dive.md
+    title: "Palantir Foundry Marking 机制进阶调研"
+    type: raw
+    status: reviewed
+    topics: [security-and-marking, governance]
+    source_layer: evidence
+    issue_refs: []
+    canonical: false
+  - id: raw-14-transform-operator-library
+    path: docs/raw/14-transform-operator-library.md
+    title: "Palantir Foundry 算子库深度调研（全量版）"
+    type: raw
+    status: reviewed
+    topics: [pipeline, operator-platform]
+    source_layer: evidence
+    issue_refs: []
+    canonical: false
+  - id: raw-15-job-execution-guarantee
+    path: docs/raw/15-job-execution-guarantee.md
+    title: "Palantir Foundry 作业运行保障体系调研"
+    type: raw
+    status: reviewed
+    topics: [execution-runtime, observability]
+    source_layer: evidence
+    issue_refs: []
+    canonical: false
+  - id: raw-16-streaming-capability-deep-dive
+    path: docs/raw/16-streaming-capability-deep-dive.md
+    title: "Palantir Foundry Stream 能力深度调研"
+    type: raw
+    status: reviewed
+    topics: [streaming]
+    source_layer: evidence
+    issue_refs: []
+    canonical: false
+  - id: raw-17-faster-engine-deep-dive
+    path: docs/raw/17-faster-engine-deep-dive.md
+    title: "Palantir Foundry Faster 引擎深度调研"
+    type: raw
+    status: reviewed
+    topics: [execution-runtime]
+    source_layer: evidence
+    issue_refs: []
+    canonical: false
+  - id: raw-18-branching-data-connection
+    path: docs/raw/18-branching-data-connection.md
+    title: "Palantir Foundry Data Connection 分支支持调研"
+    type: raw
+    status: reviewed
+    topics: [data-integration, branching]
+    source_layer: evidence
+    issue_refs: []
+    canonical: false
+  - id: raw-19-streaming-pipeline-deep-dive
+    path: docs/raw/19-streaming-pipeline-deep-dive.md
+    title: "Palantir Foundry 流式链路深度调研（补充篇）"
+    type: raw
+    status: reviewed
+    topics: [streaming, pipeline]
+    source_layer: evidence
+    issue_refs: []
+    canonical: false
+  - id: raw-20-stream-self-build-architecture
+    path: docs/raw/20-stream-self-build-architecture.md
+    title: "类 Palantir Stream 能力自建方案"
+    type: raw
+    status: reviewed
+    topics: [streaming, self-build-roadmap]
+    source_layer: evidence
+    issue_refs: []
+    canonical: false
+  - id: raw-21-pro-code-capability-deep-dive
+    path: docs/raw/21-pro-code-capability-deep-dive.md
+    title: "Palantir 高码能力深度调研"
+    type: raw
+    status: reviewed
+    topics: [pro-code]
+    source_layer: evidence
+    issue_refs: []
+    canonical: false
+  - id: raw-22-pro-code-source-map
+    path: docs/raw/22-pro-code-source-map.md
+    title: "Palantir 高码能力资料源与可信度矩阵"
+    type: raw
+    status: reviewed
+    topics: [pro-code]
+    source_layer: evidence
+    issue_refs: [6]
+    canonical: false
+  - id: raw-23-code-repositories-engineering-entry
+    path: docs/raw/23-code-repositories-engineering-entry.md
+    title: "Palantir Code Repositories 与高码工程入口调研"
+    type: raw
+    status: reviewed
+    topics: [pro-code, governance]
+    source_layer: evidence
+    issue_refs: [7]
+    canonical: false
+  - id: raw-24-pro-code-runtime-compute-engines
+    path: docs/raw/24-pro-code-runtime-compute-engines.md
+    title: "Palantir 高码运行时、计算引擎与依赖管理"
+    type: raw
+    status: reviewed
+    topics: [pro-code, execution-runtime]
+    source_layer: evidence
+    issue_refs: [8]
+    canonical: false
+  - id: raw-25-transform-contract-dag
+    path: docs/raw/25-transform-contract-dag.md
+    title: "Transform Contract 与 DAG 推导机制调研"
+    type: raw
+    status: reviewed
+    topics: [pipeline, pro-code]
+    source_layer: evidence
+    issue_refs: [9]
+    canonical: false
+  - id: raw-26-pro-code-governance-quality-observability
+    path: docs/raw/26-pro-code-governance-quality-observability.md
+    title: "Palantir 高码质量、测试、血缘、权限与可观测性调研"
+    type: raw
+    status: reviewed
+    topics: [pro-code, data-quality, observability]
+    source_layer: evidence
+    issue_refs: [10]
+    canonical: false
+  - id: raw-27-incremental-scheduling-transaction
+    path: docs/raw/27-incremental-scheduling-transaction.md
+    title: "增量计算、调度与 Dataset Transaction"
+    type: raw
+    status: reviewed
+    topics: [incremental, scheduling, dataset]
+    source_layer: evidence
+    issue_refs: [11]
+    canonical: false
+  - id: raw-28-pipeline-builder-pro-code-interop
+    path: docs/raw/28-pipeline-builder-pro-code-interop.md
+    title: "Pipeline Builder 与高码互操作调研"
+    type: raw
+    status: reviewed
+    topics: [pipeline, pro-code, low-code]
+    source_layer: evidence
+    issue_refs: [14]
+    canonical: false
+  - id: raw-29-lineage-branch-version-pipeline-sync
+    path: docs/raw/29-lineage-branch-version-pipeline-sync.md
+    title: "血缘、Dataset Branch/Version 与 Pipeline/Sync 数据关系调研"
+    type: raw
+    status: reviewed
+    topics: [lineage-and-catalog, dataset, branching]
+    source_layer: evidence
+    issue_refs: []
+    canonical: false
+  - id: raw-30-dataset-permission-marking-architecture
+    path: docs/raw/30-dataset-permission-marking-architecture.md
+    title: "Palantir Dataset 权限体系与 Marking 架构全覆盖调研"
+    type: raw
+    status: reviewed
+    topics: [security-and-marking, dataset]
+    source_layer: evidence
+    issue_refs: [19]
+    canonical: false
+  - id: raw-31-media-set-implementation-deep-dive
+    path: docs/raw/31-media-set-implementation-deep-dive.md
+    title: "Palantir Foundry Media Set 实现机制深度调研"
+    type: raw
+    status: reviewed
+    topics: [dataset, media]
+    source_layer: evidence
+    issue_refs: []
+    canonical: false
+  - id: raw-32-ai-fde-source-map
+    path: docs/raw/32-ai-fde-source-map.md
+    title: "Palantir AI FDE 资料源与术语基线"
+    type: raw
+    status: reviewed
+    topics: [ai-fde]
+    source_layer: evidence
+    issue_refs: [22]
+    canonical: false
+  - id: raw-33-ai-fde-product-positioning
+    path: docs/raw/33-ai-fde-product-positioning.md
+    title: "Palantir AI FDE 功能定位与产品边界"
+    type: raw
+    status: reviewed
+    topics: [ai-fde]
+    source_layer: evidence
+    issue_refs: [21]
+    canonical: false
+  - id: raw-34-ai-fde-context-tools-skills
+    path: docs/raw/34-ai-fde-context-tools-skills.md
+    title: "Palantir AI FDE 交互、上下文、模式与工具模型调研"
+    type: raw
+    status: reviewed
+    topics: [ai-fde]
+    source_layer: evidence
+    issue_refs: [23]
+    canonical: false
+  - id: raw-35-ai-fde-governance-branching
+    path: docs/raw/35-ai-fde-governance-branching.md
+    title: "Palantir AI FDE 安全治理、审批与分支变更模型调研"
+    type: raw
+    status: reviewed
+    topics: [ai-fde, governance]
+    source_layer: evidence
+    issue_refs: [26]
+    canonical: false
+  - id: raw-36-ai-fde-architecture-design
+    path: docs/raw/36-ai-fde-architecture-design.md
+    title: "Palantir AI FDE 架构设计推断"
+    type: raw
+    status: reviewed
+    topics: [ai-fde, architecture]
+    source_layer: evidence
+    issue_refs: [25]
+    canonical: false
+  - id: raw-37-ai-fde-self-build-implementation-blueprint
+    path: docs/raw/37-ai-fde-self-build-implementation-blueprint.md
+    title: "Palantir AI FDE 自建实现方案与 PoC 路线"
+    type: raw
+    status: reviewed
+    topics: [ai-fde, self-build-roadmap]
+    source_layer: evidence
+    issue_refs: [24]
+    canonical: false
+  - id: raw-38-foundry-schedule-module-research-plan
+    path: docs/raw/38-foundry-schedule-module-research-plan.md
+    title: "Foundry Schedule 模块运行模式调研计划"
+    type: raw
+    status: draft
+    topics: [scheduling]
+    source_layer: evidence
+    issue_refs: []
+    canonical: false
+  - id: raw-39-foundry-dataset-transaction-view-evidence
+    path: docs/raw/39-foundry-dataset-transaction-view-evidence.md
+    title: "Foundry Dataset transaction/view 证据链"
+    type: raw
+    status: reviewed
+    topics: [dataset, transaction]
+    source_layer: evidence
+    issue_refs: [29]
+    canonical: false
+  - id: raw-40-traditional-dt-partition-production-semantics
+    path: docs/raw/40-traditional-dt-partition-production-semantics.md
+    title: "传统 dt 分区生产控制语义"
+    type: raw
+    status: reviewed
+    topics: [dataset, incremental]
+    source_layer: evidence
+    issue_refs: [32]
+    canonical: false
+  - id: raw-41-lakehouse-layout-partition-cost-model
+    path: docs/raw/41-lakehouse-layout-partition-cost-model.md
+    title: "湖仓布局、分区裁剪与成本模型对比"
+    type: raw
+    status: reviewed
+    topics: [dataset, lakehouse]
+    source_layer: evidence
+    issue_refs: [34]
+    canonical: false
+  - id: raw-42-governance-lineage-audit-contracts
+    path: docs/raw/42-governance-lineage-audit-contracts.md
+    title: "治理、血缘、审计与元数据契约：从 dt 目录约定迁移到 Dataset transaction"
+    type: raw
+    status: reviewed
+    topics: [governance, lineage-and-catalog, dataset]
+    source_layer: evidence
+    issue_refs: [30]
+    canonical: false
+  - id: raw-43-migration-risk-dual-coordinate-patterns
+    path: docs/raw/43-migration-risk-dual-coordinate-patterns.md
+    title: "迁移风险案例与双坐标设计模式"
+    type: raw
+    status: reviewed
+    topics: [dataset, migration, self-build-roadmap]
+    source_layer: evidence
+    issue_refs: [33]
+    canonical: false
+  - id: raw-44-data-quality-source-map
+    path: docs/raw/44-data-quality-source-map.md
+    title: "Palantir Data Quality 资料源与术语基线"
+    type: raw
+    status: reviewed
+    topics: [data-quality]
+    source_layer: evidence
+    issue_refs: [36]
+    canonical: false
+  - id: raw-45-data-expectations-build-gates
+    path: docs/raw/45-data-expectations-build-gates.md
+    title: "Palantir Data Expectations 构建期质量门禁调研"
+    type: raw
+    status: reviewed
+    topics: [data-quality, pipeline]
+    source_layer: evidence
+    issue_refs: [40]
+    canonical: false
+  - id: raw-46-data-health-health-checks
+    path: docs/raw/46-data-health-health-checks.md
+    title: "Palantir Data Health 与 Health Checks 运行期监控调研"
+    type: raw
+    status: reviewed
+    topics: [data-quality, observability]
+    source_layer: evidence
+    issue_refs: [37]
+    canonical: false
+  - id: raw-47-monitoring-views-alert-issue-loop
+    path: docs/raw/47-monitoring-views-alert-issue-loop.md
+    title: "Palantir Monitoring Views、告警与 Issue 闭环调研"
+    type: raw
+    status: reviewed
+    topics: [data-quality, observability]
+    source_layer: evidence
+    issue_refs: [39]
+    canonical: false
+  - id: raw-48-data-quality-governance-lifecycle
+    path: docs/raw/48-data-quality-governance-lifecycle.md
+    title: "Palantir Data Quality 治理、代码评审与生命周期调研"
+    type: raw
+    status: reviewed
+    topics: [data-quality, governance]
+    source_layer: evidence
+    issue_refs: [38]
+    canonical: false
+  - id: raw-49-data-quality-external-notification-security
+    path: docs/raw/49-data-quality-external-notification-security.md
+    title: "Palantir Data Quality 外部通知安全边界补充调研"
+    type: raw
+    status: reviewed
+    topics: [data-quality, security-and-marking, observability]
+    source_layer: evidence
+    issue_refs: [43]
+    canonical: false
+
+  - id: synthesis-dataset-permission-marking-architecture-summary
+    path: docs/synthesis/dataset-permission-marking-architecture-summary.md
+    title: "Palantir Dataset 权限体系与 Marking 机制沉淀"
+    type: synthesis
+    status: canonical
+    topics: [security-and-marking, dataset]
+    source_layer: conclusion
+    issue_refs: [19]
+    source_refs: [docs/raw/30-dataset-permission-marking-architecture.md]
+    canonical: true
+  - id: synthesis-dataworks-vs-palantir-integration
+    path: docs/synthesis/dataworks-vs-palantir-integration.md
+    title: "DataWorks 与 Palantir Data Integration 差异研究"
+    type: synthesis
+    status: canonical
+    topics: [data-integration, self-build-roadmap]
+    source_layer: conclusion
+    issue_refs: []
+    canonical: true
+  - id: synthesis-foundry-schedule-module-deep-dive
+    path: docs/synthesis/foundry-schedule-module-deep-dive.md
+    title: "Foundry Schedule 模块运行模式深度调研"
+    type: synthesis
+    status: canonical
+    topics: [scheduling]
+    source_layer: conclusion
+    issue_refs: []
+    source_refs: [docs/raw/38-foundry-schedule-module-research-plan.md]
+    canonical: true
+  - id: synthesis-operator-platform-design
+    path: docs/synthesis/operator-platform-design.md
+    title: "算子平台建设方案：Palantir 级别算子能力设计与规划"
+    type: synthesis
+    status: canonical
+    topics: [operator-platform, self-build-roadmap]
+    source_layer: conclusion
+    issue_refs: []
+    canonical: true
+  - id: synthesis-palantir-ai-fde-research
+    path: docs/synthesis/palantir-ai-fde-research.md
+    title: "Palantir AI FDE 综合结论、证据校验与自建方案"
+    type: synthesis
+    status: canonical
+    topics: [ai-fde, self-build-roadmap]
+    source_layer: conclusion
+    issue_refs: [20, 27]
+    source_refs: [docs/raw/32-ai-fde-source-map.md, docs/raw/33-ai-fde-product-positioning.md, docs/raw/34-ai-fde-context-tools-skills.md, docs/raw/35-ai-fde-governance-branching.md, docs/raw/36-ai-fde-architecture-design.md, docs/raw/37-ai-fde-self-build-implementation-blueprint.md]
+    canonical: true
+  - id: synthesis-palantir-data-quality-module-research
+    path: docs/synthesis/palantir-data-quality-module-research.md
+    title: "Palantir Data Quality 模块调研综合报告"
+    type: synthesis
+    status: canonical
+    topics: [data-quality, observability, governance, self-build-roadmap]
+    source_layer: conclusion
+    issue_refs: [35, 41, 43]
+    source_refs: [docs/raw/44-data-quality-source-map.md, docs/raw/45-data-expectations-build-gates.md, docs/raw/46-data-health-health-checks.md, docs/raw/47-monitoring-views-alert-issue-loop.md, docs/raw/48-data-quality-governance-lifecycle.md, docs/raw/49-data-quality-external-notification-security.md]
+    canonical: true
+  - id: synthesis-palantir-dataset-no-dt-partition-impact
+    path: docs/synthesis/palantir-dataset-no-dt-partition-impact.md
+    title: "Palantir Dataset 无默认 dt 分区模型的数据模型差异分析"
+    type: synthesis
+    status: canonical
+    topics: [dataset, incremental, self-build-roadmap]
+    source_layer: conclusion
+    issue_refs: [28, 31]
+    source_refs: [docs/raw/39-foundry-dataset-transaction-view-evidence.md, docs/raw/40-traditional-dt-partition-production-semantics.md, docs/raw/41-lakehouse-layout-partition-cost-model.md, docs/raw/42-governance-lineage-audit-contracts.md, docs/raw/43-migration-risk-dual-coordinate-patterns.md]
+    canonical: true
+  - id: synthesis-palantir-dataset-vs-data-warehouse
+    path: docs/synthesis/palantir-dataset-vs-data-warehouse.md
+    title: "Palantir Dataset 与传统数据仓库建模对比"
+    type: synthesis
+    status: canonical
+    topics: [dataset]
+    source_layer: conclusion
+    issue_refs: []
+    canonical: true
+  - id: synthesis-palantir-pipeline-deep-dive
+    path: docs/synthesis/palantir-pipeline-deep-dive.md
+    title: "Palantir Pipeline 技术实现深度分析"
+    type: synthesis
+    status: canonical
+    topics: [pipeline, execution-runtime]
+    source_layer: conclusion
+    issue_refs: []
+    source_refs: [docs/raw/01-pipeline-expression-dsl.md, docs/raw/02-execution-engine-spark.md, docs/raw/03-streaming-batch-architecture.md]
+    canonical: true
+  - id: synthesis-palantir-pro-code-capability-research
+    path: docs/synthesis/palantir-pro-code-capability-research.md
+    title: "Palantir 高码能力研究综合结论"
+    type: synthesis
+    status: canonical
+    topics: [pro-code, pipeline, governance]
+    source_layer: conclusion
+    issue_refs: [12]
+    source_refs: [docs/raw/22-pro-code-source-map.md, docs/raw/23-code-repositories-engineering-entry.md, docs/raw/24-pro-code-runtime-compute-engines.md, docs/raw/25-transform-contract-dag.md, docs/raw/26-pro-code-governance-quality-observability.md, docs/raw/27-incremental-scheduling-transaction.md, docs/raw/28-pipeline-builder-pro-code-interop.md]
+    canonical: true
+
+  - id: plan-palantir-summary-site-implementation
+    path: docs/superpowers/plans/2026-05-16-palantir-summary-site-implementation.md
+    title: "Palantir Summary Site Implementation Plan"
+    type: plan
+    status: reviewed
+    topics: [library]
+    source_layer: planning
+    issue_refs: []
+    canonical: false
+  - id: plan-palantir-pro-code-research
+    path: docs/superpowers/plans/2026-05-29-palantir-pro-code-research-plan.md
+    title: "Palantir Pro-Code Research Implementation Plan"
+    type: plan
+    status: reviewed
+    topics: [pro-code]
+    source_layer: planning
+    issue_refs: [4]
+    canonical: false
+  - id: plan-dataset-dt-partition-research
+    path: docs/superpowers/plans/2026-05-30-dataset-dt-partition-research-plan.md
+    title: "Dataset 与传统 dt 分区数据模型差异调研计划"
+    type: plan
+    status: reviewed
+    topics: [dataset]
+    source_layer: planning
+    issue_refs: [28]
+    canonical: false
+  - id: plan-palantir-ai-fde-research
+    path: docs/superpowers/plans/2026-05-30-palantir-ai-fde-research-plan.md
+    title: "Palantir AI FDE Research Implementation Plan"
+    type: plan
+    status: reviewed
+    topics: [ai-fde]
+    source_layer: planning
+    issue_refs: [20]
+    canonical: false
+  - id: plan-palantir-data-quality-research
+    path: docs/superpowers/plans/2026-05-30-palantir-data-quality-research-plan.md
+    title: "Palantir Data Quality 模块调研计划"
+    type: plan
+    status: reviewed
+    topics: [data-quality]
+    source_layer: planning
+    issue_refs: [35]
+    canonical: false
+  - id: spec-platform-upgrade-design
+    path: docs/superpowers/specs/2026-04-09-platform-upgrade-design.md
+    title: "大数据平台升级设计文档"
+    type: spec
+    status: reviewed
+    topics: [self-build-roadmap]
+    source_layer: planning
+    issue_refs: []
+    canonical: false
+  - id: spec-ontology-data-model-research
+    path: docs/superpowers/specs/2026-04-15-ontology-data-model-research.md
+    title: "Palantir Foundry Ontology 核心业务对象与数据模型调研"
+    type: spec
+    status: reviewed
+    topics: [ontology]
+    source_layer: planning
+    issue_refs: []
+    canonical: false
+  - id: spec-roadmap-product-interpretation
+    path: docs/superpowers/specs/2026-04-16-roadmap-product-interpretation.md
+    title: "Roadmap 产品视角解读（业务语言版）"
+    type: spec
+    status: reviewed
+    topics: [self-build-roadmap]
+    source_layer: planning
+    issue_refs: []
+    canonical: false
+  - id: spec-roadmap-q2-q3-breakdown
+    path: docs/superpowers/specs/2026-04-16-roadmap-q2-q3-breakdown.md
+    title: "2026 Q2 / Q3 工作内容详细拆解（I1 基础闭环）"
+    type: spec
+    status: reviewed
+    topics: [self-build-roadmap]
+    source_layer: planning
+    issue_refs: []
+    canonical: false
+  - id: spec-palantir-summary-site-design
+    path: docs/superpowers/specs/2026-05-16-palantir-summary-site-design.md
+    title: "Palantir 调研总结 HTML 专题页设计文档"
+    type: spec
+    status: reviewed
+    topics: [library]
+    source_layer: planning
+    issue_refs: []
+    canonical: false
+  - id: spec-research-doc-library-design
+    path: docs/superpowers/specs/2026-05-31-research-doc-library-design.md
+    title: "调研文档库体系化组织设计"
+    type: spec
+    status: canonical
+    topics: [library, self-build-roadmap]
+    source_layer: planning
+    issue_refs: [42]
+    canonical: true
