@@ -79,7 +79,7 @@ const pages = [
     path: "pages/foundry-schedule-module.html",
     slug: "foundry-schedule-module",
     title: "Foundry Schedule 运行模式",
-    requiredText: ["Foundry Schedule 运行模式", "Schedule 到 Build 的运行链路", "Trigger 是状态机", "Build、staleness 与 force build", "拆开业务周期调度与 freshness 调度"],
+    requiredText: ["Foundry Schedule 运行模式", "Schedule 到 Build 的运行链路", "Trigger 是状态机", "多条件组合的内部判定模型", "trigger_tree + observed_events", "官方证据：布尔树", "Palantir Linter rules", "四个实际案例", "AND satisfied", "术语来源要分层", "Build、staleness 与 force build", "拆开业务周期调度与 freshness 调度"],
   },
   {
     path: "pages/streaming-architecture.html",

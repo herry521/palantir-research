@@ -91,6 +91,8 @@
             <a href="#conclusion">结论</a>
             <a href="#model">运行模型</a>
             <a href="#triggers">触发器</a>
+            <a href="#trigger-engine">内部逻辑</a>
+            <a href="#cases">实际案例</a>
             <a href="#build">Build 与 freshness</a>
             <a href="#sync">Data Connection</a>
             <a href="#decision">架构决策</a>
@@ -167,8 +169,150 @@
                   <p class="muted"><code>AND(A updated, B updated)</code> 只表示上次 run 后 A/B 都更新过，不表示 A/B 属于同一 <code>business_date</code>。</p>
                 </article>
                 <article class="detail-card mechanism-card">
+                  <h3>术语来源要分层</h3>
+                  <p class="muted"><code>compound trigger</code>、<code>AND/OR trigger</code> 与 event satisfied 语义来自 Palantir 官方文档；“状态机”“锁存”“不是业务时间 join”是本文的解释性抽象。</p>
+                </article>
+                <article class="detail-card mechanism-card">
                   <h3>运行中触发会保持 triggered</h3>
                   <p class="muted">前一次 schedule 仍在 action 时，新的触发会保持 triggered，等前一次 finished 后再运行；多个 pending trigger 是否合并，公开文档未说明。</p>
+                </article>
+              </div>
+            </section>
+
+            <section class="section-card" id="trigger-engine">
+              <p class="section-kicker">Trigger Engine</p>
+              <h2>多条件组合的内部判定模型</h2>
+              <p class="intro-note">
+                Palantir 没有公开 scheduler 源码；下面是由官方 trigger、schedule 和 troubleshooting 语义推导出的保守模型。
+              </p>
+              <div class="research-flow">
+                <div><strong>Trigger tree</strong><span>配置被表达成 time/event/AND/OR 的布尔树</span></div>
+                <div><strong>Leaf state</strong><span>time 是瞬时，event 是 observed latch</span></div>
+                <div><strong>Evaluate</strong><span>AND 要全部 satisfied，OR 要任一 satisfied</span></div>
+                <div><strong>Run gate</strong><span>root satisfied 后发起 schedule run 或置 pending</span></div>
+                <div><strong>Build dedupe</strong><span>staleness 决定是否真正创建 build</span></div>
+              </div>
+              <div class="formula-panel">
+                <div>
+                  <strong>核心状态</strong>
+                  <code>trigger_tree + observed_events + last_run_time + in_action + pending_triggered</code>
+                </div>
+                <div>
+                  <strong>Event 语义</strong>
+                  <code>event happens -> leaf satisfied -> 保持到 whole trigger satisfied and schedule run</code>
+                </div>
+                <div>
+                  <strong>多输入 AND</strong>
+                  <code>last run = T1; next run at T2 requires A and B updated during (T1, T2)</code>
+                </div>
+                <div>
+                  <strong>设计取向</strong>
+                  <code>trigger 是 wake-up signal；Run Identity 和 business_date correlation 不在 Foundry Schedule 原生层</code>
+                </div>
+              </div>
+              <div class="detail-grid mechanism-grid">
+                <article class="detail-card mechanism-card">
+                  <h3>官方证据：布尔树</h3>
+                  <p class="muted">Advanced configuration 用 <code>AND</code> / <code>OR</code> 和括号组合 component triggers。</p>
+                  <a class="source-link" href="https://www.palantir.com/docs/foundry/building-pipelines/create-schedule/">Create a schedule</a>
+                  <a class="source-link" href="https://www.palantir.com/docs/foundry/building-pipelines/triggers-reference/">Trigger types reference</a>
+                </article>
+                <article class="detail-card mechanism-card">
+                  <h3>官方证据：Event latch</h3>
+                  <p class="muted">Event trigger 在事件发生后保持 satisfied，直到整个 trigger satisfied 且 schedule run。</p>
+                  <a class="source-link" href="https://www.palantir.com/docs/foundry/building-pipelines/triggers-reference/">Trigger types reference</a>
+                </article>
+                <article class="detail-card mechanism-card">
+                  <h3>官方证据：多输入窗口</h3>
+                  <p class="muted">上次 run 在 <code>T1</code>，本次 <code>T2</code> 想等待 A1/A2 都更新，则二者都要在 <code>(T1, T2)</code> 内更新。</p>
+                  <a class="source-link" href="https://www.palantir.com/docs/foundry/building-pipelines/schedule-troubleshooting/">Schedule troubleshooting</a>
+                </article>
+                <article class="detail-card mechanism-card">
+                  <h3>官方证据：去重层</h3>
+                  <p class="muted">Fresh output 不重算；target 全部 up-to-date 时 schedule run 会被 ignored。</p>
+                  <a class="source-link" href="https://www.palantir.com/docs/foundry/data-integration/builds/">Builds core concepts</a>
+                  <a class="source-link" href="https://www.palantir.com/docs/foundry/building-pipelines/schedule-troubleshooting/">Schedule troubleshooting</a>
+                </article>
+              </div>
+              <div class="detail-grid mechanism-grid">
+                <article class="detail-card mechanism-card">
+                  <h3>它如何判断组合条件</h3>
+                  <p class="muted">先更新叶子状态，再递归计算 trigger tree。Time leaf 只在 cron 命中瞬间为 true；Event leaf 在事件发生后锁存为 true；AND/OR 只做布尔组合。</p>
+                </article>
+                <article class="detail-card mechanism-card">
+                  <h3>它为何不等同时到达</h3>
+                  <p class="muted"><code>AND(A,B)</code> 判断的是上次 run 后 A/B 是否都 observed，而不是 A/B 是否同一秒到达，也不是同一业务日期。</p>
+                </article>
+                <article class="detail-card mechanism-card">
+                  <h3>运行中再次触发</h3>
+                  <p class="muted">官方只说明会保持 triggered，前一次结束后再 run；多次 pending 是否计数未公开，保守理解为至少一次 pending signal。</p>
+                </article>
+                <article class="detail-card mechanism-card">
+                  <h3>背后思考</h3>
+                  <p class="muted">Schedule 负责唤醒，Build/staleness 负责去重和成本控制。这套模型服务 freshness，不服务业务周期实例判重。</p>
+                </article>
+              </div>
+            </section>
+
+            <section class="section-card" id="cases">
+              <p class="section-kicker">Practical Cases</p>
+              <h2>四个实际案例</h2>
+              <p class="intro-note">
+                这些案例用同一张宽图表达：每行一个 case，横向串起 trigger、gate、build 与业务边界。
+              </p>
+              <div class="schedule-case-board" aria-label="Foundry Schedule 四个实际案例对照图">
+                <div class="case-board-head">Case</div>
+                <div class="case-board-head">触发源</div>
+                <div class="case-board-head">条件语义</div>
+                <div class="case-board-head">执行动作</div>
+                <div class="case-board-head">业务边界</div>
+
+                <article class="case-board-row">
+                  <div class="case-title">
+                    <span class="tag confidence-fact">Case 01</span>
+                    <strong>每日快照</strong>
+                    <p>适合 latest view、缓存；不适合账期 SLA。</p>
+                  </div>
+                  <div class="case-cell time"><span>Time</span><strong>02:00 time trigger</strong><p>cron + timezone 匹配。</p></div>
+                  <div class="case-cell event"><span>Run</span><strong>Schedule run</strong><p>发起一次图构建检查。</p></div>
+                  <div class="case-cell build"><span>Build</span><strong>Build latest</strong><p>读取当前 input transaction set。</p></div>
+                  <div class="case-cell output"><span>Boundary</span><strong>Snapshot only</strong><p>不能直接声明 <code>business_date=昨日</code> 已完成。</p></div>
+                </article>
+
+                <article class="case-board-row">
+                  <div class="case-title">
+                    <span class="tag confidence-infer">Case 02</span>
+                    <strong>OR 事件</strong>
+                    <p>A 或 B 更新即触发；风险是 input vector 半新半旧。</p>
+                  </div>
+                  <div class="case-cell event"><span>Event</span><strong>A updated / B updated</strong><p>任一 Dataset commit transaction。</p></div>
+                  <div class="case-cell time"><span>Gate</span><strong>OR satisfied</strong><p>事件满足，不做业务日期配对。</p></div>
+                  <div class="case-cell build"><span>Build</span><strong>Build C</strong><p>按触发时可见 input vector 解析。</p></div>
+                  <div class="case-cell warn"><span>Boundary</span><strong>Confirm dt</strong><p>业务时间只能从输入版本、字段或 manifest 确认。</p></div>
+                </article>
+
+                <article class="case-board-row">
+                  <div class="case-title">
+                    <span class="tag confidence-infer">Case 03</span>
+                    <strong>AND 事件</strong>
+                    <p>A/B 都更新才触发；风险是业务日期不对齐。</p>
+                  </div>
+                  <div class="case-cell event"><span>Event</span><strong>A 09:05 / B 10:40</strong><p>A(dt=29), B(dt=28)。</p></div>
+                  <div class="case-cell time"><span>Gate</span><strong>AND satisfied</strong><p>A/B 都发生过更新。</p></div>
+                  <div class="case-cell build"><span>Build</span><strong>Build C?</strong><p>Foundry 原生语义下可触发。</p></div>
+                  <div class="case-cell warn"><span>Boundary</span><strong>Ready manifest</strong><p>先判断 <code>A.ready(dt) && B.ready(dt)</code>。</p></div>
+                </article>
+
+                <article class="case-board-row">
+                  <div class="case-title">
+                    <span class="tag confidence-fact">Case 04</span>
+                    <strong>Data Connection</strong>
+                    <p>外部源变化不可见；force 只解决 sync 入口。</p>
+                  </div>
+                  <div class="case-cell external"><span>External</span><strong>ERP / API</strong><p>外部源是否变化未知。</p></div>
+                  <div class="case-cell force"><span>Gate</span><strong>Force sync</strong><p>绕过 up-to-date 判断。</p></div>
+                  <div class="case-cell output"><span>Output</span><strong>Raw Dataset</strong><p>sync 层产生 transaction。</p></div>
+                  <div class="case-cell build"><span>Boundary</span><strong>Downstream freshness</strong><p>下游再按 Dataset transaction / staleness 驱动。</p></div>
                 </article>
               </div>
             </section>
@@ -273,11 +417,23 @@
                 <a class="source-link" href="https://www.palantir.com/docs/foundry/building-pipelines/triggers-reference/">
                   <svg class="icon sm" aria-hidden="true"><use href="#i-file"></use></svg><span>Palantir Trigger types reference</span>
                 </a>
+                <a class="source-link" href="https://www.palantir.com/docs/foundry/building-pipelines/create-schedule/">
+                  <svg class="icon sm" aria-hidden="true"><use href="#i-file"></use></svg><span>Palantir Create a schedule</span>
+                </a>
+                <a class="source-link" href="https://www.palantir.com/docs/foundry/building-pipelines/common-schedules/">
+                  <svg class="icon sm" aria-hidden="true"><use href="#i-file"></use></svg><span>Palantir Common scheduling configurations</span>
+                </a>
+                <a class="source-link" href="https://www.palantir.com/docs/foundry/building-pipelines/schedule-troubleshooting/">
+                  <svg class="icon sm" aria-hidden="true"><use href="#i-file"></use></svg><span>Palantir Schedule troubleshooting</span>
+                </a>
                 <a class="source-link" href="https://www.palantir.com/docs/foundry/data-integration/schedules/">
                   <svg class="icon sm" aria-hidden="true"><use href="#i-file"></use></svg><span>Palantir Schedules core concepts</span>
                 </a>
                 <a class="source-link" href="https://www.palantir.com/docs/foundry/data-integration/builds/">
                   <svg class="icon sm" aria-hidden="true"><use href="#i-file"></use></svg><span>Palantir Builds core concepts</span>
+                </a>
+                <a class="source-link" href="https://www.palantir.com/docs/foundry/linter/rules">
+                  <svg class="icon sm" aria-hidden="true"><use href="#i-file"></use></svg><span>Palantir Linter rules</span>
                 </a>
               </div>
             </section>

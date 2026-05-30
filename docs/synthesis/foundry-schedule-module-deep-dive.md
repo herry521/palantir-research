@@ -11,10 +11,24 @@
 ## 核心结论
 
 1. 【事实】Foundry Schedule 的主语是 Dataset graph build，不是业务周期实例。Schedule trigger 满足后，平台动态解析 build 范围、branch/scope、staleness、build locking，再决定是否真正创建 build。
-2. 【事实】Trigger 是状态机而不是业务时间 join。Time trigger 是瞬时 wall-clock 条件；event trigger 是锁存 satisfied 状态；`AND/OR` 只组合 trigger satisfied 状态，不保证多个输入属于同一 `business_date/data_interval`。
+2. 【事实+推断】Trigger 是状态机而不是业务时间 join。公开语义可推导为 trigger expression tree + event latch + run-boundary reset：Time trigger 是瞬时 wall-clock 条件；event trigger 是锁存 satisfied 状态；`AND/OR` 只组合 trigger satisfied 状态，不保证多个输入属于同一 `business_date/data_interval`。
 3. 【事实】Schedule run 的 `Succeeded` 只表示 build 被成功发起，不代表 build/job 最终成功；`Ignored` 通常表示没有创建 build，多数情况下因为目标已 up-to-date。
 4. 【事实】Data Connection sync 是特殊边界：外部源变化不被内部 staleness 可靠感知，sync 通常需要单独 schedule + force build；下游 Transform 再使用普通 freshness/staleness。
 5. 【决策】自研平台必须把 business-cycle scheduling 和 freshness scheduling 拆开。Foundry 的 Schedule 能力可用于 Data Version Identity；任何声明业务日期或数据区间的输出，必须先经过 ready manifest / business-cycle scheduler。
+
+---
+
+## 术语来源澄清
+
+| 术语 / 表达 | 归属 | 说明 |
+|---|---|---|
+| `schedule` / `trigger` / `time trigger` / `event trigger` | Palantir 官方术语 | Schedules 文档说明 trigger 定义 build 运行条件；Trigger Reference 分别定义 time/event trigger。 |
+| `compound trigger` / `AND trigger` / `OR trigger` | Palantir 官方术语 | Trigger Reference 明确 compound trigger 由多个 component trigger 通过 `AND` / `OR` 组合而成，并支持嵌套。 |
+| `event trigger remains satisfied` | Palantir 官方语义 | 官方说明 event 发生后保持 satisfied，直到整个 trigger 满足并 schedule run。 |
+| “状态机”“锁存”“gate”“不是业务时间 join” | 本文解释性抽象 | 用来解释 Palantir 触发语义：它组合的是事件满足状态，不是 DataWorks 式业务日期依赖。 |
+| `business_date` / `data_interval` / `ready manifest` / `business-cycle scheduler` | 自研平台设计概念 | 这些不是 Foundry Schedule 官方原生概念，是为承载业务周期对齐、补数、重跑和同周期依赖而引入。 |
+
+因此，本文可以继续使用 `compound trigger`，但页面和设计文档必须明确：它是 Foundry 的 trigger expression 概念，不是业务周期调度模型。
 
 ---
 
@@ -109,7 +123,96 @@ Foundry 支持 `AND` / `OR` 组合，并可嵌套。
 
 官方排障文档中的关键语义是：如果一个 schedule 等多个输入都更新，且上次 run 在 `T1`，那么下一次 run 要求这些输入都在 `(T1, T2)` 期间更新。这是“上次 schedule run 后的事件窗口”，不是 `business_date` 配对。
 
-### 3.4 Running 时再次触发
+### 3.4 多条件组合的内部判定模型推导
+
+Palantir 没有公开 scheduler 源码，但公开文档已经暴露出足够多的外部语义，可以推导一个保守的内部模型：
+
+```text
+ScheduleVersion
+  trigger_tree: Time | Event | AND(children) | OR(children)
+  observed_events: Map<EventLeaf, satisfied_since>
+  last_run_time: timestamp
+  in_action: boolean
+  pending_triggered: boolean
+```
+
+公开事实：
+
+- Create Schedule 文档说明 advanced configuration 用 `AND` / `OR` 和括号组合 component triggers。【事实，[Create a schedule](https://www.palantir.com/docs/foundry/building-pipelines/create-schedule/)】
+- Trigger Reference 说明 event trigger 在事件发生后保持 satisfied，直到整个 trigger satisfied 且 schedule run。【事实，[Trigger types reference](https://www.palantir.com/docs/foundry/building-pipelines/triggers-reference/)】
+- Troubleshooting 文档说明：如果 schedule 上次 run 在 `T1`，下一次 `T2` 想等待 A1/A2 都更新，则 A1/A2 都要在 `(T1, T2)` 窗口内更新。【事实，[Schedule troubleshooting](https://www.palantir.com/docs/foundry/building-pipelines/schedule-troubleshooting/)】
+- Schedules 文档说明：前一次 run 仍在 action 时再次触发，schedule 会保持 triggered，等前一次 finished 后再 run。【事实，[Schedules core concepts](https://www.palantir.com/docs/foundry/data-integration/schedules/)】
+- Pause schedule 会 reset trigger state，并忘记 observed events。【事实，[Schedule troubleshooting](https://www.palantir.com/docs/foundry/building-pipelines/schedule-troubleshooting/)】
+
+官方证据链：
+
+| 结论 | 官方证据链接 | 证据边界 |
+|---|---|---|
+| Schedule trigger 是 build 运行条件，不是业务周期实例 | [Schedules core concepts](https://www.palantir.com/docs/foundry/data-integration/schedules/) | 官方只说 trigger 满足后 schedule run；没有 `$bizdate` / 周期实例概念。 |
+| Advanced trigger 可表达为 `AND` / `OR` 布尔树 | [Create a schedule](https://www.palantir.com/docs/foundry/building-pipelines/create-schedule/)、[Trigger types reference](https://www.palantir.com/docs/foundry/building-pipelines/triggers-reference/) | “trigger tree” 是本文对官方 `component trigger + AND/OR + parenthesis` 的实现化抽象。 |
+| Event leaf 是 latch，而不是瞬时事件 | [Trigger types reference](https://www.palantir.com/docs/foundry/building-pipelines/triggers-reference/) | 官方直接说明 event trigger remains satisfied；没有公开内部状态表结构。 |
+| `Data updated` 的事件条件是 Dataset transaction committed | [Trigger types reference](https://www.palantir.com/docs/foundry/building-pipelines/triggers-reference/) | 只能证明数据版本变化，不证明业务日期完成。 |
+| `AND(time, event)` 不限制事件发生窗口 | [Common scheduling configurations](https://www.palantir.com/docs/foundry/building-pipelines/common-schedules/)、[Trigger types reference](https://www.palantir.com/docs/foundry/building-pipelines/triggers-reference/) | 官方例子说明前一天 09:10 的 event 也可让次日 09:00 run。 |
+| 多输入 AND 的窗口是上次 run 后到本次检查前 | [Schedule troubleshooting](https://www.palantir.com/docs/foundry/building-pipelines/schedule-troubleshooting/) | 官方用 `(T1, T2)` 解释 wait until all datasets update；不是业务日期配对。 |
+| 运行中再次触发会保持 triggered，完成后再 run | [Schedules core concepts](https://www.palantir.com/docs/foundry/data-integration/schedules/) | 官方未说明多次 pending trigger 是否计数，因此本文按 pending bit 保守推断。 |
+| OR 触发容易让 schedule 更频繁运行 | [Linter rules](https://www.palantir.com/docs/foundry/linter/rules) | Linter 给出两个输入每小时更新导致每小时跑两次的成本提示。 |
+| Build/staleness 是真正去重与跳过重算的层 | [Builds core concepts](https://www.palantir.com/docs/foundry/data-integration/builds/)、[Schedule troubleshooting](https://www.palantir.com/docs/foundry/building-pipelines/schedule-troubleshooting/) | 官方说明 fresh output 不重算、all target up-to-date 时 schedule run 会 ignored。 |
+| Force build 绕过 staleness，通常只适合外部依赖/ingest 边界 | [Schedule troubleshooting](https://www.palantir.com/docs/foundry/building-pipelines/schedule-troubleshooting/)、[Linter rules](https://www.palantir.com/docs/foundry/linter/rules) | 官方明确 force build 计算浪费，Data Connection/API 等外部依赖是例外。 |
+
+因此，多条件组合更像下面这个判断过程：
+
+```text
+on_clock_tick(now):
+  mark time leaves satisfied only for this tick
+  evaluate_trigger_tree(now)
+
+on_event(event):
+  mark matching event leaves satisfied
+  evaluate_trigger_tree(now)
+
+evaluate_trigger_tree(now):
+  root = eval(trigger_tree)
+  if root == false:
+    keep event leaves latched
+    return
+
+  if schedule is already in action:
+    pending_triggered = true
+    return
+
+  start schedule run
+  consume/reset observed event leaves for the satisfied trigger window
+```
+
+`eval(trigger_tree)` 的语义是普通布尔树，但叶子节点不是同一种时间模型：
+
+| Leaf / Node | 判定语义 | 状态生命周期 |
+|---|---|---|
+| `time(cron, timezone)` | 当前墙钟时刻是否匹配 cron | 瞬时，过点即 false |
+| `event(dataset updated)` | 对应 Dataset 是否发生 committed transaction | 锁存，直到 whole trigger satisfied and schedule run |
+| `AND(children)` | 所有子节点当前 satisfied | 不做事件 payload join |
+| `OR(children)` | 任一子节点当前 satisfied | 任一分支可释放整个 trigger |
+
+这个模型解释了几个看似反直觉的行为：
+
+1. `AND(time=09:00, A updated)` 不是“09:00 前固定窗口内 A 更新”。只要 A 的 event leaf 已经 latched，09:00 到来就会 run；Palantir common schedules 文档明确提示前一天 09:10 的更新也可能让第二天 09:00 条件成立。【事实】
+2. `AND(A updated, B updated)` 不要求 A/B 同时到达。它要求上次 run 之后两个 event leaf 都变成 satisfied；Troubleshooting 文档的 `(T1, T2)` 例子正是这个窗口语义。【事实】
+3. `OR(A updated, B updated)` 会在 A 或 B 任一更新时释放 trigger；如果 A/B 都每小时更新，可能导致 schedule 一小时跑两次，Linter 因此建议把某些 OR 改成 AND 或定时触发以降低成本。【事实】
+4. `OR(time, AND(A,B))` 中 time 分支会绕过 A/B 到齐要求；这不是 bug，而是布尔树语义的自然结果。【推断】
+5. 若 schedule 运行中又满足 trigger，公开文档只说保持 triggered，未说明多次 pending 是否计数。因此保守设计应把它视为“至少再跑一次”的 pending bit，而不是可靠事件队列。【事实+推断】
+
+背后的设计思路不是 DataWorks 式“实例枚举 + 周期依赖判重”，而是：
+
+- 用 trigger expression 做轻量 wake-up；
+- 用 Dataset transaction / JobSpec / staleness 判断是否真的有 work；
+- 用 build graph resolution 在运行时决定实际构建范围；
+- 用 event latch 解决异步到达，不要求事件同时发生；
+- 用 schedule run boundary 清空已观察事件，避免无限重复触发；
+- 用 `Ignored` 和 staleness 抑制无效重算。
+
+这套思路的优点是弹性高、对 pipeline 变化友好、成本可由 staleness 控制；代价是它不携带业务周期 identity，也不做业务日期 correlation。
+
+### 3.5 Running 时再次触发
 
 如果 schedule 前一次 run 仍在 action 中，再次满足 trigger：
 

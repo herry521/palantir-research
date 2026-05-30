@@ -328,6 +328,127 @@ img {
   line-height: 1.45;
 }
 
+.schedule-case-board {
+  display: grid;
+  grid-template-columns: 1.1fr repeat(4, minmax(0, 1fr));
+  gap: 10px;
+  margin-top: 22px;
+  padding: 14px;
+  overflow-x: auto;
+  border-radius: var(--radius-md);
+  border: 1px solid rgba(16, 45, 34, 0.09);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.96), #fbfcfa),
+    linear-gradient(135deg, rgba(61, 138, 112, 0.08), rgba(201, 178, 116, 0.06));
+  box-shadow: 0 8px 26px rgba(14, 38, 29, 0.06);
+}
+
+.case-board-head,
+.case-board-row {
+  min-width: 0;
+}
+
+.case-board-head {
+  padding: 9px 10px;
+  border-radius: var(--radius-sm);
+  background: rgba(39, 104, 77, 0.08);
+  color: var(--forest-700);
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.case-board-row {
+  display: contents;
+}
+
+.case-title,
+.case-cell {
+  min-width: 0;
+  padding: 13px;
+  border-radius: var(--radius-sm);
+  border: 1px solid rgba(16, 45, 34, 0.1);
+  background: #fff;
+  box-shadow: 0 8px 20px rgba(7, 24, 19, 0.05);
+}
+
+.case-title {
+  display: grid;
+  align-content: start;
+  gap: 8px;
+  background: linear-gradient(180deg, #fff, rgba(237, 242, 236, 0.82));
+}
+
+.case-title strong {
+  color: var(--ink-900);
+  font-size: 15px;
+  line-height: 1.3;
+}
+
+.case-title p,
+.case-cell p {
+  margin: 0;
+  color: var(--ink-500);
+  font-size: 12px;
+  line-height: 1.45;
+  overflow-wrap: anywhere;
+}
+
+.case-cell {
+  position: relative;
+  display: grid;
+  align-content: start;
+  gap: 7px;
+}
+
+.case-cell:not(:last-child)::after {
+  content: "→";
+  position: absolute;
+  top: 50%;
+  right: -10px;
+  transform: translate(50%, -50%);
+  color: var(--forest-700);
+  font-size: 12px;
+  font-weight: 700;
+  z-index: 1;
+}
+
+.case-cell span {
+  color: var(--forest-700);
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.case-cell strong {
+  color: var(--ink-900);
+  font-size: 13px;
+  line-height: 1.25;
+  overflow-wrap: anywhere;
+}
+
+.case-cell.time,
+.case-cell.output {
+  border-color: rgba(61, 138, 112, 0.22);
+  background: linear-gradient(180deg, #fff, rgba(237, 246, 241, 0.9));
+}
+
+.case-cell.event {
+  border-color: rgba(139, 155, 215, 0.24);
+  background: linear-gradient(180deg, #fff, rgba(238, 241, 252, 0.88));
+}
+
+.case-cell.build {
+  border-color: rgba(47, 106, 87, 0.24);
+}
+
+.case-cell.external,
+.case-cell.force,
+.case-cell.warn {
+  border-color: rgba(201, 178, 116, 0.34);
+  background: linear-gradient(180deg, #fff, rgba(248, 241, 221, 0.82));
+}
+
 .hero {
   position: relative;
   overflow: hidden;
@@ -2028,6 +2149,34 @@ html.is-embedded-root .section-card {
 
   .conclusion-grid {
     grid-template-columns: 1fr;
+  }
+
+  .schedule-case-board {
+    grid-template-columns: 1fr;
+    overflow-x: visible;
+  }
+
+  .case-board-head {
+    display: none;
+  }
+
+  .case-board-row {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 10px;
+    padding: 12px;
+    border-radius: var(--radius-sm);
+    border: 1px solid rgba(16, 45, 34, 0.08);
+    background: rgba(255, 255, 255, 0.68);
+  }
+
+  .case-cell:not(:last-child)::after {
+    top: auto;
+    right: auto;
+    bottom: -13px;
+    left: 50%;
+    transform: translateX(-50%);
+    content: "↓";
   }
 
   .nav-inner {
