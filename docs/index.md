@@ -75,3 +75,4 @@
 - 不移动 `docs/raw` 和 `docs/synthesis` 中的既有文件，除非有单独 issue、alias 和链接检查。
 - 新增重要结论必须写入 `docs/raw` 或 `docs/synthesis`，不能只留在聊天中。
 - `catalog.yml` 中的 `canonical: true` 只用于当前推荐引用的结论文档或设计基线。
+- 提交前运行 `bash scripts/verify-doc-library.sh` 和 `git diff --check`；如需确认校验能发现缺失路径，运行 `bash scripts/verify-doc-library.sh --self-test`。
