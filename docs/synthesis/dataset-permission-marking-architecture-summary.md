@@ -328,7 +328,414 @@ Transform 声明 stop_propagating
 
 ---
 
-## 11. 自建平台成熟度分层
+## 11. Marking 传递与计算详细设计
+
+### 11.1 三个计算时机
+
+Marking 计算不要放进一个大函数里。更稳妥的拆法是按时机分成三类：
+
+| 时机 | 输入 | 输出 | 是否持久化 | 目标 |
+|---|---|---|---|---|
+| Apply-time | 用户、资源、Marking | direct resource requirement | 是 | 记录资源被直接要求哪些 Marking |
+| Build-time | input transactions、resource requirements、unmarking rules | output transaction requirements | 是 | 让敏感要求随数据血缘传播 |
+| Query-time | 用户 entitlements、resource requirements、transaction requirements | allow / deny / missing requirements | 否，只写审计 | 快速判定用户能否读取 |
+
+这三个时机对应三类问题：
+
+```text
+Apply-time：这个 Project / Dataset 被加了什么访问要求。
+Build-time：这个 output transaction 从上游继承了什么访问要求。
+Query-time：这个用户是否满足当前 resource + data requirements。
+```
+
+### 11.2 Apply-time：Marking 应用过程
+
+给资源应用 Marking 时，本质是新增一条 direct requirement，而不是写普通标签。
+
+```text
+User apply marking
+  -> 校验用户对 resource 有 Update Markings / Owner 类权限
+  -> 校验用户对 marking 有 APPLY 权限
+  -> 写 resource_direct_requirement
+  -> 重算 resource_effective_requirement
+  -> 触发 downstream impact simulation
+  -> 写 audit log
+```
+
+伪代码：
+
+```python
+def apply_marking(user, resource_id, marking_id):
+    if not resource_role_service.allows(user, resource_id, "UPDATE_MARKINGS"):
+        raise Deny("missing resource permission")
+
+    if not marking_role_service.allows(user, marking_id, "APPLY"):
+        raise Deny("missing marking apply permission")
+
+    requirement_service.add_direct_requirement(
+        resource_id=resource_id,
+        requirement_type="MARKING",
+        requirement_id=marking_id,
+        source_type="DIRECT",
+        source_resource_id=resource_id,
+    )
+
+    requirement_service.recompute_resource_effective_requirements(resource_id)
+    lineage_service.enqueue_downstream_impact_scan(resource_id)
+
+    audit.log(
+        event="resource_marking_added",
+        actor=user.id,
+        resource_id=resource_id,
+        marking_id=marking_id,
+    )
+```
+
+验收点：
+
+- `APPLY` 权限和资源 `UPDATE_MARKINGS` 权限都必须满足。
+- Marking member 不等于可以 apply marking。
+- Marking admin 不等于自动拥有该 Marking 的数据访问资格。
+- 变更后要能解释 direct requirement 和 inherited requirement 的来源。
+
+### 11.3 Resource hierarchy：资源层传递
+
+资源层传播沿 Project / folder / resource 父子树生效。
+
+```text
+Project: Finance
+  direct requirement: FINANCE
+
+Folder: raw/
+  inherited requirement: FINANCE
+
+Dataset: raw/customer
+  inherited requirement: FINANCE
+```
+
+计算公式：
+
+```text
+effective_resource_requirements(resource) =
+    direct_requirements(resource)
+  ∪ effective_resource_requirements(parent(resource))
+```
+
+伪代码：
+
+```python
+def compute_effective_resource_requirements(resource_id):
+    resource = resource_service.get(resource_id)
+    direct = requirement_service.get_direct_requirements(resource_id)
+
+    if resource.parent_resource_id is None:
+        inherited = set()
+    else:
+        inherited = compute_effective_resource_requirements(resource.parent_resource_id)
+
+    return normalize_requirements(direct | inherited)
+```
+
+工程实现上不建议查询时递归。更适合维护物化表：
+
+```text
+resource_effective_requirement
+  resource_id
+  requirement_type
+  requirement_id
+  source_type          # DIRECT / PARENT
+  source_resource_id
+  requirement_version
+```
+
+当 Project / folder 的 Marking 变化时：
+
+```text
+Parent requirement changed
+  -> 找到所有 descendant resources
+  -> 重算 descendant resource_effective_requirement
+  -> 找到 descendant datasets
+  -> 标记 downstream data requirements 需要 impact scan 或 rebuild
+```
+
+### 11.4 Build-time：数据血缘传递
+
+数据血缘传播是防止下游绕权的核心。构建 output transaction 前，需要把每个 input 的访问要求合并到 output。
+
+```text
+BuildRun start
+  -> resolve input dataset views
+  -> resolve input transactions
+  -> 读取 input resource effective requirements
+  -> 读取 input transaction requirements
+  -> 合并 carried requirements
+  -> 应用 approved unmarking rules
+  -> 执行 transform
+  -> commit output transaction 前写 transaction_requirement
+  -> 写 lineage_edge
+  -> audit
+```
+
+关键公式：
+
+```text
+carried_requirements(input) =
+    effective_resource_requirements(input.dataset_resource)
+  ∪ transaction_requirements(input.transaction)
+
+output_transaction_requirements =
+    effective_resource_requirements(output.dataset_resource)
+  ∪ union(carried_requirements(each_input) - approved_unmarking_rules)
+```
+
+伪代码：
+
+```python
+def compute_output_transaction_requirements(build_run):
+    output = build_run.output_dataset
+    branch = build_run.branch
+
+    output_direct = requirement_service.get_effective_resource_requirements(
+        output.resource_id
+    )
+
+    inherited = set()
+
+    for input_ref in build_run.inputs:
+        input_view = dataset_service.resolve_view(
+            dataset_id=input_ref.dataset_id,
+            branch=input_ref.branch,
+            transaction_selector=input_ref.selector,
+        )
+
+        input_resource_reqs = requirement_service.get_effective_resource_requirements(
+            input_view.dataset_resource_id
+        )
+
+        input_data_reqs = requirement_service.get_transaction_requirements(
+            input_view.transaction_id
+        )
+
+        carried = input_resource_reqs | input_data_reqs
+
+        approved_removals = unmarking_service.get_approved_rules(
+            branch=branch,
+            input_dataset_id=input_view.dataset_id,
+            output_dataset_id=output.dataset_id,
+        )
+
+        filtered = remove_requirements(carried, approved_removals)
+
+        inherited |= annotate_source(
+            filtered,
+            source_input_dataset_id=input_view.dataset_id,
+            source_input_transaction_id=input_view.transaction_id,
+        )
+
+    return normalize_requirements(output_direct | inherited)
+```
+
+这里的 `normalize_requirements` 要保留来源，而不只是去重：
+
+```python
+def normalize_requirements(requirements):
+    result = {}
+
+    for req in requirements:
+        key = (req.requirement_type, req.requirement_id)
+        if key not in result:
+            result[key] = req
+        else:
+            result[key].sources += req.sources
+
+    return set(result.values())
+```
+
+否则 Access Debugger 无法回答“这个 PII requirement 是哪个 input 带来的”。
+
+### 11.5 Unmarking：传播中断计算
+
+传播中断不能设计成“从 output 上删除某个 Marking”。它必须是 input-specific 规则：
+
+```text
+unmarking_rule =
+  branch
+  input_dataset_id
+  output_dataset_id
+  requirement_type
+  requirement_id
+  status
+  approved_by
+```
+
+原因是多输入场景里，一个 input 停止传播，不代表其他 input 不再携带同一个 Marking。
+
+```text
+Dataset A: PII
+Dataset B: PII
+
+Transform(A, B) -> Dataset C
+
+只对 A stop_propagating PII
+但 B 仍然贡献 PII
+所以 C 仍然必须要求 PII
+```
+
+审批流程：
+
+```text
+Engineer declares stop_propagating
+  -> 创建 unmarking_rule
+  -> 校验目标 branch 是否 protected
+  -> Security approver 审批
+  -> 校验 approver 是否有该 Marking 的 REMOVE 权限
+  -> rule APPROVED
+  -> build-time propagation 生效
+```
+
+伪代码：
+
+```python
+def approve_unmarking_rule(approver, rule_id):
+    rule = unmarking_service.get(rule_id)
+
+    if not branch_service.is_protected(rule.branch):
+        raise Deny("unmarking must target protected branch")
+
+    if rule.requirement_type == "MARKING":
+        if not marking_role_service.allows(approver, rule.requirement_id, "REMOVE"):
+            raise Deny("missing marking remove permission")
+
+    rule.status = "APPROVED"
+    rule.approved_by = approver.id
+    audit.log("unmarking_rule_approved", rule_id=rule_id, actor=approver.id)
+```
+
+Build-time 应用：
+
+```python
+def remove_requirements(carried, approved_rules):
+    removed_keys = {
+        (rule.requirement_type, rule.requirement_id)
+        for rule in approved_rules
+        if rule.status == "APPROVED"
+    }
+
+    return {
+        req for req in carried
+        if (req.requirement_type, req.requirement_id) not in removed_keys
+    }
+```
+
+### 11.6 Query-time：读取时 Marking 计算
+
+读取路径不要重新推导 lineage。读取时应只读取已经物化好的 requirements：
+
+```text
+required_for_read =
+    effective_resource_requirements(dataset_resource)
+  ∪ transaction_requirements(dataset_view.transaction)
+```
+
+用户拥有的 Marking：
+
+```text
+user_markings =
+    direct_marking_memberships(user)
+  ∪ marking_memberships_from_groups(user.groups)
+```
+
+普通 Marking 判定：
+
+```text
+missing_markings = required_markings - user_markings
+```
+
+完整伪代码：
+
+```python
+def authorize_dataset_read(user, dataset_view):
+    dataset = dataset_service.get(dataset_view.dataset_id)
+
+    if not role_service.allows(user, dataset.resource_id, "VIEW"):
+        return deny("MISSING_RESOURCE_ROLE")
+
+    resource_reqs = requirement_service.get_effective_resource_requirements(
+        dataset.resource_id
+    )
+
+    data_reqs = requirement_service.get_transaction_requirements(
+        dataset_view.transaction_id
+    )
+
+    required = normalize_requirements(resource_reqs | data_reqs)
+    user_ctx = entitlement_service.resolve(user)
+
+    missing_markings = required.markings - user_ctx.markings
+    if missing_markings:
+        return deny("MISSING_MARKINGS", missing_markings)
+
+    if required.organizations:
+        if not required.organizations & user_ctx.organizations:
+            return deny("MISSING_ORGANIZATION", required.organizations)
+
+    if required.classification:
+        if not cbac_service.satisfies(user_ctx, required.classification):
+            return deny("MISSING_CLASSIFICATION", required.classification)
+
+    audit.log("dataset_read_allowed", user=user.id, dataset=dataset.id)
+    return allow()
+```
+
+读取路径的验收点：
+
+- Query engine、preview、export、API、OSDK、AIP 都必须走同一套 PDP。
+- Deny 结果要返回可解释原因，而不是只返回 forbidden。
+- 权限判定不能信任前端 UI 的显示状态。
+- scoped session 只能收窄用户当前可用 Markings，不能扩大访问。
+
+### 11.7 事件流
+
+推荐把计算拆成事件驱动链路：
+
+```text
+MarkingApplied
+  -> RecomputeResourceRequirements
+  -> DownstreamImpactSimulation
+  -> MarkDatasetsStaleForRequirementReview
+
+BuildStarted
+  -> ResolveInputTransactions
+  -> ComputeOutputRequirements
+  -> CommitOutputTransaction
+  -> WriteLineageEdges
+  -> EmitDatasetRequirementChanged
+
+UnmarkingRuleApproved
+  -> RebuildAffectedOutputs
+  -> RecomputeDownstreamRequirements
+
+DatasetReadRequested
+  -> ResolveUserEntitlements
+  -> LoadEffectiveRequirements
+  -> PDPDecision
+  -> Audit
+```
+
+### 11.8 容易做错的边界
+
+| 错误设计 | 风险 | 正确做法 |
+|---|---|---|
+| 只在 Dataset 上存当前 Marking | 旧 transaction 和新 transaction 权限混淆 | requirement 绑定 transaction / view |
+| 下游只继承 input transaction requirement | 上游 Project / folder Marking 可能被绕过 | carried requirements 同时包含 input resource + input transaction |
+| unmarking 做成 output 全局删除 | 多输入场景误删其他 input 的 Marking | unmarking 绑定 input -> output -> requirement |
+| 读取时重新计算全量 lineage | 查询慢且不稳定 | Build-time 物化，query-time 判定 |
+| Marking admin 默认也是 member | 管理权限变成数据访问资格 | admin / apply / remove / member 分离 |
+| 只返回 forbidden | 排障和权限申请困难 | 提供 whyDenied / missing requirements |
+
+---
+
+## 12. 自建平台成熟度分层
 
 | 层级 | 能力 | 结果 |
 |---|---|---|
@@ -342,7 +749,7 @@ Transform 声明 stop_propagating
 
 ---
 
-## 12. 常见误区
+## 13. 常见误区
 
 | 误区 | 风险 | 修正 |
 |---|---|---|
@@ -356,7 +763,7 @@ Transform 声明 stop_propagating
 
 ---
 
-## 13. 对我们的建设建议
+## 14. 对我们的建设建议
 
 1. 先统一 Dataset、Resource、Branch、Transaction、Lineage 的元模型，再补 Marking。
 2. Marking 不要做成普通标签字段，必须进入鉴权、构建、查询、审批和审计链路。
@@ -368,13 +775,14 @@ Transform 声明 stop_propagating
 
 ---
 
-## 14. HTML 展示口径
+## 15. HTML 展示口径
 
-站点页面应突出四个阅读重点：
+站点页面应突出五个阅读重点：
 
 1. Dataset 访问为什么是多层判定，而不是单一 RBAC。
 2. Role、Organization、Marking、Data Requirement 的边界。
 3. Marking 如何沿资源层级和数据血缘传播。
-4. 自建平台要如何落控制面、构建链路、查询链路、审批链路和审计链路。
+4. Marking 在 apply-time、build-time、query-time 三个时机如何计算。
+5. 自建平台要如何落控制面、构建链路、查询链路、审批链路和审计链路。
 
 页面不需要复刻原始调研的全部 API 和 SQL 模型，完整证据和实现细节继续指向 `docs/raw/30-dataset-permission-marking-architecture.md`。

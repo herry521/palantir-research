@@ -1015,6 +1015,76 @@ img {
   font-weight: 700;
 }
 
+.calculation-flow {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+  margin-top: 18px;
+}
+
+.calculation-flow article,
+.formula-panel {
+  border-radius: var(--radius-md);
+  border: 1px solid rgba(16, 45, 34, 0.1);
+  background: linear-gradient(180deg, #ffffff 0%, #fbfcfa 100%);
+  box-shadow: 0 8px 26px rgba(14, 38, 29, 0.06);
+}
+
+.calculation-flow article {
+  padding: 18px;
+}
+
+.calculation-flow span {
+  display: inline-flex;
+  margin-bottom: 12px;
+  padding: 6px 10px;
+  border-radius: 999px;
+  background: rgba(201, 178, 116, 0.18);
+  color: #66511f;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.calculation-flow h3 {
+  margin: 0 0 8px;
+  font-size: 18px;
+}
+
+.calculation-flow p {
+  margin: 0;
+  color: var(--ink-500);
+  font-size: 14px;
+  line-height: 1.55;
+}
+
+.formula-panel {
+  display: grid;
+  gap: 12px;
+  margin-top: 18px;
+  padding: 18px;
+}
+
+.formula-panel div {
+  display: grid;
+  grid-template-columns: 240px 1fr;
+  gap: 14px;
+  align-items: start;
+  padding: 14px;
+  border-radius: 14px;
+  background: rgba(39, 104, 77, 0.045);
+  border: 1px solid rgba(39, 104, 77, 0.09);
+}
+
+.formula-panel strong {
+  color: var(--forest-700);
+  font-size: 14px;
+}
+
+.formula-panel code {
+  width: 100%;
+  overflow-wrap: anywhere;
+}
+
 .map-layers {
   display: grid;
   gap: 14px;
@@ -1716,6 +1786,7 @@ html.is-embedded-root .section-card {
   .lineage-version-grid,
   .permission-matrix,
   .implementation-chain,
+  .calculation-flow,
   .engine-decision-panel,
   .engine-decision-grid,
   .faster-engine-head,
@@ -1803,6 +1874,7 @@ html.is-embedded-root .section-card {
   .permission-matrix,
   .implementation-chain,
   .architecture-chain,
+  .calculation-flow,
   .hero-stat,
   .operator-conclusion-stack {
     grid-template-columns: 1fr;
@@ -1875,6 +1947,10 @@ html.is-embedded-root .section-card {
     justify-content: center;
     white-space: normal;
     text-align: center;
+  }
+
+  .formula-panel div {
+    grid-template-columns: 1fr;
   }
 
   .conclusion-grid {

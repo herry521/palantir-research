@@ -98,6 +98,7 @@
             <a href="#marking-model">Marking 机制</a>
             <a href="#architecture">架构设计</a>
             <a href="#implementation">实现链路</a>
+            <a href="#calculation">计算设计</a>
             <a href="#build-your-own">自建建议</a>
             <a href="#sources">相关来源</a>
           </aside>
@@ -309,6 +310,67 @@
                   <span>06</span>
                   <h3>审计与模拟</h3>
                   <p>记录成员变更、资源打标、读取、审批和移除动作，并支持 Marking 变更影响模拟。</p>
+                </article>
+              </div>
+            </section>
+
+            <section class="section-card" id="calculation">
+              <p class="section-kicker">Calculation Design</p>
+              <h2>
+                <span class="title-row"><svg class="icon lg" aria-hidden="true"><use href="#i-cpu"></use></svg><span>Marking 传递与计算设计</span></span>
+              </h2>
+              <div class="calculation-flow">
+                <article>
+                  <span>Apply-time</span>
+                  <h3>应用 Marking</h3>
+                  <p>校验 resource update-markings 权限和 marking apply 权限，写入 direct resource requirement，并触发 downstream impact simulation。</p>
+                </article>
+                <article>
+                  <span>Resource hierarchy</span>
+                  <h3>资源层继承</h3>
+                  <p><code>effective_resource_requirements = direct + parent_effective</code>，Project / folder 的要求物化到子资源。</p>
+                </article>
+                <article>
+                  <span>Build-time</span>
+                  <h3>构建时传播</h3>
+                  <p>读取 input resource requirements 和 input transaction requirements，合并后写入 output transaction requirements。</p>
+                </article>
+                <article>
+                  <span>Query-time</span>
+                  <h3>读取时判定</h3>
+                  <p>读取已物化的 resource + transaction requirements，和用户 Marking membership 做 all-of 判定。</p>
+                </article>
+              </div>
+              <div class="formula-panel">
+                <div>
+                  <strong>carried_requirements(input)</strong>
+                  <code>input.resource_effective_requirements ∪ input.transaction_requirements</code>
+                </div>
+                <div>
+                  <strong>output_transaction_requirements</strong>
+                  <code>output.resource_effective_requirements ∪ union(carried - approved_unmarking_rules)</code>
+                </div>
+                <div>
+                  <strong>required_for_read</strong>
+                  <code>dataset.resource_effective_requirements ∪ dataset_view.transaction_requirements</code>
+                </div>
+              </div>
+              <div class="detail-grid mechanism-grid">
+                <article class="detail-card mechanism-card">
+                  <h3>Unmarking 必须 input-specific</h3>
+                  <p class="muted">多输入场景里，A 停止传播 PII 不代表 B 不再贡献 PII。传播中断规则应绑定 <code>input -> output -> requirement</code>。</p>
+                </article>
+                <article class="detail-card mechanism-card">
+                  <h3>读取路径不重新算 lineage</h3>
+                  <p class="muted">Lineage 传播应在 build-time 物化到 transaction requirements；query-time 只做快速 PDP 判定和可解释拒绝。</p>
+                </article>
+                <article class="detail-card mechanism-card">
+                  <h3>来源要保留</h3>
+                  <p class="muted">Requirement 去重时不能丢 source chain，否则 Access Debugger 无法解释某个 Marking 是哪个 parent 或 input 带来的。</p>
+                </article>
+                <article class="detail-card mechanism-card">
+                  <h3>事件流解耦</h3>
+                  <p class="muted">MarkingApplied、BuildStarted、UnmarkingRuleApproved、DatasetReadRequested 应分别触发重算、传播、审批和审计。</p>
                 </article>
               </div>
             </section>

@@ -91,7 +91,7 @@ const pages = [
     path: "pages/dataset-permission-marking.html",
     slug: "dataset-permission-marking",
     title: "Dataset 权限与 Marking 架构",
-    requiredText: ["Dataset 权限与 Marking 架构", "Dataset 权限全景", "访问判定模型", "Marking 的设计和传播", "端到端实现链路"],
+    requiredText: ["Dataset 权限与 Marking 架构", "Dataset 权限全景", "访问判定模型", "Marking 的设计和传播", "端到端实现链路", "Marking 传递与计算设计"],
   },
   {
     path: "pages/engineering-and-ecosystem.html",
