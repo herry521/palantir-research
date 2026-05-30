@@ -32,8 +32,8 @@ documents:
     status: reviewed
     topics: [library, self-build-roadmap]
     source_layer: reading
-    issue_refs: [44]
-    related_docs: [docs/catalog.yml, docs/topics/dataset.md, docs/topics/pipeline.md, docs/topics/data-quality.md, docs/topics/self-build-roadmap.md]
+    issue_refs: [44, 49]
+    related_docs: [docs/catalog.yml, docs/topics/dataset.md, docs/topics/pipeline.md, docs/topics/data-quality.md, docs/topics/security-and-marking.md, docs/topics/self-build-roadmap.md]
     canonical: false
     updated: 2026-05-31
 
@@ -129,8 +129,8 @@ documents:
     status: reviewed
     topics: [security-and-marking, governance]
     source_layer: topic
-    issue_refs: [19, 42, 43, 46]
-    source_refs: [docs/synthesis/dataset-permission-marking-architecture-summary.md, docs/raw/30-dataset-permission-marking-architecture.md, docs/raw/06-security-and-permissions.md, docs/raw/11-marking-mechanism-deep-dive.md, docs/raw/12-dataset-marking-implementation.md, docs/raw/13-marking-advanced-deep-dive.md, docs/raw/49-data-quality-external-notification-security.md, docs/synthesis/palantir-data-quality-module-research.md]
+    issue_refs: [19, 42, 43, 46, 49, 50, 51, 52, 53, 54, 55, 56, 57]
+    source_refs: [docs/synthesis/dataset-permission-marking-architecture-summary.md, docs/synthesis/data-integration-permission-system-roadmap.md, docs/raw/30-dataset-permission-marking-architecture.md, docs/raw/06-security-and-permissions.md, docs/raw/11-marking-mechanism-deep-dive.md, docs/raw/12-dataset-marking-implementation.md, docs/raw/13-marking-advanced-deep-dive.md, docs/raw/49-data-quality-external-notification-security.md, docs/raw/51-ingestion-connection-credential-permission-boundary.md, docs/raw/52-transform-runtime-build-permission-boundary.md, docs/raw/53-consumption-export-access-control.md, docs/raw/54-lineage-marking-policy-propagation-model.md, docs/raw/55-permission-governance-audit-lifecycle.md, docs/synthesis/palantir-data-quality-module-research.md]
     related_docs: [docs/topics/dataset.md, docs/topics/data-quality.md, docs/topics/ontology.md]
     canonical: false
     created: 2026-05-31
@@ -219,8 +219,8 @@ documents:
     status: reviewed
     topics: [self-build-roadmap, operator-platform]
     source_layer: topic
-    issue_refs: [24, 28, 31, 33, 35, 41, 42, 43, 46]
-    source_refs: [docs/synthesis/operator-platform-design.md, docs/synthesis/dataworks-vs-palantir-integration.md, docs/synthesis/palantir-dataset-no-dt-partition-impact.md, docs/synthesis/palantir-data-quality-module-research.md, docs/synthesis/palantir-ai-fde-research.md, docs/superpowers/specs/2026-05-31-research-doc-library-design.md, docs/raw/10-opensource-alternative-stack.md, docs/raw/20-stream-self-build-architecture.md, docs/raw/37-ai-fde-self-build-implementation-blueprint.md, docs/raw/43-migration-risk-dual-coordinate-patterns.md, docs/raw/26-pro-code-governance-quality-observability.md, docs/raw/27-incremental-scheduling-transaction.md, docs/superpowers/specs/2026-04-09-platform-upgrade-design.md, docs/superpowers/specs/2026-04-16-roadmap-product-interpretation.md, docs/superpowers/specs/2026-04-16-roadmap-q2-q3-breakdown.md]
+    issue_refs: [24, 28, 31, 33, 35, 41, 42, 43, 46, 49, 57]
+    source_refs: [docs/synthesis/operator-platform-design.md, docs/synthesis/dataworks-vs-palantir-integration.md, docs/synthesis/palantir-dataset-no-dt-partition-impact.md, docs/synthesis/palantir-data-quality-module-research.md, docs/synthesis/palantir-ai-fde-research.md, docs/synthesis/data-integration-permission-system-roadmap.md, docs/superpowers/specs/2026-05-31-research-doc-library-design.md, docs/raw/10-opensource-alternative-stack.md, docs/raw/20-stream-self-build-architecture.md, docs/raw/37-ai-fde-self-build-implementation-blueprint.md, docs/raw/43-migration-risk-dual-coordinate-patterns.md, docs/raw/26-pro-code-governance-quality-observability.md, docs/raw/27-incremental-scheduling-transaction.md, docs/raw/50-data-integration-permission-source-map.md, docs/raw/56-open-platform-permission-comparison.md, docs/superpowers/specs/2026-04-09-platform-upgrade-design.md, docs/superpowers/specs/2026-04-16-roadmap-product-interpretation.md, docs/superpowers/specs/2026-04-16-roadmap-q2-q3-breakdown.md]
     related_docs: [docs/topics/dataset.md, docs/topics/pipeline.md, docs/topics/data-quality.md, docs/topics/ai-fde.md]
     canonical: false
     created: 2026-05-31
@@ -690,6 +690,76 @@ documents:
     source_layer: evidence
     issue_refs: [43]
     canonical: false
+  - id: raw-50-data-integration-permission-source-map
+    path: docs/raw/50-data-integration-permission-source-map.md
+    title: "Data Integration 权限体系资料源与术语基线"
+    type: raw
+    status: reviewed
+    topics: [data-integration, security-and-marking, self-build-roadmap]
+    source_layer: evidence
+    issue_refs: [49, 50]
+    source_refs: [docs/synthesis/dataset-permission-marking-architecture-summary.md, docs/raw/30-dataset-permission-marking-architecture.md, docs/raw/49-data-quality-external-notification-security.md]
+    canonical: false
+  - id: raw-51-ingestion-connection-credential-permission-boundary
+    path: docs/raw/51-ingestion-connection-credential-permission-boundary.md
+    title: "数据接入、连接与凭据权限边界调研"
+    type: raw
+    status: reviewed
+    topics: [data-integration, security-and-marking, credential]
+    source_layer: evidence
+    issue_refs: [49, 51]
+    source_refs: [docs/raw/50-data-integration-permission-source-map.md, docs/raw/49-data-quality-external-notification-security.md, docs/synthesis/dataset-permission-marking-architecture-summary.md]
+    canonical: false
+  - id: raw-52-transform-runtime-build-permission-boundary
+    path: docs/raw/52-transform-runtime-build-permission-boundary.md
+    title: "Transform / Pipeline 构建运行时权限边界调研"
+    type: raw
+    status: reviewed
+    topics: [data-integration, pipeline, pro-code, governance]
+    source_layer: evidence
+    issue_refs: [49, 52]
+    source_refs: [docs/raw/23-code-repositories-engineering-entry.md, docs/raw/25-transform-contract-dag.md, docs/raw/26-pro-code-governance-quality-observability.md, docs/raw/27-incremental-scheduling-transaction.md, docs/raw/35-ai-fde-governance-branching.md, docs/synthesis/palantir-pro-code-capability-research.md]
+    canonical: false
+  - id: raw-53-consumption-export-access-control
+    path: docs/raw/53-consumption-export-access-control.md
+    title: "Dataset、Stream、API 消费与导出访问控制调研"
+    type: raw
+    status: reviewed
+    topics: [data-integration, dataset, streaming, security-and-marking]
+    source_layer: evidence
+    issue_refs: [49, 53]
+    source_refs: [docs/raw/16-streaming-capability-deep-dive.md, docs/raw/29-lineage-branch-version-pipeline-sync.md, docs/raw/30-dataset-permission-marking-architecture.md, docs/raw/49-data-quality-external-notification-security.md, docs/synthesis/dataset-permission-marking-architecture-summary.md]
+    canonical: false
+  - id: raw-54-lineage-marking-policy-propagation-model
+    path: docs/raw/54-lineage-marking-policy-propagation-model.md
+    title: "权限传播、血缘、Marking 与细粒度策略落地模型"
+    type: raw
+    status: reviewed
+    topics: [data-integration, security-and-marking, lineage-and-catalog, governance]
+    source_layer: evidence
+    issue_refs: [49, 54]
+    source_refs: [docs/raw/11-marking-mechanism-deep-dive.md, docs/raw/12-dataset-marking-implementation.md, docs/raw/13-marking-advanced-deep-dive.md, docs/raw/30-dataset-permission-marking-architecture.md, docs/raw/42-governance-lineage-audit-contracts.md]
+    canonical: false
+  - id: raw-55-permission-governance-audit-lifecycle
+    path: docs/raw/55-permission-governance-audit-lifecycle.md
+    title: "权限申请、审批、审计与生命周期治理调研"
+    type: raw
+    status: reviewed
+    topics: [data-integration, security-and-marking, governance, observability]
+    source_layer: evidence
+    issue_refs: [49, 55]
+    source_refs: [docs/raw/30-dataset-permission-marking-architecture.md, docs/raw/42-governance-lineage-audit-contracts.md, docs/raw/48-data-quality-governance-lifecycle.md]
+    canonical: false
+  - id: raw-56-open-platform-permission-comparison
+    path: docs/raw/56-open-platform-permission-comparison.md
+    title: "主流数据平台权限模型对标与自研映射"
+    type: raw
+    status: reviewed
+    topics: [data-integration, security-and-marking, self-build-roadmap]
+    source_layer: evidence
+    issue_refs: [49, 56]
+    source_refs: [docs/raw/50-data-integration-permission-source-map.md]
+    canonical: false
 
   - id: synthesis-dataset-permission-marking-architecture-summary
     path: docs/synthesis/dataset-permission-marking-architecture-summary.md
@@ -700,6 +770,17 @@ documents:
     source_layer: conclusion
     issue_refs: [19]
     source_refs: [docs/raw/30-dataset-permission-marking-architecture.md]
+    canonical: true
+  - id: synthesis-data-integration-permission-system-roadmap
+    path: docs/synthesis/data-integration-permission-system-roadmap.md
+    title: "Data Integration 权限体系建设缺口与路线图"
+    type: synthesis
+    status: canonical
+    topics: [data-integration, security-and-marking, self-build-roadmap, governance]
+    source_layer: conclusion
+    issue_refs: [49, 57]
+    source_refs: [docs/raw/50-data-integration-permission-source-map.md, docs/raw/51-ingestion-connection-credential-permission-boundary.md, docs/raw/52-transform-runtime-build-permission-boundary.md, docs/raw/53-consumption-export-access-control.md, docs/raw/54-lineage-marking-policy-propagation-model.md, docs/raw/55-permission-governance-audit-lifecycle.md, docs/raw/56-open-platform-permission-comparison.md, docs/synthesis/dataset-permission-marking-architecture-summary.md]
+    related_docs: [docs/topics/security-and-marking.md, docs/topics/self-build-roadmap.md]
     canonical: true
   - id: synthesis-dataworks-vs-palantir-integration
     path: docs/synthesis/dataworks-vs-palantir-integration.md
@@ -833,6 +914,16 @@ documents:
     topics: [data-quality]
     source_layer: planning
     issue_refs: [35]
+    canonical: false
+  - id: plan-data-integration-permission-research
+    path: docs/superpowers/plans/2026-05-31-data-integration-permission-research-plan.md
+    title: "Data Integration 权限体系建设缺口调研计划"
+    type: plan
+    status: reviewed
+    topics: [data-integration, security-and-marking, self-build-roadmap]
+    source_layer: planning
+    issue_refs: [49, 50, 51, 52, 53, 54, 55, 56, 57]
+    related_docs: [docs/synthesis/data-integration-permission-system-roadmap.md]
     canonical: false
   - id: plan-research-doc-library-phase1
     path: docs/superpowers/plans/2026-05-31-research-doc-library-phase1-plan.md

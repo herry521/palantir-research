@@ -4,7 +4,7 @@
 
 1. 【建议】先读 `docs/synthesis` 中的 canonical 结论，再回到 `docs/raw` 查证据；不要从 raw 编号顺序线性阅读。
 2. 【事实】当前仓库保留三层主结构：`raw` 是证据层，`synthesis` 是结论层，`superpowers` 是计划与设计记录层。
-3. 【推断】Data Quality、AI FDE、Dataset transaction、Pro-Code 和权限/Marking 是当前最适合直接服务自研平台设计的主题。
+3. 【推断】Data Quality、AI FDE、Dataset transaction、Pro-Code 和 Data Integration 权限体系是当前最适合直接服务自研平台设计的主题。
 4. 【建议】新增 `docs/catalog.yml` 作为机器可读索引，后续主题页、阅读层和链接检查都应从 catalog 派生。
 
 ## 层级说明
@@ -28,7 +28,7 @@
 | Pipeline | [docs/topics/pipeline.md](topics/pipeline.md) | Pipeline Builder、Transform、执行引擎、增量和算子平台。 |
 | Scheduling | [docs/topics/scheduling.md](topics/scheduling.md) | Schedule trigger、graph build、staleness、freshness 与业务周期边界。 |
 | Lineage and Catalog | [docs/topics/lineage-and-catalog.md](topics/lineage-and-catalog.md) | 血缘坐标、branch/version、catalog 元数据和文档库索引。 |
-| Security and Marking | [docs/topics/security-and-marking.md](topics/security-and-marking.md) | 权限、Marking、传播、审计和外部通知安全。 |
+| Security and Marking | [docs/topics/security-and-marking.md](topics/security-and-marking.md) | Dataset/Data Integration 权限、Marking、Credential、传播、审计和外部通知安全。 |
 | Ontology | [docs/topics/ontology.md](topics/ontology.md) | Object Type、Property、Link、Action、语义层和业务操作模型。 |
 | Data Quality | [docs/topics/data-quality.md](topics/data-quality.md) | Data Expectations、Health Checks、Monitoring Views、告警和 issue 闭环。 |
 | Pro-Code | [docs/topics/pro-code.md](topics/pro-code.md) | Code Repositories、Transform Contract、运行时、CI 和工程治理。 |
@@ -53,7 +53,8 @@
 
 1. 先从 [Security and Marking 主题索引](topics/security-and-marking.md) 明确权限判定层次和待验证边界。
 2. 再读 [Palantir Dataset 权限体系与 Marking 机制沉淀](synthesis/dataset-permission-marking-architecture-summary.md)。
-3. 按需回查 Marking 机制、实现方案和进阶机制：`docs/raw/11`、`12`、`13`。
+3. 若目标是自研 Data Integration 权限控制面，继续读 [Data Integration 权限体系建设缺口与路线图](synthesis/data-integration-permission-system-roadmap.md)。
+4. 按需回查 Marking 机制、实现方案、进阶机制和本轮 Data Integration Story：`docs/raw/11`、`12`、`13`、`50` 到 `56`。
 
 ### Data Quality
 
@@ -76,7 +77,7 @@
 ### 自建平台路线
 
 1. 先从 [Self-build Roadmap 主题索引](topics/self-build-roadmap.md) 建立能力域优先级。
-2. 从 [算子平台建设方案](synthesis/operator-platform-design.md) 和 [Data Quality 综合报告](synthesis/palantir-data-quality-module-research.md) 提取可落地模块。
+2. 从 [算子平台建设方案](synthesis/operator-platform-design.md)、[Data Quality 综合报告](synthesis/palantir-data-quality-module-research.md) 和 [Data Integration 权限体系路线图](synthesis/data-integration-permission-system-roadmap.md) 提取可落地模块。
 3. 使用 `docs/catalog.yml` 查看 canonical 文档和对应证据层。
 
 ## 追踪与维护
@@ -84,6 +85,7 @@
 - 当前文档库重组 Epic: [#42](https://gitlabee.chehejia.com/huyongqiang/palantir-research/-/issues/42)
 - 全局入口 Story: [#44](https://gitlabee.chehejia.com/huyongqiang/palantir-research/-/issues/44)
 - Catalog Story: [#45](https://gitlabee.chehejia.com/huyongqiang/palantir-research/-/issues/45)
+- Data Integration 权限体系 Epic: [#49](https://gitlabee.chehejia.com/huyongqiang/palantir-research/-/issues/49)
 
 维护规则：
 

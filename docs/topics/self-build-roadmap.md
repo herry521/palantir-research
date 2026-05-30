@@ -5,8 +5,8 @@
 1. 【建议】自建路线应以能力域为主轴，而不是复刻 Foundry 产品菜单；优先建设 Dataset/Transaction、Pipeline Contract、调度、质量、血缘、权限和工程治理这些底座能力。
 2. 【推断】算子平台的核心是“有契约的计算单元”：OperatorSpec 负责编译期 schema/参数/资源契约，Executor 负责运行时执行，多引擎通过 Engine Router 选择。
 3. 【建议】迁移传统数仓时不能丢掉 `dt` 承载的生产语义；应采用 `transaction/view` 管版本证据，`business_date/data_interval/partition_manifest` 管业务解释、补数和 SLA。
-4. 【推断】类 AI FDE 应放在平台治理底座之后推进：先只读探索，再 branch-local 修改，再 preview/CI validation，最后扩展 ontology/function/tool。
-5. 【边界】开源栈可覆盖接入、计算、调度、血缘的一部分，但 Ontology、统一治理、Dataset Transaction、增量语义和受控 AI 工程执行仍需平台自研。
+4. 【推断】Data Integration 权限体系的 P0 应先覆盖 source/credential/sync/build/query/export/audit 的所有 PEP，再推进受控 unmarking、细粒度策略和 recertification。
+5. 【边界】开源栈可覆盖接入、计算、调度、血缘的一部分，但 Ontology、统一治理、Dataset Transaction、增量语义、权限传播和受控 AI 工程执行仍需平台自研。
 
 ## Canonical Documents
 
@@ -17,6 +17,7 @@
 | [docs/synthesis/palantir-dataset-no-dt-partition-impact.md](../synthesis/palantir-dataset-no-dt-partition-impact.md) | Dataset transaction/view 与传统 `dt` 生产坐标差异，迁移双坐标设计依据。 |
 | [docs/synthesis/palantir-data-quality-module-research.md](../synthesis/palantir-data-quality-module-research.md) | 自建质量控制面：build-time expectations、runtime health checks、monitoring views。 |
 | [docs/synthesis/palantir-ai-fde-research.md](../synthesis/palantir-ai-fde-research.md) | 类 AI FDE 自建边界和 90 天 PoC 路线。 |
+| [docs/synthesis/data-integration-permission-system-roadmap.md](../synthesis/data-integration-permission-system-roadmap.md) | Data Integration 权限体系 P0/P1/P2 路线，覆盖 source、credential、sync、transform、stream、export、audit。 |
 | [docs/superpowers/specs/2026-05-31-research-doc-library-design.md](../superpowers/specs/2026-05-31-research-doc-library-design.md) | 文档库与 topic/index 体系设计基线，关联 #42。 |
 
 ## Supporting Evidence
@@ -29,13 +30,15 @@
 | [docs/raw/43-migration-risk-dual-coordinate-patterns.md](../raw/43-migration-risk-dual-coordinate-patterns.md) | 双坐标设计、ready barrier、active pointer、supersedes transaction、coverage lineage。 |
 | [docs/raw/26-pro-code-governance-quality-observability.md](../raw/26-pro-code-governance-quality-observability.md) | 高码平台治理闭环，对自建工程入口、质量、血缘、权限、可观测有直接参考价值。 |
 | [docs/raw/27-incremental-scheduling-transaction.md](../raw/27-incremental-scheduling-transaction.md) | Dataset Transaction、增量调度、staleness、fallback 与 retention 的自建底座建议。 |
+| [docs/raw/50-data-integration-permission-source-map.md](../raw/50-data-integration-permission-source-map.md) | Data Integration 权限体系的资料源、术语和证据可信度基线。 |
+| [docs/raw/56-open-platform-permission-comparison.md](../raw/56-open-platform-permission-comparison.md) | Databricks、Snowflake、BigQuery、Ranger/Atlas、OpenLineage、Airflow 权限模型对标。 |
 | [docs/superpowers/specs/2026-04-09-platform-upgrade-design.md](../superpowers/specs/2026-04-09-platform-upgrade-design.md) | 大数据平台升级 17 模块 L1-L4 路线。 |
 | [docs/superpowers/specs/2026-04-16-roadmap-product-interpretation.md](../superpowers/specs/2026-04-16-roadmap-product-interpretation.md) | 产品阶段视角：I1 基础闭环、I2 生产就绪、I3 规模协作、I4 AI 自运营。 |
 | [docs/superpowers/specs/2026-04-16-roadmap-q2-q3-breakdown.md](../superpowers/specs/2026-04-16-roadmap-q2-q3-breakdown.md) | 2026 Q2/Q3 交付拆解：Pipeline Builder v1、H1 演示、文档/时序数据支持。 |
 
 ## Related Issues
 
-#24、#28、#31、#33、#35、#41、#42、#43、#46
+#24、#28、#31、#33、#35、#41、#42、#43、#46、#49、#57
 
 ## Open Questions
 
@@ -44,3 +47,5 @@
 - Operator Contract 与 Pro-Code Transform Contract 是否应合并为同一套 IR？
 - Data Quality、Lineage、Permission/Marking、Observability 的最小 P0 范围如何切分，避免做成互相孤立的外围系统？
 - 类 AI FDE 何时进入路线图更合适：在工程治理闭环完成后，还是可以先做只读探索型 P0？
+- Data Integration 权限体系的 `transaction_requirement`、`access_decision_snapshot`、`export_policy` 应分别由哪个服务拥有？
+- Source/credential/service principal 的外部授权回读和 rotation 是否纳入平台 P0，还是作为安全平台能力复用？
