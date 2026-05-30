@@ -30,9 +30,12 @@ check_contains() {
 
 check_contains "$ROOT/index.html" "Palantir"
 check_contains "$ROOT/index.html" "三个管理判断"
+check_contains "$ROOT/index.html" "一页纸 + 技术总览 + 建设蓝图 + 算子总览 + 八个专题页"
 check_contains "$ROOT/index.html" "Foundry Schedule 运行模式"
 check_contains "$ROOT/pages/overview.html" "技术总览"
 check_contains "$ROOT/pages/overview.html" "map-layers"
+check_contains "$ROOT/pages/overview.html" "专题 00"
+check_contains "$ROOT/pages/overview.html" "专题 07"
 check_contains "$ROOT/pages/overview.html" "Foundry Schedule 运行模式"
 check_contains "$ROOT/pages/data-engineering-platform-map.html" "能力建设关注点"
 check_contains "$ROOT/pages/data-engineering-platform-map.html" "Dataset 版本模型"
@@ -119,7 +122,7 @@ for file in "${required_files[@]}"; do
   }
 
   check_contains "$file" "Palantir Foundry / Pipeline 调研材料库"
-  check_contains "$file" "统一入口：首页 / 总览 / 高码 / 蓝图 / 算子总览 / 八个技术专题"
+  check_contains "$file" "统一入口：首页 / 总览 / 蓝图 / 算子总览 / 八个专题页"
 done
 
 grep -q 'href="pages/overview.html"' "$ROOT/index.html" || {

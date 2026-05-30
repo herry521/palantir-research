@@ -431,7 +431,7 @@ Foundry Schedule 不能天然表达：
 | Time trigger | 墙钟时间 | 业务日期推导 | business calendar |
 | Data updated | Dataset transaction committed | 分区/账期 ready | ready manifest |
 | AND/OR trigger | 事件 satisfied 布尔组合 | event correlation by business date | data_interval correlation |
-| Staleness | 数据版本是否过期 | 业务周期是否 eligible | Run Identity |
+| Staleness | 数据版本是否过期；归属 Data Version Identity / freshness scheduler | 业务周期是否 eligible | Business-cycle scheduler / Run Identity 补 business eligibility |
 | Force build | 绕过 up-to-date | 历史业务日期重跑 | backfill/rerun policy |
 | Build locking | 输出 transaction 并发控制 | 业务实例幂等 | run-to-transaction mapping |
 
@@ -514,4 +514,3 @@ Freshness scheduler:
 - DataWorks：[Supported formats of scheduling parameters](https://www.alibabacloud.com/help/doc-detail/2846748.html)
 - DataWorks：[Data backfill](https://www.alibabacloud.com/help/en/dataworks/data-backfilling)
 - DataWorks：[View auto-triggered instances](https://www.alibabacloud.com/help/en/dataworks/user-guide/view-auto-triggered-node-instances)
-

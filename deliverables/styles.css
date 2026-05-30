@@ -21,9 +21,9 @@
   --line-light: rgba(9, 27, 20, 0.1);
   --shadow-soft: 0 16px 48px rgba(7, 24, 19, 0.12);
   --shadow-heavy: 0 24px 80px rgba(4, 14, 10, 0.28);
-  --radius-lg: 28px;
-  --radius-md: 20px;
-  --radius-sm: 14px;
+  --radius-lg: 8px;
+  --radius-md: 8px;
+  --radius-sm: 6px;
   --content-width: 1180px;
   --font-sans: "PingFang SC", "Noto Sans SC", "Helvetica Neue", sans-serif;
   --font-serif: "Songti SC", "STSong", "Noto Serif SC", serif;
@@ -156,17 +156,19 @@ img {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 24px;
+  gap: 16px;
   padding: 16px 0;
 }
 
 .brand-mark {
   display: inline-flex;
   align-items: center;
+  flex: 0 0 auto;
   gap: 12px;
-  font-size: 13px;
-  letter-spacing: 0.18em;
+  font-size: 12px;
+  letter-spacing: 0.12em;
   text-transform: uppercase;
+  white-space: nowrap;
 }
 
 .brand-dot {
@@ -179,19 +181,29 @@ img {
 
 .nav-links {
   display: flex;
-  flex-wrap: wrap;
+  flex: 1 1 auto;
+  flex-wrap: nowrap;
   justify-content: flex-end;
-  gap: 10px;
+  gap: 4px;
+  min-width: 0;
   max-width: 100%;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.nav-links::-webkit-scrollbar {
+  display: none;
 }
 
 .nav-links a {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
-  padding: 10px 14px;
+  flex: 0 0 auto;
+  gap: 5px;
+  padding: 8px 9px;
   border-radius: 999px;
-  font-size: 14px;
+  font-size: 13px;
+  white-space: nowrap;
   transition: background-color 180ms ease, color 180ms ease, transform 180ms ease;
 }
 
@@ -348,7 +360,7 @@ img {
   font-family: var(--font-serif);
   font-weight: 600;
   line-height: 1.08;
-  letter-spacing: -0.03em;
+  letter-spacing: 0;
 }
 
 .hero-copy h1 {
@@ -484,6 +496,16 @@ img {
   gap: 18px;
 }
 
+.detail-main,
+.section-card,
+.detail-card,
+.source-card,
+.theme-card,
+.map-card,
+.topic-summary {
+  min-width: 0;
+}
+
 .summary-grid {
   grid-template-columns: repeat(3, 1fr);
 }
@@ -497,6 +519,10 @@ img {
 .entry-grid,
 .detail-grid {
   grid-template-columns: repeat(2, 1fr);
+}
+
+.home-body .entry-grid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
 }
 
 .conclusion-grid {
@@ -529,6 +555,37 @@ img {
 .theme-card h3,
 .map-card h3 {
   margin: 0 0 10px;
+}
+
+.detail-main h2,
+.detail-card h3,
+.topic-summary h3,
+.mechanism-card h3,
+.source-card h4,
+.theme-card h3,
+.map-card h3,
+.operator-conclusion-card h3 {
+  display: inline-flex;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+.detail-main h2::before,
+.detail-card h3::before,
+.topic-summary h3::before,
+.mechanism-card h3::before,
+.source-card h4::before,
+.theme-card h3::before,
+.map-card h3::before,
+.operator-conclusion-card h3::before {
+  content: "";
+  width: 14px;
+  height: 14px;
+  flex: 0 0 auto;
+  margin-top: 0.28em;
+  border-radius: 4px;
+  background: linear-gradient(135deg, var(--forest-600), rgba(98, 181, 143, 0.38));
+  box-shadow: inset 0 0 0 1px rgba(47, 106, 87, 0.18);
 }
 
 .detail-card,
@@ -702,7 +759,7 @@ img {
   display: block;
   padding: 10px 12px;
   margin-bottom: 8px;
-  border-radius: 12px;
+  border-radius: var(--radius-sm);
   font-size: 14px;
   color: var(--ink-500);
 }
@@ -1135,7 +1192,7 @@ img {
   color: var(--forest-700);
   font-size: 22px;
   font-weight: 700;
-  letter-spacing: -0.04em;
+  letter-spacing: 0;
 }
 
 .map-layer-body h3 {
@@ -1270,7 +1327,7 @@ body.is-embedded .topic-header h1,
 html.is-embedded-root .topic-header h1 {
   margin-bottom: 14px;
   font-size: 36px;
-  letter-spacing: -0.02em;
+  letter-spacing: 0;
 }
 
 body.is-embedded .intro-note,
@@ -1341,7 +1398,7 @@ html.is-embedded-root .section-card {
   font-size: 26px;
   line-height: 1;
   font-weight: 700;
-  letter-spacing: -0.04em;
+  letter-spacing: 0;
 }
 
 .capability-layer-title h3 {
@@ -1482,7 +1539,7 @@ html.is-embedded-root .section-card {
   line-height: 1;
   font-weight: 700;
   color: rgba(39, 104, 77, 0.18);
-  letter-spacing: -0.05em;
+  letter-spacing: 0;
   order: -1;
 }
 
@@ -1778,6 +1835,10 @@ html.is-embedded-root .section-card {
     grid-template-columns: repeat(2, 1fr);
   }
 
+  .home-body .entry-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
   .capability-roadmap {
     grid-template-columns: 1fr;
   }
@@ -1888,6 +1949,10 @@ html.is-embedded-root .section-card {
     grid-template-columns: 1fr;
   }
 
+  .home-body .entry-grid {
+    grid-template-columns: 1fr;
+  }
+
   .capability-blueprint {
     padding: 12px;
   }
@@ -1975,10 +2040,13 @@ html.is-embedded-root .section-card {
     grid-template-columns: repeat(2, minmax(0, 1fr));
     width: 100%;
     justify-content: flex-start;
+    overflow: visible;
   }
 
   .nav-links a {
+    flex: initial;
     justify-content: center;
+    padding: 9px 10px;
     text-align: center;
   }
 
@@ -1989,7 +2057,7 @@ html.is-embedded-root .section-card {
 
   .hero-copy h1 {
     font-size: 30px;
-    letter-spacing: -0.02em;
+    letter-spacing: 0;
     word-break: break-word;
     overflow-wrap: anywhere;
   }

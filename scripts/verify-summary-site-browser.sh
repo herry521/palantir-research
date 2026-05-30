@@ -180,6 +180,21 @@ async function checkPage(browser, pageSpec, viewport) {
     throw new Error(`${pageSpec.path}: body did not render with a usable size`);
   }
 
+  const horizontalOverflow = await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
+  if (horizontalOverflow > 2) {
+    throw new Error(`${pageSpec.path}: page overflows horizontally by ${horizontalOverflow}px`);
+  }
+
+  if (viewport.name === "desktop" && (await page.locator(".site-nav .nav-links a").count()) > 0) {
+    const navTopSpread = await page.locator(".site-nav .nav-links a").evaluateAll((items) => {
+      const tops = items.map((item) => Math.round(item.getBoundingClientRect().top));
+      return Math.max(...tops) - Math.min(...tops);
+    });
+    if (navTopSpread > 8) {
+      throw new Error(`${pageSpec.path}: desktop primary navigation appears to wrap; top spread is ${navTopSpread}px`);
+    }
+  }
+
   if (errors.length > 0) {
     throw new Error(`${pageSpec.path}: browser console errors: ${errors.join(" | ")}`);
   }
