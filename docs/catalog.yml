@@ -32,8 +32,8 @@ documents:
     status: reviewed
     topics: [library, self-build-roadmap]
     source_layer: reading
-    issue_refs: [44, 49]
-    related_docs: [docs/catalog.yml, docs/topics/dataset.md, docs/topics/pipeline.md, docs/topics/data-quality.md, docs/topics/security-and-marking.md, docs/topics/self-build-roadmap.md]
+    issue_refs: [44, 49, 60]
+    related_docs: [docs/catalog.yml, docs/library/README.md, docs/library/SUMMARY.md, docs/topics/dataset.md, docs/topics/pipeline.md, docs/topics/data-quality.md, docs/topics/security-and-marking.md, docs/topics/self-build-roadmap.md]
     canonical: false
     updated: 2026-05-31
 
@@ -44,11 +44,182 @@ documents:
     status: reviewed
     topics: [library, lineage-and-catalog]
     source_layer: metadata
-    issue_refs: [45, 47]
+    issue_refs: [45, 47, 60]
     source_refs: [docs/superpowers/specs/2026-05-31-research-doc-library-design.md, docs/superpowers/plans/2026-05-31-research-doc-library-phase1-plan.md]
-    related_docs: [docs/index.md, docs/topics/lineage-and-catalog.md]
+    related_docs: [docs/index.md, docs/library/README.md, docs/library/appendices/research-document-map.md, docs/topics/lineage-and-catalog.md]
     canonical: false
     updated: 2026-05-31
+
+  - id: library-readme
+    path: docs/library/README.md
+    title: "Palantir Research Book"
+    type: library
+    status: reviewed
+    topics: [library, self-build-roadmap]
+    source_layer: reading
+    issue_refs: [42, 60]
+    source_refs: [docs/index.md, docs/catalog.yml, docs/superpowers/specs/2026-05-31-research-doc-library-design.md]
+    related_docs: [docs/library/SUMMARY.md, docs/library/00-executive-summary.md, docs/library/appendices/research-document-map.md]
+    canonical: false
+    created: 2026-05-31
+    updated: 2026-05-31
+    last_reviewed: 2026-05-31
+    confidence: medium
+    evidence_strength: medium
+    owner: codex
+    reviewers: [codex]
+
+  - id: library-summary
+    path: docs/library/SUMMARY.md
+    title: "Palantir Research Book Summary"
+    type: library
+    status: reviewed
+    topics: [library]
+    source_layer: reading
+    issue_refs: [42, 60]
+    source_refs: [docs/library/README.md, docs/catalog.yml]
+    related_docs: [docs/library/00-executive-summary.md, docs/library/05-self-build-roadmap.md]
+    canonical: false
+    created: 2026-05-31
+    updated: 2026-05-31
+    last_reviewed: 2026-05-31
+    confidence: medium
+    evidence_strength: medium
+    owner: codex
+    reviewers: [codex]
+
+  - id: library-00-executive-summary
+    path: docs/library/00-executive-summary.md
+    title: "Executive Summary"
+    type: library
+    status: reviewed
+    topics: [library, self-build-roadmap]
+    source_layer: reading
+    issue_refs: [42, 60]
+    source_refs: [docs/topics/self-build-roadmap.md, docs/synthesis/operator-platform-design.md, docs/synthesis/palantir-dataset-no-dt-partition-impact.md, docs/synthesis/palantir-data-quality-module-research.md, docs/synthesis/data-integration-permission-system-roadmap.md]
+    related_docs: [docs/library/05-self-build-roadmap.md, docs/library/appendices/research-document-map.md]
+    canonical: false
+    created: 2026-05-31
+    updated: 2026-05-31
+    last_reviewed: 2026-05-31
+    confidence: medium
+    evidence_strength: strong
+    owner: codex
+    reviewers: [codex]
+
+  - id: library-01-platform-mental-model
+    path: docs/library/01-platform-mental-model.md
+    title: "Platform Mental Model"
+    type: library
+    status: reviewed
+    topics: [library, dataset, pipeline, ontology, lineage-and-catalog]
+    source_layer: reading
+    issue_refs: [4, 28, 42, 46, 60]
+    source_refs: [docs/topics/dataset.md, docs/topics/pipeline.md, docs/topics/ontology.md, docs/topics/lineage-and-catalog.md, docs/synthesis/palantir-dataset-vs-data-warehouse.md, docs/synthesis/palantir-pipeline-deep-dive.md, docs/synthesis/operator-platform-design.md, docs/raw/25-transform-contract-dag.md, docs/raw/29-lineage-branch-version-pipeline-sync.md]
+    related_docs: [docs/library/02-data-engineering-core.md, docs/library/03-governance-and-operations.md]
+    canonical: false
+    created: 2026-05-31
+    updated: 2026-05-31
+    last_reviewed: 2026-05-31
+    confidence: medium
+    evidence_strength: strong
+    owner: codex
+    reviewers: [codex]
+
+  - id: library-02-data-engineering-core
+    path: docs/library/02-data-engineering-core.md
+    title: "Data Engineering Core"
+    type: library
+    status: reviewed
+    topics: [library, dataset, pipeline, scheduling, incremental]
+    source_layer: reading
+    issue_refs: [28, 29, 31, 33, 42, 60]
+    source_refs: [docs/topics/dataset.md, docs/topics/scheduling.md, docs/synthesis/palantir-dataset-no-dt-partition-impact.md, docs/synthesis/dataworks-vs-palantir-integration.md, docs/synthesis/foundry-schedule-module-deep-dive.md, docs/raw/39-foundry-dataset-transaction-view-evidence.md, docs/raw/27-incremental-scheduling-transaction.md]
+    related_docs: [docs/library/01-platform-mental-model.md, docs/library/05-self-build-roadmap.md]
+    canonical: false
+    created: 2026-05-31
+    updated: 2026-05-31
+    last_reviewed: 2026-05-31
+    confidence: medium
+    evidence_strength: strong
+    owner: codex
+    reviewers: [codex]
+
+  - id: library-03-governance-and-operations
+    path: docs/library/03-governance-and-operations.md
+    title: "Governance and Operations"
+    type: library
+    status: reviewed
+    topics: [library, security-and-marking, data-quality, governance, observability]
+    source_layer: reading
+    issue_refs: [35, 41, 42, 49, 57, 60]
+    source_refs: [docs/topics/security-and-marking.md, docs/topics/data-quality.md, docs/synthesis/dataset-permission-marking-architecture-summary.md, docs/synthesis/data-integration-permission-system-roadmap.md, docs/synthesis/palantir-data-quality-module-research.md, docs/raw/51-ingestion-connection-credential-permission-boundary.md, docs/raw/53-consumption-export-access-control.md, docs/raw/54-lineage-marking-policy-propagation-model.md, docs/raw/55-permission-governance-audit-lifecycle.md]
+    related_docs: [docs/library/02-data-engineering-core.md, docs/library/05-self-build-roadmap.md]
+    canonical: false
+    created: 2026-05-31
+    updated: 2026-05-31
+    last_reviewed: 2026-05-31
+    confidence: medium
+    evidence_strength: strong
+    owner: codex
+    reviewers: [codex]
+
+  - id: library-04-ai-fde-and-engineering
+    path: docs/library/04-ai-fde-and-engineering.md
+    title: "AI FDE and Engineering"
+    type: library
+    status: reviewed
+    topics: [library, pro-code, ai-fde, governance]
+    source_layer: reading
+    issue_refs: [4, 12, 20, 27, 42, 60]
+    source_refs: [docs/topics/pro-code.md, docs/topics/ai-fde.md, docs/synthesis/palantir-pro-code-capability-research.md, docs/synthesis/palantir-ai-fde-research.md, docs/raw/25-transform-contract-dag.md, docs/raw/34-ai-fde-context-tools-skills.md, docs/raw/35-ai-fde-governance-branching.md, docs/raw/37-ai-fde-self-build-implementation-blueprint.md]
+    related_docs: [docs/library/01-platform-mental-model.md, docs/library/05-self-build-roadmap.md]
+    canonical: false
+    created: 2026-05-31
+    updated: 2026-05-31
+    last_reviewed: 2026-05-31
+    confidence: medium
+    evidence_strength: strong
+    owner: codex
+    reviewers: [codex]
+
+  - id: library-05-self-build-roadmap
+    path: docs/library/05-self-build-roadmap.md
+    title: "Self-build Roadmap"
+    type: library
+    status: reviewed
+    topics: [library, self-build-roadmap, operator-platform]
+    source_layer: reading
+    issue_refs: [24, 41, 42, 57, 60]
+    source_refs: [docs/topics/self-build-roadmap.md, docs/synthesis/operator-platform-design.md, docs/synthesis/dataworks-vs-palantir-integration.md, docs/synthesis/data-integration-permission-system-roadmap.md, docs/raw/10-opensource-alternative-stack.md, docs/raw/20-stream-self-build-architecture.md]
+    related_docs: [docs/library/00-executive-summary.md, docs/library/appendices/research-document-map.md]
+    canonical: false
+    created: 2026-05-31
+    updated: 2026-05-31
+    last_reviewed: 2026-05-31
+    confidence: medium
+    evidence_strength: strong
+    owner: codex
+    reviewers: [codex]
+
+  - id: library-appendix-research-document-map
+    path: docs/library/appendices/research-document-map.md
+    title: "Research Document Map"
+    type: library
+    status: reviewed
+    topics: [library, lineage-and-catalog]
+    source_layer: reading
+    issue_refs: [42, 45, 46, 60]
+    source_refs: [docs/catalog.yml, docs/index.md, docs/topics/self-build-roadmap.md, docs/topics/pipeline.md, docs/topics/security-and-marking.md]
+    related_docs: [docs/library/SUMMARY.md, docs/library/README.md]
+    canonical: false
+    created: 2026-05-31
+    updated: 2026-05-31
+    last_reviewed: 2026-05-31
+    confidence: medium
+    evidence_strength: medium
+    owner: codex
+    reviewers: [codex]
 
   - id: topic-dataset
     path: docs/topics/dataset.md

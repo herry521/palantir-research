@@ -5,7 +5,7 @@
 1. 【建议】先读 `docs/synthesis` 中的 canonical 结论，再回到 `docs/raw` 查证据；不要从 raw 编号顺序线性阅读。
 2. 【事实】当前仓库保留三层主结构：`raw` 是证据层，`synthesis` 是结论层，`superpowers` 是计划与设计记录层。
 3. 【推断】Data Quality、AI FDE、Dataset transaction、Pro-Code 和 Data Integration 权限体系是当前最适合直接服务自研平台设计的主题。
-4. 【建议】新增 `docs/catalog.yml` 作为机器可读索引，后续主题页、阅读层和链接检查都应从 catalog 派生。
+4. 【事实】`docs/library` 已作为 book 式阅读层落地；HTML 只承担结论预览和相关调研文档列表，不替代 canonical Markdown 结论。
 
 ## 层级说明
 
@@ -15,10 +15,25 @@
 | 结论层 | `docs/synthesis/` | 保存可复用综合判断、架构建议和自研平台启示。 |
 | 计划/设计层 | `docs/superpowers/` | 保存研究计划、规格设计、执行拆解和评审记录。 |
 | 元数据层 | `docs/catalog.yml` | 连接文档、主题、issue、canonical 状态和证据关系。 |
-| 阅读层 | `docs/library/` | 规划中；用于“像书一样读”的导读和章节，不复制 raw 正文。 |
+| 阅读层 | `docs/library/` | book 式导读和章节体系，用于“像书一样读”，不复制 raw 正文。 |
 | 主题索引层 | `docs/topics/` | 已建立首批多轴入口；用于按 Dataset、Pipeline、Data Quality 等主题聚合结论和证据链。 |
 
 设计基线见 [调研文档库体系化组织设计](superpowers/specs/2026-05-31-research-doc-library-design.md)，父 issue 为 [#42](https://gitlabee.chehejia.com/huyongqiang/palantir-research/-/issues/42)。
+
+## Book 式阅读层
+
+| 章节 | 适合回答的问题 |
+|---|---|
+| [Book 入口](library/README.md) | 如何按书的顺序阅读，而不是按 raw 编号阅读。 |
+| [Executive Summary](library/00-executive-summary.md) | 这批调研最终服务哪些管理和架构决策。 |
+| [Platform Mental Model](library/01-platform-mental-model.md) | Foundry 的平台心智和层级分工是什么。 |
+| [Data Engineering Core](library/02-data-engineering-core.md) | Dataset、Pipeline、调度、时间语义如何组合。 |
+| [Governance and Operations](library/03-governance-and-operations.md) | 权限、质量、血缘、告警和审计如何闭环。 |
+| [AI FDE and Engineering](library/04-ai-fde-and-engineering.md) | Pro-Code 与 AI FDE 对工程体系意味着什么。 |
+| [Self-build Roadmap](library/05-self-build-roadmap.md) | 自研平台应按什么顺序建设。 |
+| [Research Document Map](library/appendices/research-document-map.md) | 每个章节背后的 topic、synthesis、raw 和 issue 映射。 |
+
+HTML 预览入口见 [deliverables/pages/book-library.html](../deliverables/pages/book-library.html)，只用于快速查看章节结论和相关调研文档。
 
 ## 主题索引
 
@@ -85,6 +100,7 @@
 - 当前文档库重组 Epic: [#42](https://gitlabee.chehejia.com/huyongqiang/palantir-research/-/issues/42)
 - 全局入口 Story: [#44](https://gitlabee.chehejia.com/huyongqiang/palantir-research/-/issues/44)
 - Catalog Story: [#45](https://gitlabee.chehejia.com/huyongqiang/palantir-research/-/issues/45)
+- Book 阅读层与 HTML 预览 Story: [#60](https://gitlabee.chehejia.com/huyongqiang/palantir-research/-/issues/60)
 - Data Integration 权限体系 Epic: [#49](https://gitlabee.chehejia.com/huyongqiang/palantir-research/-/issues/49)
 
 维护规则：

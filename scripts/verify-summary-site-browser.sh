@@ -34,7 +34,13 @@ const pages = [
     path: "index.html",
     slug: "home",
     title: "Palantir 调研总结一页纸",
-    requiredText: ["三个管理判断", "高码能力研究", "Pipeline Builder 算子总览", "Dataset 权限与 Marking 架构", "Data Integration 权限控制面", "Media Set", "Foundry Schedule 运行模式"],
+    requiredText: ["三个管理判断", "Book 式文档体系预览", "高码能力研究", "Pipeline Builder 算子总览", "Dataset 权限与 Marking 架构", "Data Integration 权限控制面", "Media Set", "Foundry Schedule 运行模式"],
+  },
+  {
+    path: "pages/book-library.html",
+    slug: "book-library",
+    title: "Book 式文档体系预览",
+    requiredText: ["Book 式文档体系预览", "章节导读", "结论预览", "相关调研文档", "docs/library/SUMMARY.md", "docs/topics/pipeline.md", "docs/synthesis/data-integration-permission-system-roadmap.md"],
   },
   {
     path: "pages/pro-code-capability.html",
@@ -46,7 +52,7 @@ const pages = [
     path: "pages/overview.html",
     slug: "overview",
     title: "Palantir 研发技术总览",
-    requiredText: ["完整阅读路径", "高码能力研究", "能力建设关注点", "Dataset 权限与 Marking 架构", "Data Integration 权限控制面", "Media Set 资产模型", "Foundry Schedule 运行模式", "算子主线如何嵌入平台图", "Pipeline Builder 算子总览页"],
+    requiredText: ["完整阅读路径", "Book 式文档体系预览", "高码能力研究", "能力建设关注点", "Dataset 权限与 Marking 架构", "Data Integration 权限控制面", "Media Set 资产模型", "Foundry Schedule 运行模式", "算子主线如何嵌入平台图", "Pipeline Builder 算子总览页"],
     iframeSelector: 'iframe[title="Pipeline Builder 算子总览页预览"]',
     iframeRequiredText: ["算子总览", "transform 清单", "expression 清单"],
     iframeSrc: "pipeline-builder-operators-overview.html",

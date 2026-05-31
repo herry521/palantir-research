@@ -6,6 +6,7 @@ required_files=(
   "$ROOT/index.html"
   "$ROOT/styles.css"
   "$ROOT/app.js"
+  "$ROOT/pages/book-library.html"
   "$ROOT/pages/overview.html"
   "$ROOT/pages/data-engineering-platform-map.html"
   "$ROOT/pages/pro-code-capability.html"
@@ -31,11 +32,19 @@ check_contains() {
 
 check_contains "$ROOT/index.html" "Palantir"
 check_contains "$ROOT/index.html" "三个管理判断"
-check_contains "$ROOT/index.html" "一页纸 + 技术总览 + 建设蓝图 + 算子总览 + 九个专题页"
+check_contains "$ROOT/index.html" "文档手册预览 + 一页纸 + 技术总览 + 建设蓝图 + 算子总览 + 九个专题页"
+check_contains "$ROOT/index.html" "Book 式文档体系预览"
 check_contains "$ROOT/index.html" "Foundry Schedule 运行模式"
 check_contains "$ROOT/index.html" "Data Integration 权限控制面"
+check_contains "$ROOT/pages/book-library.html" "Book 式文档体系预览"
+check_contains "$ROOT/pages/book-library.html" "结论预览"
+check_contains "$ROOT/pages/book-library.html" "相关调研文档"
+check_contains "$ROOT/pages/book-library.html" "docs/library/SUMMARY.md"
+check_contains "$ROOT/pages/book-library.html" "docs/topics/pipeline.md"
+check_contains "$ROOT/pages/book-library.html" "docs/synthesis/data-integration-permission-system-roadmap.md"
 check_contains "$ROOT/pages/overview.html" "技术总览"
 check_contains "$ROOT/pages/overview.html" "map-layers"
+check_contains "$ROOT/pages/overview.html" "Book 式文档体系预览"
 check_contains "$ROOT/pages/overview.html" "专题 00"
 check_contains "$ROOT/pages/overview.html" "专题 08"
 check_contains "$ROOT/pages/overview.html" "Foundry Schedule 运行模式"
@@ -144,6 +153,16 @@ done
 
 grep -q 'href="pages/overview.html"' "$ROOT/index.html" || {
   echo "Homepage must link to overview page"
+  exit 1
+}
+
+grep -q 'href="pages/book-library.html"' "$ROOT/index.html" || {
+  echo "Homepage must link to book library preview page"
+  exit 1
+}
+
+grep -q 'href="book-library.html"' "$ROOT/pages/overview.html" || {
+  echo "Overview page must link to book library preview page"
   exit 1
 }
 

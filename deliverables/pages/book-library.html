@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Book 式文档体系预览</title>
+    <link rel="stylesheet" href="../styles.css" />
+    <script defer src="../app.js"></script>
+  </head>
+  <body class="detail-body">
+    <div class="site-shell">
+      <svg class="icon-sprite" xmlns="http://www.w3.org/2000/svg">
+        <symbol id="i-home" viewBox="0 0 24 24">
+          <path
+            d="M12 3l8 6v11a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V9l8-6Z"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.8"
+            stroke-linejoin="round"
+          />
+          <path
+            d="M9 21v-8h6v8"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.8"
+            stroke-linejoin="round"
+          />
+        </symbol>
+        <symbol id="i-map" viewBox="0 0 24 24">
+          <path d="M9 4 3 6v14l6-2 6 2 6-2V4l-6 2-6-2Z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" />
+          <path d="M9 4v14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
+          <path d="M15 6v14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
+        </symbol>
+        <symbol id="i-brackets" viewBox="0 0 24 24">
+          <path d="M9 6 5 12l4 6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" />
+          <path d="M15 6l4 6-4 6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" />
+          <path d="M13 6l-2 12" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
+        </symbol>
+        <symbol id="i-cpu" viewBox="0 0 24 24">
+          <path d="M9 9h6v6H9V9Z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" />
+          <path d="M9 2v3M15 2v3M9 19v3M15 19v3M2 9h3M2 15h3M19 9h3M19 15h3" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
+          <path d="M7 7h10v10H7V7Z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" />
+        </symbol>
+        <symbol id="i-wave" viewBox="0 0 24 24">
+          <path d="M3 14c2 0 2-4 4-4s2 4 4 4 2-4 4-4 2 4 4 4 2-4 4-4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" />
+        </symbol>
+        <symbol id="i-nodes" viewBox="0 0 24 24">
+          <path d="M7 7h0" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
+          <path d="M17 7h0" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
+          <path d="M12 17h0" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
+          <path d="M7 7 12 17 17 7" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" />
+        </symbol>
+        <symbol id="i-wrench" viewBox="0 0 24 24">
+          <path d="M14 7a4 4 0 0 0-6 3.5l-5 5a2 2 0 1 0 2.8 2.8l5-5A4 4 0 0 0 17 9l-3 3-2-2 2-3Z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" />
+        </symbol>
+        <symbol id="i-spark" viewBox="0 0 24 24">
+          <path d="M12 2l1.5 6.5L20 10l-6.5 1.5L12 18l-1.5-6.5L4 10l6.5-1.5L12 2Z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" />
+        </symbol>
+        <symbol id="i-layers" viewBox="0 0 24 24">
+          <path d="M12 3 2.5 8 12 13l9.5-5L12 3Z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" />
+          <path d="M2.5 12 12 17l9.5-5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round" />
+          <path d="M2.5 16 12 21l9.5-5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round" />
+        </symbol>
+        <symbol id="i-file" viewBox="0 0 24 24">
+          <path d="M7 3h7l3 3v15a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1Z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" />
+          <path d="M14 3v4h4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" />
+        </symbol>
+      </svg>
+      <header class="site-nav">
+        <div class="nav-inner">
+          <a class="brand-mark" href="../index.html">
+            <span class="brand-dot"></span>
+            <span>Palantir Research Summary</span>
+          </a>
+          <nav class="nav-links">
+            <a data-nav href="../index.html"><svg class="icon sm" aria-hidden="true"><use href="#i-home"></use></svg><span>首页</span></a>
+            <a data-nav href="overview.html"><svg class="icon sm" aria-hidden="true"><use href="#i-map"></use></svg><span>总览</span></a>
+            <a data-nav href="pro-code-capability.html"><svg class="icon sm" aria-hidden="true"><use href="#i-brackets"></use></svg><span>高码</span></a>
+            <a data-nav href="data-engineering-platform-map.html"><svg class="icon sm" aria-hidden="true"><use href="#i-layers"></use></svg><span>蓝图</span></a>
+            <a data-nav href="expression-and-operators.html"><svg class="icon sm" aria-hidden="true"><use href="#i-brackets"></use></svg><span>表达</span></a>
+            <a data-nav href="execution-and-incremental.html"><svg class="icon sm" aria-hidden="true"><use href="#i-cpu"></use></svg><span>执行</span></a>
+            <a data-nav href="foundry-schedule-module.html"><svg class="icon sm" aria-hidden="true"><use href="#i-nodes"></use></svg><span>调度</span></a>
+            <a data-nav href="streaming-architecture.html"><svg class="icon sm" aria-hidden="true"><use href="#i-wave"></use></svg><span>流式</span></a>
+            <a data-nav href="lineage-ontology-governance.html"><svg class="icon sm" aria-hidden="true"><use href="#i-nodes"></use></svg><span>治理</span></a>
+            <a data-nav href="dataset-permission-marking.html"><svg class="icon sm" aria-hidden="true"><use href="#i-file"></use></svg><span>权限</span></a>
+            <a data-nav href="data-integration-permission-system.html"><svg class="icon sm" aria-hidden="true"><use href="#i-file"></use></svg><span>集成权限</span></a>
+            <a data-nav href="engineering-and-ecosystem.html"><svg class="icon sm" aria-hidden="true"><use href="#i-wrench"></use></svg><span>工程</span></a>
+          </nav>
+        </div>
+      </header>
+
+      <main>
+        <section class="topic-header">
+          <p class="eyebrow">Book Preview</p>
+          <h1>Book 式文档体系预览</h1>
+          <p class="intro-note">
+            这一页只做结论预览和相关调研文档列表。正式阅读层在 <code>docs/library</code>，证据和 canonical 结论仍保留在 <code>docs/topics</code>、<code>docs/synthesis</code> 和 <code>docs/raw</code>。
+          </p>
+          <div class="topic-meta">
+            <span class="tag">Story #60</span>
+            <span class="tag">Epic #42</span>
+            <span class="tag">docs/library</span>
+          </div>
+        </section>
+
+        <section class="page-section">
+          <div class="section-head">
+            <div>
+              <p class="section-kicker">Book Structure</p>
+              <h2>
+                <span class="title-row"><svg class="icon lg" aria-hidden="true"><use href="#i-map"></use></svg><span>章节导读</span></span>
+              </h2>
+            </div>
+            <p>Book 层按决策路径组织，不按 raw 编号组织；每章都能回到 topic、synthesis 和 raw 证据。</p>
+          </div>
+          <div class="entry-grid">
+            <a class="detail-card" href="../../docs/library/00-executive-summary.md">
+              <span class="tag">00</span>
+              <h3>Executive Summary</h3>
+              <p class="muted">收束平台壁垒、核心差距和自研优先级。</p>
+            </a>
+            <a class="detail-card" href="../../docs/library/01-platform-mental-model.md">
+              <span class="tag">01</span>
+              <h3>Platform Mental Model</h3>
+              <p class="muted">解释 Dataset、Pipeline、Ontology 和治理层的分工。</p>
+            </a>
+            <a class="detail-card" href="../../docs/library/02-data-engineering-core.md">
+              <span class="tag">02</span>
+              <h3>Data Engineering Core</h3>
+              <p class="muted">串起 Dataset transaction、调度、增量和业务时间语义。</p>
+            </a>
+            <a class="detail-card" href="../../docs/library/03-governance-and-operations.md">
+              <span class="tag">03</span>
+              <h3>Governance and Operations</h3>
+              <p class="muted">把权限、质量、血缘、告警、issue 和审计放进同一闭环。</p>
+            </a>
+            <a class="detail-card" href="../../docs/library/04-ai-fde-and-engineering.md">
+              <span class="tag">04</span>
+              <h3>AI FDE and Engineering</h3>
+              <p class="muted">说明高码、工具审批、branch/PR、preview/CI/eval 对 AI 工程入口的意义。</p>
+            </a>
+            <a class="detail-card" href="../../docs/library/05-self-build-roadmap.md">
+              <span class="tag">05</span>
+              <h3>Self-build Roadmap</h3>
+              <p class="muted">把底座、控制面和业务/AI 闭环拆成三阶段路线。</p>
+            </a>
+          </div>
+        </section>
+
+        <section class="page-section">
+          <div class="section-head">
+            <div>
+              <p class="section-kicker">Conclusion Preview</p>
+              <h2>
+                <span class="title-row"><svg class="icon lg" aria-hidden="true"><use href="#i-spark"></use></svg><span>结论预览</span></span>
+              </h2>
+            </div>
+            <p>HTML 只保留适合快速判断的结论，详细论证回到 Markdown 文档。</p>
+          </div>
+          <div class="source-grid">
+            <article class="source-card">
+              <h4>Dataset 坐标要拆开</h4>
+              <p class="muted">transaction/view 管版本证据，business_date/data_interval 管业务解释和补数验收。</p>
+              <a class="source-link" href="../../docs/topics/dataset.md"><svg class="icon sm" aria-hidden="true"><use href="#i-file"></use></svg><span>docs/topics/dataset.md</span></a>
+            </article>
+            <article class="source-card">
+              <h4>Pipeline 是平台契约</h4>
+              <p class="muted">Transform Contract、Operator Registry、Engine Router 和质量/血缘契约比函数库更重要。</p>
+              <a class="source-link" href="../../docs/topics/pipeline.md"><svg class="icon sm" aria-hidden="true"><use href="#i-file"></use></svg><span>docs/topics/pipeline.md</span></a>
+            </article>
+            <article class="source-card">
+              <h4>治理必须跨运行链路</h4>
+              <p class="muted">source、credential、sync、build、query、export 和 audit 都应进入同一权限控制面。</p>
+              <a class="source-link" href="../../docs/topics/security-and-marking.md"><svg class="icon sm" aria-hidden="true"><use href="#i-file"></use></svg><span>docs/topics/security-and-marking.md</span></a>
+            </article>
+            <article class="source-card">
+              <h4>AI FDE 先做受控工具面</h4>
+              <p class="muted">可信边界来自 context、tool approval、branch/PR、preview/CI/eval 和 audit，而不是聊天 UI。</p>
+              <a class="source-link" href="../../docs/topics/ai-fde.md"><svg class="icon sm" aria-hidden="true"><use href="#i-file"></use></svg><span>docs/topics/ai-fde.md</span></a>
+            </article>
+          </div>
+        </section>
+
+        <section class="page-section">
+          <div class="section-head">
+            <div>
+              <p class="section-kicker">Related Research Docs</p>
+              <h2>
+                <span class="title-row"><svg class="icon lg" aria-hidden="true"><use href="#i-file"></use></svg><span>相关调研文档</span></span>
+              </h2>
+            </div>
+            <p>这里列出每条主线最适合继续阅读的 Markdown 文档。</p>
+          </div>
+          <div class="entry-grid">
+            <a class="detail-card" href="../../docs/library/SUMMARY.md">
+              <span class="tag">Book</span>
+              <h3>docs/library/SUMMARY.md</h3>
+              <p class="muted">Book 式目录、阅读模式和维护规则。</p>
+            </a>
+            <a class="detail-card" href="../../docs/library/appendices/research-document-map.md">
+              <span class="tag">Map</span>
+              <h3>Research Document Map</h3>
+              <p class="muted">章节、topic、synthesis、raw 和 issue 的映射表。</p>
+            </a>
+            <a class="detail-card" href="../../docs/synthesis/operator-platform-design.md">
+              <span class="tag">Synthesis</span>
+              <h3>算子平台建设方案</h3>
+              <p class="muted">OperatorSpec、Registry、Engine Router 和建设路线。</p>
+            </a>
+            <a class="detail-card" href="../../docs/synthesis/palantir-dataset-no-dt-partition-impact.md">
+              <span class="tag">Synthesis</span>
+              <h3>Dataset 无 dt 差异分析</h3>
+              <p class="muted">transaction/view 与传统业务日期坐标的差异。</p>
+            </a>
+            <a class="detail-card" href="../../docs/synthesis/palantir-data-quality-module-research.md">
+              <span class="tag">Synthesis</span>
+              <h3>Data Quality 综合报告</h3>
+              <p class="muted">build-time expectations、health checks、monitoring views 和 issue 闭环。</p>
+            </a>
+            <a class="detail-card" href="../../docs/synthesis/data-integration-permission-system-roadmap.md">
+              <span class="tag">Synthesis</span>
+              <h3>Data Integration 权限路线图</h3>
+              <p class="muted">source、credential、runtime、export、approval 和 audit 控制面。docs/synthesis/data-integration-permission-system-roadmap.md</p>
+            </a>
+          </div>
+        </section>
+      </main>
+
+      <footer class="site-footer">
+        <div class="page-footer">
+          <div>Palantir Foundry / Pipeline 调研材料库</div>
+          <div class="footer-note">统一入口：首页 / 总览 / 蓝图 / 算子总览 / 九个专题页</div>
+        </div>
+      </footer>
+    </div>
+  </body>
+</html>

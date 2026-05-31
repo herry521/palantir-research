@@ -76,7 +76,7 @@ def validate_catalog(data)
     failures << "#{label}: uncataloged superseded_by path #{ref}" if local_path?(ref) && File.exist?(ref) && !paths.key?(ref)
   end
 
-  tracked = `git ls-files "docs/catalog.yml" "docs/index.md" "docs/topics/*.md" "docs/raw/*.md" "docs/synthesis/*.md" "docs/superpowers/**/*.md"`.split("\n")
+  tracked = `git ls-files "docs/catalog.yml" "docs/index.md" "docs/library/**/*.md" "docs/topics/*.md" "docs/raw/*.md" "docs/synthesis/*.md" "docs/superpowers/**/*.md"`.split("\n")
   catalog_paths = docs.map { |doc| doc["path"] }
   missing_tracked = tracked - catalog_paths
   failures << "missing catalog entries for tracked docs: #{missing_tracked.join(", ")}" unless missing_tracked.empty?
@@ -99,7 +99,7 @@ end
 
 def validate_markdown_links
   failures = []
-  pages = ["docs/index.md"] + Dir["docs/topics/**/*.md"]
+  pages = ["docs/index.md"] + Dir["docs/library/**/*.md"] + Dir["docs/topics/**/*.md"]
 
   pages.each do |page|
     next unless File.exist?(page)
