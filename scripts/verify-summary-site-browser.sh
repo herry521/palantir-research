@@ -34,13 +34,24 @@ const pages = [
     path: "index.html",
     slug: "home",
     title: "Palantir 调研总结一页纸",
-    requiredText: ["三个管理判断", "Book 式文档体系预览", "高码能力研究", "Pipeline Builder 算子总览", "Dataset 权限与 Marking 架构", "Data Integration 权限控制面", "Media Set", "Foundry Schedule 运行模式"],
+    requiredText: ["三个管理判断", "Book 式文档体系预览", "高码能力研究", "Pipeline Builder 算子总览", "Dataset 权限与 Marking 架构", "Data Integration 权限控制面", "Data Quality 质量控制面", "十个专题页", "Media Set", "Foundry Schedule 运行模式"],
   },
   {
     path: "pages/book-library.html",
     slug: "book-library",
     title: "Book 式文档体系预览",
-    requiredText: ["Book 式文档体系预览", "章节导读", "结论预览", "相关调研文档", "docs/library/SUMMARY.md", "docs/topics/pipeline.md", "docs/synthesis/data-integration-permission-system-roadmap.md"],
+    requiredText: ["Book 式文档体系预览", "章节导读", "结论预览", "相关调研文档", "Data Quality 质量控制面", "docs/library/SUMMARY.md", "docs/topics/pipeline.md", "docs/synthesis/palantir-data-quality-module-research.md", "docs/synthesis/data-integration-permission-system-roadmap.md"],
+    rewrittenMarkdownLinks: [
+      { text: "docs/topics/pipeline.md", doc: "docs/topics/pipeline.md" },
+      { text: "docs/library/SUMMARY.md", doc: "docs/library/SUMMARY.md" },
+    ],
+  },
+  {
+    path: "pages/md-preview.html",
+    query: "?doc=docs/library/00-executive-summary.md",
+    slug: "md-preview",
+    title: "Executive Summary - Markdown 文档预览",
+    requiredText: ["Markdown 文档预览", "docs/library/00-executive-summary.md", "Executive Summary", "摘要与洞察", "平台壁垒"],
   },
   {
     path: "pages/pro-code-capability.html",
@@ -52,7 +63,7 @@ const pages = [
     path: "pages/overview.html",
     slug: "overview",
     title: "Palantir 研发技术总览",
-    requiredText: ["完整阅读路径", "Book 式文档体系预览", "高码能力研究", "能力建设关注点", "Dataset 权限与 Marking 架构", "Data Integration 权限控制面", "Media Set 资产模型", "Foundry Schedule 运行模式", "算子主线如何嵌入平台图", "Pipeline Builder 算子总览页"],
+    requiredText: ["完整阅读路径", "Book 式文档体系预览", "高码能力研究", "能力建设关注点", "Dataset 权限与 Marking 架构", "Data Integration 权限控制面", "Data Quality 质量控制面", "Media Set 资产模型", "Foundry Schedule 运行模式", "算子主线如何嵌入平台图", "Pipeline Builder 算子总览页"],
     iframeSelector: 'iframe[title="Pipeline Builder 算子总览页预览"]',
     iframeRequiredText: ["算子总览", "transform 清单", "expression 清单"],
     iframeSrc: "pipeline-builder-operators-overview.html",
@@ -104,6 +115,12 @@ const pages = [
     slug: "dataset-permission-marking",
     title: "Dataset 权限与 Marking 架构",
     requiredText: ["Dataset 权限与 Marking 架构", "Dataset 权限全景", "访问判定模型", "Marking 的设计和传播", "端到端实现链路", "Marking 传递与计算设计", "不等于都被 direct marking"],
+  },
+  {
+    path: "pages/data-quality.html",
+    slug: "data-quality",
+    title: "Data Quality 质量控制面",
+    requiredText: ["Data Quality 质量控制面", "核心结论", "Data Expectations", "Health Checks", "Monitoring Views", "BuildCheckResult", "ExternalRoutePolicy", "docs/synthesis/palantir-data-quality-module-research.md", "docs/raw/49-data-quality-external-notification-security.md"],
   },
   {
     path: "pages/data-integration-permission-system.html",
@@ -161,7 +178,7 @@ async function checkPage(browser, pageSpec, viewport) {
   });
   page.on("pageerror", (error) => errors.push(error.message));
 
-  const fileUrl = pathToFileURL(path.join(root, pageSpec.path)).href;
+  const fileUrl = pathToFileURL(path.join(root, pageSpec.path)).href + (pageSpec.query || "");
   await page.goto(fileUrl, { waitUntil: "networkidle" });
 
   const title = await page.title();
@@ -173,6 +190,15 @@ async function checkPage(browser, pageSpec, viewport) {
   for (const text of pageSpec.requiredText) {
     if (!bodyText.includes(text)) {
       throw new Error(`${pageSpec.path}: missing text "${text}"`);
+    }
+  }
+
+  for (const linkSpec of pageSpec.rewrittenMarkdownLinks || []) {
+    const link = page.locator("a", { hasText: linkSpec.text }).first();
+    const href = await link.getAttribute("href");
+    const expectedDoc = encodeURIComponent(linkSpec.doc);
+    if (!href || !href.includes("md-preview.html?doc=") || !href.includes(expectedDoc)) {
+      throw new Error(`${pageSpec.path}: Markdown link "${linkSpec.text}" was not rewritten to preview page, got "${href}"`);
     }
   }
 

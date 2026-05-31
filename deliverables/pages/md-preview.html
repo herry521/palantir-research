@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Markdown 文档预览</title>
+    <link rel="stylesheet" href="../styles.css" />
+    <script defer src="../md-docs.js"></script>
+    <script defer src="../app.js"></script>
+  </head>
+  <body class="detail-body">
+    <div class="site-shell">
+      <header class="site-nav">
+        <div class="nav-inner">
+          <a class="brand-mark" href="../index.html">
+            <span class="brand-dot"></span>
+            <span>Palantir Research Summary</span>
+          </a>
+          <nav class="nav-links">
+            <a data-nav href="../index.html"><span>首页</span></a>
+            <a data-nav href="overview.html"><span>总览</span></a>
+            <a data-nav href="pro-code-capability.html"><span>高码</span></a>
+            <a data-nav href="data-engineering-platform-map.html"><span>蓝图</span></a>
+            <a data-nav href="expression-and-operators.html"><span>表达</span></a>
+            <a data-nav href="execution-and-incremental.html"><span>执行</span></a>
+            <a data-nav href="foundry-schedule-module.html"><span>调度</span></a>
+            <a data-nav href="streaming-architecture.html"><span>流式</span></a>
+            <a data-nav href="lineage-ontology-governance.html"><span>治理</span></a>
+            <a data-nav href="dataset-permission-marking.html"><span>权限</span></a>
+            <a data-nav href="data-quality.html"><span>质量</span></a>
+            <a data-nav href="data-integration-permission-system.html"><span>集成权限</span></a>
+            <a data-nav href="engineering-and-ecosystem.html"><span>工程</span></a>
+          </nav>
+        </div>
+      </header>
+
+      <main>
+        <section class="topic-header md-preview-header">
+          <p class="eyebrow">Markdown Preview</p>
+          <h1 data-md-title>Markdown 文档预览</h1>
+          <p class="intro-note">
+            Markdown 文档预览能力用于在 HTML 站点内直接阅读仓库 Markdown。页面内容来自 <code>deliverables/md-docs.js</code>，因此直接用 file:// 打开也能渲染。
+          </p>
+          <div class="topic-meta">
+            <span class="tag" data-md-path>docs/library/README.md</span>
+            <a class="tag" data-md-raw-link data-no-md-preview="1" href="../../docs/library/README.md">打开原始 Markdown</a>
+          </div>
+        </section>
+
+        <section class="page-section">
+          <div class="md-preview-layout">
+            <aside class="md-doc-browser">
+              <div class="md-doc-browser-head">
+                <span class="tag">Documents</span>
+                <h2>文档列表</h2>
+              </div>
+              <label class="md-search">
+                <span>搜索 Markdown</span>
+                <input data-md-search type="search" placeholder="输入标题或路径" />
+              </label>
+              <div class="md-doc-list" data-md-doc-list></div>
+            </aside>
+
+            <article class="markdown-body" data-md-preview-doc>
+              <p class="muted">正在加载 Markdown 文档...</p>
+            </article>
+          </div>
+        </section>
+      </main>
+
+      <footer class="site-footer">
+        <div class="page-footer">
+          <div>Palantir Foundry / Pipeline 调研材料库</div>
+          <div class="footer-note">统一入口：首页 / 总览 / 蓝图 / 算子总览 / 十个专题页</div>
+        </div>
+      </footer>
+    </div>
+  </body>
+</html>

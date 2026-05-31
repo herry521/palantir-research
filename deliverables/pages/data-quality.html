@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Data Quality 质量控制面</title>
+    <link rel="stylesheet" href="../styles.css" />
+    <script defer src="../app.js"></script>
+  </head>
+  <body class="detail-body">
+    <div class="site-shell">
+      <svg class="icon-sprite" xmlns="http://www.w3.org/2000/svg">
+        <symbol id="i-home" viewBox="0 0 24 24">
+          <path d="M12 3l8 6v11a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V9l8-6Z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" />
+          <path d="M9 21v-8h6v8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" />
+        </symbol>
+        <symbol id="i-map" viewBox="0 0 24 24">
+          <path d="M9 4 3 6v14l6-2 6 2 6-2V4l-6 2-6-2Z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" />
+          <path d="M9 4v14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
+          <path d="M15 6v14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
+        </symbol>
+        <symbol id="i-brackets" viewBox="0 0 24 24">
+          <path d="M9 6 5 12l4 6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" />
+          <path d="M15 6l4 6-4 6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" />
+          <path d="M13 6l-2 12" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
+        </symbol>
+        <symbol id="i-cpu" viewBox="0 0 24 24">
+          <path d="M9 9h6v6H9V9Z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" />
+          <path d="M9 2v3M15 2v3M9 19v3M15 19v3M2 9h3M2 15h3M19 9h3M19 15h3" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
+          <path d="M7 7h10v10H7V7Z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" />
+        </symbol>
+        <symbol id="i-wave" viewBox="0 0 24 24">
+          <path d="M3 14c2 0 2-4 4-4s2 4 4 4 2-4 4-4 2 4 4 4 2-4 4-4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" />
+        </symbol>
+        <symbol id="i-nodes" viewBox="0 0 24 24">
+          <path d="M7 7h0M17 7h0M12 17h0" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
+          <path d="M7 7 12 17 17 7" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" />
+        </symbol>
+        <symbol id="i-wrench" viewBox="0 0 24 24">
+          <path d="M14 7a4 4 0 0 0-6 3.5l-5 5a2 2 0 1 0 2.8 2.8l5-5A4 4 0 0 0 17 9l-3 3-2-2 2-3Z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" />
+        </symbol>
+        <symbol id="i-layers" viewBox="0 0 24 24">
+          <path d="M12 3 2.5 8 12 13l9.5-5L12 3Z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" />
+          <path d="M2.5 12 12 17l9.5-5M2.5 16 12 21l9.5-5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round" />
+        </symbol>
+        <symbol id="i-file" viewBox="0 0 24 24">
+          <path d="M7 3h7l3 3v15a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1Z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" />
+          <path d="M14 3v4h4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" />
+        </symbol>
+      </svg>
+      <header class="site-nav">
+        <div class="nav-inner">
+          <a class="brand-mark" href="../index.html">
+            <span class="brand-dot"></span>
+            <span>Palantir Research Summary</span>
+          </a>
+          <nav class="nav-links">
+            <a data-nav href="../index.html"><svg class="icon sm" aria-hidden="true"><use href="#i-home"></use></svg><span>首页</span></a>
+            <a data-nav href="overview.html"><svg class="icon sm" aria-hidden="true"><use href="#i-map"></use></svg><span>总览</span></a>
+            <a data-nav href="pro-code-capability.html"><svg class="icon sm" aria-hidden="true"><use href="#i-brackets"></use></svg><span>高码</span></a>
+            <a data-nav href="data-engineering-platform-map.html"><svg class="icon sm" aria-hidden="true"><use href="#i-layers"></use></svg><span>蓝图</span></a>
+            <a data-nav href="expression-and-operators.html"><svg class="icon sm" aria-hidden="true"><use href="#i-brackets"></use></svg><span>表达</span></a>
+            <a data-nav href="execution-and-incremental.html"><svg class="icon sm" aria-hidden="true"><use href="#i-cpu"></use></svg><span>执行</span></a>
+            <a data-nav href="foundry-schedule-module.html"><svg class="icon sm" aria-hidden="true"><use href="#i-nodes"></use></svg><span>调度</span></a>
+            <a data-nav href="streaming-architecture.html"><svg class="icon sm" aria-hidden="true"><use href="#i-wave"></use></svg><span>流式</span></a>
+            <a data-nav href="lineage-ontology-governance.html"><svg class="icon sm" aria-hidden="true"><use href="#i-nodes"></use></svg><span>治理</span></a>
+            <a data-nav href="dataset-permission-marking.html"><svg class="icon sm" aria-hidden="true"><use href="#i-file"></use></svg><span>权限</span></a>
+            <a data-nav href="data-quality.html"><svg class="icon sm" aria-hidden="true"><use href="#i-file"></use></svg><span>质量</span></a>
+            <a data-nav href="data-integration-permission-system.html"><svg class="icon sm" aria-hidden="true"><use href="#i-file"></use></svg><span>集成权限</span></a>
+            <a data-nav href="engineering-and-ecosystem.html"><svg class="icon sm" aria-hidden="true"><use href="#i-wrench"></use></svg><span>工程</span></a>
+          </nav>
+        </div>
+      </header>
+
+      <main>
+        <section class="topic-header">
+          <p class="eyebrow">Data Quality</p>
+          <h1>Data Quality 质量控制面</h1>
+          <p class="intro-note">
+            本页把 Palantir Data Quality 调研压缩成可决策版本：它不是单点规则引擎，而是横跨构建期门禁、运行期健康、规模化监控、告警 issue 和治理生命周期的质量控制面。
+          </p>
+          <div class="topic-meta">
+            <span class="tag">Data Expectations</span>
+            <span class="tag">Data Health</span>
+            <span class="tag">Monitoring Views</span>
+            <span class="tag">Issue Loop</span>
+          </div>
+        </section>
+
+        <div class="detail-layout">
+          <aside class="section-nav">
+            <strong>本页导航</strong>
+            <a href="#conclusions">核心结论</a>
+            <a href="#model">三层模型</a>
+            <a href="#closed-loop">闭环链路</a>
+            <a href="#build">自建模块</a>
+            <a href="#risks">证据缺口</a>
+            <a href="#sources">来源</a>
+          </aside>
+
+          <div class="detail-main">
+            <section class="section-card" id="conclusions">
+              <p class="section-kicker">Conclusions</p>
+              <h2>核心结论</h2>
+              <div class="detail-grid conclusion-grid">
+                <article class="detail-card">
+                  <span class="tag confidence-infer">【推断】</span>
+                  <h3>Data Quality 是控制面，不是孤立产品</h3>
+                  <p class="muted">它由 Data Expectations、Data Health、Monitoring Views、通知、issue 和规则治理组成，共同覆盖构建前、构建中、运行后和协同处理。</p>
+                </article>
+                <article class="detail-card">
+                  <span class="tag confidence-fact">【事实】</span>
+                  <h3>构建期门禁可以直接阻断坏数据</h3>
+                  <p class="muted">Data Expectations 绑定在 transform input/output 上随 build job 运行；<code>FAIL</code> 可 abort job，<code>WARN</code> 可继续并上报。</p>
+                </article>
+                <article class="detail-card">
+                  <span class="tag confidence-fact">【事实】</span>
+                  <h3>运行期健康不等于 build abort</h3>
+                  <p class="muted">Health Checks 面向 dataset、schedule、table 的 status、time、size、content、schema 和 freshness 检查，核心职责是监控、展示、通知和 issue。</p>
+                </article>
+                <article class="detail-card">
+                  <span class="tag confidence-infer">【推断】</span>
+                  <h3>强项在跨应用闭环</h3>
+                  <p class="muted">规则定义、CI 注册、构建执行、结构化结果、Health tab / lineage 展示、订阅告警、issue 和生命周期审查在同一平台模型内联动。</p>
+                </article>
+                <article class="detail-card">
+                  <span class="tag confidence-infer">【建议】</span>
+                  <h3>自建要拆开结果模型和失败语义</h3>
+                  <p class="muted">BuildCheckResult、HealthCheckResult、MonitoringAlert、IssueLinkage 和 ExternalRoutePolicy 应分层建模，避免把门禁、监控和通知压成同一种规则。</p>
+                </article>
+              </div>
+            </section>
+
+            <section class="section-card" id="model">
+              <p class="section-kicker">Model</p>
+              <h2>三层质量模型</h2>
+              <div class="research-flow">
+                <div><strong>Build-time expectations</strong><span>Transform input/output 契约，FAIL 可阻断 build</span></div>
+                <div><strong>Single-resource health checks</strong><span>Dataset / schedule / table 的运行期健康</span></div>
+                <div><strong>Scope-based monitoring rules</strong><span>Monitoring Views 发现资源、路由告警和订阅</span></div>
+                <div><strong>Notification / issue loop</strong><span>Foundry 通知、邮件、外部通道和自动 issue</span></div>
+              </div>
+              <div class="detail-grid mechanism-grid">
+                <article class="detail-card mechanism-card">
+                  <h3>构建期契约</h3>
+                  <p class="muted">Data Expectations 更接近 transform contract 的一部分，适合约束输出数据能否进入新 transaction，属于生产发布前的硬/软门禁。</p>
+                </article>
+                <article class="detail-card mechanism-card">
+                  <h3>运行期健康</h3>
+                  <p class="muted">Health Checks 负责已存在资源的健康、新鲜度、schema/content 漂移和 SLA 异常，适合发现生产态问题，但不应默认等同构建阻断。</p>
+                </article>
+                <article class="detail-card mechanism-card">
+                  <h3>规模化监控</h3>
+                  <p class="muted">Monitoring Views 用 static/dynamic scope 覆盖一批资源，让监控规则、severity、订阅和外部路由从单资源配置升级为资产域治理。</p>
+                </article>
+                <article class="detail-card mechanism-card">
+                  <h3>协同处理</h3>
+                  <p class="muted">Health Check failure 可以自动创建 Foundry Issue，resolve 后自动关闭；Monitoring View alert 可进入 Foundry、邮件、PagerDuty、Slack 或 webhook。</p>
+                </article>
+              </div>
+            </section>
+
+            <section class="section-card" id="closed-loop">
+              <p class="section-kicker">Closed Loop</p>
+              <h2>质量闭环链路</h2>
+              <div class="formula-panel">
+                <div>
+                  <strong>规则进入工程生命周期</strong>
+                  <code>Code Repository branch -> PR review -> CI registers checks -> protected branch merge</code>
+                </div>
+                <div>
+                  <strong>构建结果进入平台上下文</strong>
+                  <code>Build job -> PASS / WARN / FAIL -> Builds / History / Data Health / Lineage</code>
+                </div>
+                <div>
+                  <strong>运行期问题进入处理闭环</strong>
+                  <code>Health check failed -> alert / notification -> Foundry Issue -> resolve / close</code>
+                </div>
+                <div>
+                  <strong>外部通知要单独控权</strong>
+                  <code>Viewer permission != external export policy; resource name may downgrade to RID</code>
+                </div>
+              </div>
+              <div class="detail-grid mechanism-grid">
+                <article class="detail-card mechanism-card">
+                  <h3>规则身份要稳定</h3>
+                  <p class="muted">不要把展示名当唯一主键。自建平台需要 <code>rule_id</code> / <code>check_id</code>、alias、tombstone、rename/delete 审计和历史保留。</p>
+                </article>
+                <article class="detail-card mechanism-card">
+                  <h3>结果要能解释失败</h3>
+                  <p class="muted">质量结果应携带 rule、expectation breakdown、build/job、branch、commit、dataset、transaction/view、trigger、threshold 和 duration。</p>
+                </article>
+                <article class="detail-card mechanism-card">
+                  <h3>排查要能跳上下文</h3>
+                  <p class="muted">失败页面必须能跳到 lineage、build history、job timeline、logs、rule diff 和最近数据/代码变更，否则质量规则只会变成告警噪声。</p>
+                </article>
+                <article class="detail-card mechanism-card">
+                  <h3>外部通道要可审计</h3>
+                  <p class="muted">Slack、PagerDuty、webhook、email 不能只记录 route；需要记录 export/redaction policy 和实际发送 payload 的脱敏结果。</p>
+                </article>
+              </div>
+            </section>
+
+            <section class="section-card" id="build">
+              <p class="section-kicker">Build Recommendation</p>
+              <h2>自建平台最小模块</h2>
+              <div class="detail-grid mechanism-grid">
+                <article class="detail-card mechanism-card">
+                  <h3>P0：Quality Rule Registry</h3>
+                  <p class="muted">注册规则、校验唯一性、绑定 dataset input/output、记录 owner、branch、commit、FAIL/WARN、retention 和生命周期审计。</p>
+                </article>
+                <article class="detail-card mechanism-card">
+                  <h3>P0：Build Gate Runner</h3>
+                  <p class="muted">在 build job 内执行规则，产生 PASS/WARN/FAIL/ABORT；它是防止坏数据进入新版本的最小生产门禁。</p>
+                </article>
+                <article class="detail-card mechanism-card">
+                  <h3>P0：Quality Result Store</h3>
+                  <p class="muted">拆分保存 BuildCheckResult 与 HealthCheckResult，并能按 dataset、branch、transaction、rule、owner 和时间追溯。</p>
+                </article>
+                <article class="detail-card mechanism-card">
+                  <h3>P1：Monitoring View Engine</h3>
+                  <p class="muted">用资源 scope 和 severity 组织批量监控、订阅、snooze、resolve、permission snapshot 和告警去重。</p>
+                </article>
+                <article class="detail-card mechanism-card">
+                  <h3>P1：Issue / Alert Router</h3>
+                  <p class="muted">连接质量结果、Foundry 内通知、自动 issue、PagerDuty、Slack、webhook 和邮件，并记录 dedupe 与 close/reopen 状态。</p>
+                </article>
+                <article class="detail-card mechanism-card">
+                  <h3>P1：External Export Controller</h3>
+                  <p class="muted">对外部通知中的资源名、敏感标签、组织边界、payload schema、secret reference 和 receiver audit 做独立管控。</p>
+                </article>
+              </div>
+            </section>
+
+            <section class="section-card" id="risks">
+              <p class="section-kicker">Evidence Gaps</p>
+              <h2>关键风险与证据缺口</h2>
+              <div class="detail-grid mechanism-grid">
+                <article class="detail-card mechanism-card">
+                  <span class="tag confidence-guess">【待验证】</span>
+                  <h3>内部结果 schema 未公开</h3>
+                  <p class="muted">公开资料没有披露 Data Expectations result 与 Health Checks result 是否共享内部 schema、ID 和保留策略。</p>
+                </article>
+                <article class="detail-card mechanism-card">
+                  <span class="tag confidence-guess">【待验证】</span>
+                  <h3>非 Python 语言等价性不足</h3>
+                  <p class="muted">本轮主要确认 Python Transforms；Java、SQL、R 等路径是否具备完全等价的 Data Expectations 能力仍需补证。</p>
+                </article>
+                <article class="detail-card mechanism-card">
+                  <span class="tag confidence-fact">【事实】</span>
+                  <h3>Health Checks build abort 未证实</h3>
+                  <p class="muted">当前只确认 Data Expectations 可 abort build；Health Checks 主要是运行期监控、告警和 issue 闭环。</p>
+                </article>
+                <article class="detail-card mechanism-card">
+                  <span class="tag confidence-guess">【待验证】</span>
+                  <h3>外部通知细节仍需保守设计</h3>
+                  <p class="muted">PagerDuty、webhook、email payload、签名、重试、接收者权限、issue dedupe 和 reopen 机制仍未完全公开。</p>
+                </article>
+              </div>
+            </section>
+
+            <section class="section-card" id="sources">
+              <p class="section-kicker">Sources</p>
+              <h2>来源与延伸阅读</h2>
+              <div class="source-grid">
+                <article class="source-card">
+                  <h4>综合结论</h4>
+                  <p class="muted">Data Quality 模块主报告，包含 issue map、能力矩阵、自建架构、专家评审和第二轮自检。</p>
+                  <a class="source-link" href="../../docs/synthesis/palantir-data-quality-module-research.md"><svg class="icon sm" aria-hidden="true"><use href="#i-file"></use></svg><span>docs/synthesis/palantir-data-quality-module-research.md</span></a>
+                </article>
+                <article class="source-card">
+                  <h4>Topic 索引</h4>
+                  <p class="muted">Data Quality 主题的 canonical document、supporting evidence、related issues 和 open questions。</p>
+                  <a class="source-link" href="../../docs/topics/data-quality.md"><svg class="icon sm" aria-hidden="true"><use href="#i-file"></use></svg><span>docs/topics/data-quality.md</span></a>
+                </article>
+                <article class="source-card">
+                  <h4>构建期门禁</h4>
+                  <p class="muted">Data Expectations、Check、Expectation、FAIL/WARN、CI 注册和 PR review 的证据。</p>
+                  <a class="source-link" href="../../docs/raw/45-data-expectations-build-gates.md"><svg class="icon sm" aria-hidden="true"><use href="#i-file"></use></svg><span>docs/raw/45-data-expectations-build-gates.md</span></a>
+                </article>
+                <article class="source-card">
+                  <h4>运行期健康</h4>
+                  <p class="muted">Health Checks、Monitoring Views、告警、自动 issue 和外部通知安全边界。</p>
+                  <a class="source-link" href="../../docs/raw/46-data-health-health-checks.md"><svg class="icon sm" aria-hidden="true"><use href="#i-file"></use></svg><span>docs/raw/46-data-health-health-checks.md</span></a>
+                  <a class="source-link" href="../../docs/raw/47-monitoring-views-alert-issue-loop.md"><svg class="icon sm" aria-hidden="true"><use href="#i-file"></use></svg><span>docs/raw/47-monitoring-views-alert-issue-loop.md</span></a>
+                  <a class="source-link" href="../../docs/raw/49-data-quality-external-notification-security.md"><svg class="icon sm" aria-hidden="true"><use href="#i-file"></use></svg><span>docs/raw/49-data-quality-external-notification-security.md</span></a>
+                </article>
+              </div>
+            </section>
+          </div>
+        </div>
+      </main>
+
+      <footer class="site-footer">
+        <div class="page-footer">
+          <div>Palantir Foundry / Pipeline 调研材料库</div>
+          <div class="footer-note">统一入口：首页 / 总览 / 蓝图 / 算子总览 / 十个专题页</div>
+        </div>
+      </footer>
+    </div>
+  </body>
+</html>
