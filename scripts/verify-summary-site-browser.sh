@@ -34,7 +34,7 @@ const pages = [
     path: "index.html",
     slug: "home",
     title: "Palantir 调研总结一页纸",
-    requiredText: ["三个管理判断", "高码能力研究", "Pipeline Builder 算子总览", "Dataset 权限与 Marking 架构", "Media Set", "Foundry Schedule 运行模式"],
+    requiredText: ["三个管理判断", "高码能力研究", "Pipeline Builder 算子总览", "Dataset 权限与 Marking 架构", "Data Integration 权限控制面", "Media Set", "Foundry Schedule 运行模式"],
   },
   {
     path: "pages/pro-code-capability.html",
@@ -46,7 +46,7 @@ const pages = [
     path: "pages/overview.html",
     slug: "overview",
     title: "Palantir 研发技术总览",
-    requiredText: ["完整阅读路径", "高码能力研究", "能力建设关注点", "Dataset 权限与 Marking 架构", "Media Set 资产模型", "Foundry Schedule 运行模式", "算子主线如何嵌入平台图", "Pipeline Builder 算子总览页"],
+    requiredText: ["完整阅读路径", "高码能力研究", "能力建设关注点", "Dataset 权限与 Marking 架构", "Data Integration 权限控制面", "Media Set 资产模型", "Foundry Schedule 运行模式", "算子主线如何嵌入平台图", "Pipeline Builder 算子总览页"],
     iframeSelector: 'iframe[title="Pipeline Builder 算子总览页预览"]',
     iframeRequiredText: ["算子总览", "transform 清单", "expression 清单"],
     iframeSrc: "pipeline-builder-operators-overview.html",
@@ -98,6 +98,12 @@ const pages = [
     slug: "dataset-permission-marking",
     title: "Dataset 权限与 Marking 架构",
     requiredText: ["Dataset 权限与 Marking 架构", "Dataset 权限全景", "访问判定模型", "Marking 的设计和传播", "端到端实现链路", "Marking 传递与计算设计", "不等于都被 direct marking"],
+  },
+  {
+    path: "pages/data-integration-permission-system.html",
+    slug: "data-integration-permission-system",
+    title: "Data Integration 权限控制面",
+    requiredText: ["Data Integration 权限控制面", "核心结论", "权限控制面覆盖链路", "P0 / P1 / P2 建设路线", "运行时身份与外发边界", "专家评审共识", "docs/synthesis/data-integration-permission-system-roadmap.md"],
   },
   {
     path: "pages/engineering-and-ecosystem.html",

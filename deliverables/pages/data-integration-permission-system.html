@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Data Integration 权限控制面</title>
+    <link rel="stylesheet" href="../styles.css" />
+    <script defer src="../app.js"></script>
+  </head>
+  <body class="detail-body">
+    <div class="site-shell">
+      <svg class="icon-sprite" xmlns="http://www.w3.org/2000/svg">
+        <symbol id="i-home" viewBox="0 0 24 24">
+          <path d="M12 3l8 6v11a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V9l8-6Z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" />
+          <path d="M9 21v-8h6v8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" />
+        </symbol>
+        <symbol id="i-map" viewBox="0 0 24 24">
+          <path d="M9 4 3 6v14l6-2 6 2 6-2V4l-6 2-6-2Z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" />
+          <path d="M9 4v14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
+          <path d="M15 6v14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
+        </symbol>
+        <symbol id="i-brackets" viewBox="0 0 24 24">
+          <path d="M9 6 5 12l4 6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" />
+          <path d="M15 6l4 6-4 6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" />
+          <path d="M13 6l-2 12" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
+        </symbol>
+        <symbol id="i-cpu" viewBox="0 0 24 24">
+          <path d="M9 9h6v6H9V9Z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" />
+          <path d="M9 2v3M15 2v3M9 19v3M15 19v3M2 9h3M2 15h3M19 9h3M19 15h3" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
+          <path d="M7 7h10v10H7V7Z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" />
+        </symbol>
+        <symbol id="i-wave" viewBox="0 0 24 24">
+          <path d="M3 14c2 0 2-4 4-4s2 4 4 4 2-4 4-4 2 4 4 4 2-4 4-4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" />
+        </symbol>
+        <symbol id="i-nodes" viewBox="0 0 24 24">
+          <path d="M7 7h0M17 7h0M12 17h0" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
+          <path d="M7 7 12 17 17 7" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" />
+        </symbol>
+        <symbol id="i-wrench" viewBox="0 0 24 24">
+          <path d="M14 7a4 4 0 0 0-6 3.5l-5 5a2 2 0 1 0 2.8 2.8l5-5A4 4 0 0 0 17 9l-3 3-2-2 2-3Z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" />
+        </symbol>
+        <symbol id="i-layers" viewBox="0 0 24 24">
+          <path d="M12 3 2.5 8 12 13l9.5-5L12 3Z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" />
+          <path d="M2.5 12 12 17l9.5-5M2.5 16 12 21l9.5-5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round" />
+        </symbol>
+        <symbol id="i-file" viewBox="0 0 24 24">
+          <path d="M7 3h7l3 3v15a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1Z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" />
+          <path d="M14 3v4h4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" />
+        </symbol>
+      </svg>
+      <header class="site-nav">
+        <div class="nav-inner">
+          <a class="brand-mark" href="../index.html">
+            <span class="brand-dot"></span>
+            <span>Palantir Research Summary</span>
+          </a>
+          <nav class="nav-links">
+            <a data-nav href="../index.html"><svg class="icon sm" aria-hidden="true"><use href="#i-home"></use></svg><span>首页</span></a>
+            <a data-nav href="overview.html"><svg class="icon sm" aria-hidden="true"><use href="#i-map"></use></svg><span>总览</span></a>
+            <a data-nav href="pro-code-capability.html"><svg class="icon sm" aria-hidden="true"><use href="#i-brackets"></use></svg><span>高码</span></a>
+            <a data-nav href="data-engineering-platform-map.html"><svg class="icon sm" aria-hidden="true"><use href="#i-layers"></use></svg><span>蓝图</span></a>
+            <a data-nav href="expression-and-operators.html"><svg class="icon sm" aria-hidden="true"><use href="#i-brackets"></use></svg><span>表达</span></a>
+            <a data-nav href="execution-and-incremental.html"><svg class="icon sm" aria-hidden="true"><use href="#i-cpu"></use></svg><span>执行</span></a>
+            <a data-nav href="foundry-schedule-module.html"><svg class="icon sm" aria-hidden="true"><use href="#i-nodes"></use></svg><span>调度</span></a>
+            <a data-nav href="streaming-architecture.html"><svg class="icon sm" aria-hidden="true"><use href="#i-wave"></use></svg><span>流式</span></a>
+            <a data-nav href="lineage-ontology-governance.html"><svg class="icon sm" aria-hidden="true"><use href="#i-nodes"></use></svg><span>治理</span></a>
+            <a data-nav href="dataset-permission-marking.html"><svg class="icon sm" aria-hidden="true"><use href="#i-file"></use></svg><span>权限</span></a>
+            <a data-nav href="data-integration-permission-system.html"><svg class="icon sm" aria-hidden="true"><use href="#i-file"></use></svg><span>集成权限</span></a>
+            <a data-nav href="engineering-and-ecosystem.html"><svg class="icon sm" aria-hidden="true"><use href="#i-wrench"></use></svg><span>工程</span></a>
+          </nav>
+        </div>
+      </header>
+
+      <main>
+        <section class="topic-header">
+          <p class="eyebrow">Data Integration Security</p>
+          <h1>Data Integration 权限控制面</h1>
+          <p class="intro-note">
+            本页把 Data Integration 权限体系调研压缩成可决策版本：核心不是再加一张数据权限表，而是把 source、credential、sync、transform、dataset/stream、API/export、approval 和 audit 放进同一套控制面。
+          </p>
+          <div class="topic-meta">
+            <span class="tag">Source / Credential</span>
+            <span class="tag">Runtime Identity</span>
+            <span class="tag">PDP / PEP</span>
+            <span class="tag">Export Policy</span>
+            <span class="tag">Audit Snapshot</span>
+          </div>
+        </section>
+
+        <div class="detail-layout">
+          <aside class="section-nav">
+            <strong>本页导航</strong>
+            <a href="#summary">核心结论</a>
+            <a href="#control-plane">控制面</a>
+            <a href="#priorities">建设路线</a>
+            <a href="#runtime">运行时与外发</a>
+            <a href="#governance">治理闭环</a>
+            <a href="#review">专家共识</a>
+            <a href="#sources">来源</a>
+          </aside>
+
+          <div class="detail-main">
+            <section class="section-card" id="summary">
+              <p class="section-kicker">Executive Summary</p>
+              <h2>核心结论</h2>
+              <div class="detail-grid conclusion-grid">
+                <article class="detail-card">
+                  <span class="tag confidence-infer">【结论】</span>
+                  <h3>缺口是控制面，不是单点 ACL</h3>
+                  <p class="muted">Data Integration 权限要覆盖接入、凭据、同步、构建、消费、外发、审批和审计；只做 Dataset ACL 会漏掉 source preview、secret use、runtime egress 和 export。</p>
+                </article>
+                <article class="detail-card">
+                  <span class="tag confidence-fact">【事实】</span>
+                  <h3>连接对象本身就是资源</h3>
+                  <p class="muted">Palantir 公开资料把 agents、sources、syncs、plugins、webhooks 和 external code connections 都建模为 resources，并允许叠加 roles、Organizations 和 Markings。</p>
+                </article>
+                <article class="detail-card">
+                  <span class="tag confidence-infer">【推断】</span>
+                  <h3>P0 要先封住所有数据接触点</h3>
+                  <p class="muted">P0 不是高阶治理，而是统一对象模型、credential 一等对象、source capability 分权、commit-time 传播、query-time PDP/PEP、export/egress PEP 和审计快照。</p>
+                </article>
+                <article class="detail-card">
+                  <span class="tag confidence-infer">【风险】</span>
+                  <h3>最危险的旁路在运行时和外发</h3>
+                  <p class="muted">高权限 service account、source editor 过宽、secret 暴露到代码、preview 自动等同 download/export、外部通知 payload 无 redaction，都会绕开 Dataset 层保护。</p>
+                </article>
+                <article class="detail-card">
+                  <span class="tag confidence-fact">【共识】</span>
+                  <h3>四类专家已评审通过</h3>
+                  <p class="muted">Data Integration 架构、安全治理、平台工程、运维合规四个视角最终均为 Pass；未通过项已补齐后复审通过。</p>
+                </article>
+              </div>
+            </section>
+
+            <section class="section-card" id="control-plane">
+              <p class="section-kicker">Control Plane</p>
+              <h2>权限控制面覆盖链路</h2>
+              <div class="lineage-map-panel">
+                <div class="lineage-flow" aria-label="Data Integration 权限控制链路">
+                  <div class="lineage-node source"><span>Source / Credential</span><strong>连接、凭据、外部账号能力边界</strong></div>
+                  <div class="lineage-arrow" aria-hidden="true">→</div>
+                  <div class="lineage-node sync"><span>Sync Runtime</span><strong>同步配置、运行、output transaction</strong></div>
+                  <div class="lineage-arrow" aria-hidden="true">→</div>
+                  <div class="lineage-node build"><span>Transform Build</span><strong>作者、CI、schedule、runtime principal</strong></div>
+                  <div class="lineage-arrow" aria-hidden="true">→</div>
+                  <div class="lineage-node dataset"><span>Dataset / Stream</span><strong>transaction requirement 与 view requirement</strong></div>
+                  <div class="lineage-arrow" aria-hidden="true">→</div>
+                  <div class="lineage-node ontology"><span>Query / API / Export</span><strong>PDP/PEP、redaction、audit snapshot</strong></div>
+                </div>
+              </div>
+              <div class="formula-panel">
+                <div>
+                  <strong>source access</strong>
+                  <code>connection role + capability permission + source markings/orgs + credential use</code>
+                </div>
+                <div>
+                  <strong>build commit</strong>
+                  <code>resolve input branch/view/tx -> compute inherited requirements -> write transaction_requirement</code>
+                </div>
+                <div>
+                  <strong>query decision</strong>
+                  <code>resource role + organizations + markings + transaction requirement + row/property/export policy</code>
+                </div>
+                <div>
+                  <strong>export decision</strong>
+                  <code>can read internal view + export permission + exportable requirements + destination credential + redaction</code>
+                </div>
+              </div>
+            </section>
+
+            <section class="section-card" id="priorities">
+              <p class="section-kicker">Roadmap</p>
+              <h2>P0 / P1 / P2 建设路线</h2>
+              <div class="capability-blueprint">
+                <article class="capability-layer">
+                  <div class="capability-layer-title">
+                    <span>P0</span>
+                    <h3>先封底座</h3>
+                  </div>
+                  <div class="capability-modules">
+                    <div class="capability-module"><strong>统一对象模型</strong><p>source、dataset、stream、repo、job、credential、export 都有 RID、owner、requirements 和 audit id。</p></div>
+                    <div class="capability-module"><strong>Credential 一等对象</strong><p><code>secret.admin</code>、<code>secret.use</code>、<code>secret.read/expose_to_code</code> 分开，默认 runtime-use-only。</p></div>
+                    <div class="capability-module"><strong>Source capability 分权</strong><p>preview、run_sql、sync_create、agent_assign、code_import、export_enable 不能被 source editor 隐式包含。</p></div>
+                    <div class="capability-module"><strong>Build-time propagation</strong><p>Sync/Transform commit 前写入 <code>transaction_requirement</code>，无法解释时 fail closed。</p></div>
+                    <div class="capability-module"><strong>PDP / PEP 全覆盖</strong><p>source preview、sync、build、query、download、API、stream、export、logs 都走统一决策。</p></div>
+                    <div class="capability-module"><strong>Export / egress PEP</strong><p>默认禁止任意 HTTP 出站；外发绑定 destination、credential、policy、redaction 和 audit。</p></div>
+                    <div class="capability-module"><strong>Access decision snapshot</strong><p>记录 entitlement snapshot、policy version、requirement version、credential scope 和 decision inputs。</p></div>
+                  </div>
+                </article>
+                <article class="capability-layer">
+                  <div class="capability-layer-title">
+                    <span>P1</span>
+                    <h3>再补治理</h3>
+                  </div>
+                  <div class="capability-modules">
+                    <div class="capability-module priority-p1"><strong>Protected unmarking</strong><p>stop_propagating / stop_requiring 绑定 input、output、branch、approval 和 approver 权限。</p></div>
+                    <div class="capability-module priority-p1"><strong>Access debugger</strong><p>解释缺 role、marking、organization、classification、row policy 或 export policy。</p></div>
+                    <div class="capability-module priority-p1"><strong>External principal inventory</strong><p>外部账号 owner、scope、external grants、last used、rotation 和 risk level 可查。</p></div>
+                    <div class="capability-module priority-p1"><strong>Time-bound access / SIEM</strong><p>临时权限自动过期，高风险 export、break-glass、denied burst 可进 SIEM。</p></div>
+                  </div>
+                </article>
+                <article class="capability-layer">
+                  <div class="capability-layer-title">
+                    <span>P2</span>
+                    <h3>最后做规模化</h3>
+                  </div>
+                  <div class="capability-modules">
+                    <div class="capability-module priority-p2"><strong>细粒度策略</strong><p>Restricted View、row/property policy、field-level export redaction 叠加 Dataset requirements。</p></div>
+                    <div class="capability-module priority-p2"><strong>Recertification</strong><p>按敏感等级周期复核权限，未确认自动降权或触发升级。</p></div>
+                    <div class="capability-module priority-p2"><strong>SDS 自动治理</strong><p>scan -> apply marking / obfuscate / create issue / policy drift。</p></div>
+                    <div class="capability-module priority-p2"><strong>Policy-as-code</strong><p>策略 diff、branch review、approval 和 rollback 纳入工程流程。</p></div>
+                  </div>
+                </article>
+              </div>
+            </section>
+
+            <section class="section-card" id="runtime">
+              <p class="section-kicker">Runtime Boundary</p>
+              <h2>运行时身份与外发边界</h2>
+              <div class="permission-matrix">
+                <article>
+                  <span class="tag">PR / Branch Build</span>
+                  <h3>检查触发者和 runtime principal</h3>
+                  <p>校验 repo/build 权限、input read、output branch write、Markings/Organizations，并写 actor、branch、input tx、requirements 快照。</p>
+                </article>
+                <article>
+                  <span class="tag">CI / Publish</span>
+                  <h3>注册生产 job spec</h3>
+                  <p>CI principal 不能继承作者 token 任意写生产；必须校验 repo owns output spec、protected branch policy 和 ownership decision。</p>
+                </article>
+                <article>
+                  <span class="tag">Schedule / Retry</span>
+                  <h3>锁定历史语义</h3>
+                  <p>scheduled build、retry、backfill 要记录 schedule owner、effective principal、config version、credential version 和 requirement version。</p>
+                </article>
+                <article>
+                  <span class="tag">Stream</span>
+                  <h3>微批也要写 requirement</h3>
+                  <p>stream runtime principal 要校验 source/stream read、checkpoint owner、output write 和 requirement propagation。</p>
+                </article>
+                <article>
+                  <span class="tag">Export / Webhook</span>
+                  <h3>外发不是 Viewer 扩展</h3>
+                  <p>export job 和 notification dispatch 必须绑定 route/destination policy、receiver ownership、secret scope、payload redaction 和 audit。</p>
+                </article>
+                <article>
+                  <span class="tag">Logs</span>
+                  <h3>日志也是敏感面</h3>
+                  <p>build logs、webhook history、request/response、resource name 和 RID 要做独立 viewer 权限、retention 和 redaction。</p>
+                </article>
+              </div>
+            </section>
+
+            <section class="section-card" id="governance">
+              <p class="section-kicker">Governance Loop</p>
+              <h2>审批、审计与生命周期闭环</h2>
+              <div class="detail-grid mechanism-grid">
+                <article class="detail-card mechanism-card">
+                  <h3>组合申请</h3>
+                  <p class="muted">Access request 不能只批 role；应能同时申请 role、Marking、Organization、export policy 或 source capability，并路由给对应 owner/admin。</p>
+                </article>
+                <article class="detail-card mechanism-card">
+                  <h3>可回放审计</h3>
+                  <p class="muted">P0 snapshot 至少包含 groups snapshot、Marking/Organization membership、credential scope、policy version、transaction requirement version 和 trace id。</p>
+                </article>
+                <article class="detail-card mechanism-card">
+                  <h3>外发审计</h3>
+                  <p class="muted">download/export/webhook/Kafka/SIEM 需要记录 export policy、destination credential、payload policy 和 redaction decision。</p>
+                </article>
+                <article class="detail-card mechanism-card">
+                  <h3>生命周期治理</h3>
+                  <p class="muted">TTL grant、break-glass、recertification、policy drift、external principal rotation 要能进入 SIEM 和 issue 流程。</p>
+                </article>
+              </div>
+            </section>
+
+            <section class="section-card" id="review">
+              <p class="section-kicker">Expert Review</p>
+              <h2>专家评审共识</h2>
+              <div class="detail-grid conclusion-grid">
+                <article class="detail-card">
+                  <span class="tag confidence-fact">Pass</span>
+                  <h3>Data Integration 架构专家</h3>
+                  <p class="muted">第一轮要求补齐 build-time propagation、Transform runtime egress、source capability 和 export/redaction P0；修订后复审通过。</p>
+                </article>
+                <article class="detail-card">
+                  <span class="tag confidence-fact">Pass</span>
+                  <h3>安全治理专家</h3>
+                  <p class="muted">确认 export 已从 read extension 改为跨边界策略，并覆盖 destination credential、payload redaction 和审计。</p>
+                </article>
+                <article class="detail-card">
+                  <span class="tag confidence-fact">Pass</span>
+                  <h3>平台工程专家</h3>
+                  <p class="muted">确认 P0 propagation、runtime identity table、audit snapshot 和 enforcement ownership matrix 已补齐。</p>
+                </article>
+                <article class="detail-card">
+                  <span class="tag confidence-fact">Pass</span>
+                  <h3>运维与合规专家</h3>
+                  <p class="muted">确认 audit/SIEM、access request、TTL、break-glass、recertification 和 policy drift 已形成路线级闭环。</p>
+                </article>
+                <article class="detail-card">
+                  <span class="tag confidence-guess">Open</span>
+                  <h3>后续风险</h3>
+                  <p class="muted">Stream hot path、secret runtime 隔离、export connector 行为、PDP schema、retry/backfill 历史语义、大规模 requirement recompute 仍需单独设计或实测。</p>
+                </article>
+              </div>
+            </section>
+
+            <section class="section-card" id="sources">
+              <p class="section-kicker">Sources</p>
+              <h2>来源与延伸阅读</h2>
+              <div class="source-grid">
+                <article class="source-card">
+                  <h4>综合路线图</h4>
+                  <p class="muted">本页的主来源，包含 P0/P1/P2 路线、runtime identity、ownership matrix 和专家评审记录。</p>
+                  <a class="source-link" href="../../docs/synthesis/data-integration-permission-system-roadmap.md"><svg class="icon sm" aria-hidden="true"><use href="#i-file"></use></svg><span>docs/synthesis/data-integration-permission-system-roadmap.md</span></a>
+                </article>
+                <article class="source-card">
+                  <h4>接入与凭据边界</h4>
+                  <p class="muted">Source、Credential、Sync、ExportPolicy 的拆分模型和高风险路径。</p>
+                  <a class="source-link" href="../../docs/raw/51-ingestion-connection-credential-permission-boundary.md"><svg class="icon sm" aria-hidden="true"><use href="#i-file"></use></svg><span>docs/raw/51-ingestion-connection-credential-permission-boundary.md</span></a>
+                </article>
+                <article class="source-card">
+                  <h4>运行时与传播</h4>
+                  <p class="muted">Transform build、schedule、runtime identity、requirement propagation 和 audit snapshot。</p>
+                  <a class="source-link" href="../../docs/raw/52-transform-runtime-build-permission-boundary.md"><svg class="icon sm" aria-hidden="true"><use href="#i-file"></use></svg><span>docs/raw/52-transform-runtime-build-permission-boundary.md</span></a>
+                  <a class="source-link" href="../../docs/raw/54-lineage-marking-policy-propagation-model.md"><svg class="icon sm" aria-hidden="true"><use href="#i-file"></use></svg><span>docs/raw/54-lineage-marking-policy-propagation-model.md</span></a>
+                  <a class="source-link" href="../../docs/raw/55-permission-governance-audit-lifecycle.md"><svg class="icon sm" aria-hidden="true"><use href="#i-file"></use></svg><span>docs/raw/55-permission-governance-audit-lifecycle.md</span></a>
+                </article>
+                <article class="source-card">
+                  <h4>官方证据</h4>
+                  <p class="muted">Data Connection permissions、exports、Markings、remove inherited Markings 和 audit logs。</p>
+                  <a class="source-link" href="https://www.palantir.com/docs/foundry/data-connection/permissions"><svg class="icon sm" aria-hidden="true"><use href="#i-file"></use></svg><span>Data Connection permissions</span></a>
+                  <a class="source-link" href="https://www.palantir.com/docs/foundry/data-connection/export-overview"><svg class="icon sm" aria-hidden="true"><use href="#i-file"></use></svg><span>Data Connection exports</span></a>
+                  <a class="source-link" href="https://www.palantir.com/docs/foundry/security/markings/"><svg class="icon sm" aria-hidden="true"><use href="#i-file"></use></svg><span>Palantir Markings</span></a>
+                  <a class="source-link" href="https://www.palantir.com/docs/foundry/security/audit-logs-overview"><svg class="icon sm" aria-hidden="true"><use href="#i-file"></use></svg><span>Audit logs overview</span></a>
+                </article>
+              </div>
+            </section>
+          </div>
+        </div>
+      </main>
+
+      <footer class="site-footer">
+        <div class="page-footer">
+          <div>Palantir Foundry / Pipeline 调研材料库</div>
+          <div class="footer-note">统一入口：首页 / 总览 / 蓝图 / 算子总览 / 九个专题页</div>
+        </div>
+      </footer>
+    </div>
+  </body>
+</html>
