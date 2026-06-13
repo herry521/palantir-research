@@ -158,7 +158,171 @@
 
 ---
 
-## 8. 参考资料
+## 8. 特性分支下 schema 变更的限制与不兼容处理
+
+### 8.1 分支隔离层面：可以变，但不会直接改主分支
+
+Foundry 的 branch-aware build 语义是：build 只会修改当前 build branch 上的 datasets，不会修改其他 branch；dataset branch 只是指向该 branch 最新 transaction 的指针，不支持直接 merge dataset branches。【事实】
+
+因此当特性分支修改 pipeline，导致 output schema 变化时：
+
+- 该变化首先只体现在该 branch 对应 output dataset view 的 schema version 上。【事实】
+- `main` / `master` 上的数据和 schema 不会被这个 branch build 直接改掉。【事实】
+- 真正进入主分支的是“逻辑变更被 merge 后，在主分支重新 build 产出的新 transaction/view/schema version”，不是把 feature branch 的 dataset branch 直接 merge 过去。【推断】
+
+### 8.2 没有看到“禁止 schema 变更”的总开关，但存在三类硬限制
+
+公开资料没有显示一个通用规则说“feature branch 不允许修改 output schema”。更准确的说法是：**schema 变更允许发生，但能否继续 build / propose / merge，取决于下面几类限制。**【推断】
+
+#### 限制一：Pipeline Builder proposal / merge 时的 schema errors
+
+Pipeline Builder branch proposal 页面明确说明：有些 proposal 会出现 schema 或 edit errors，必须先 `Fix schemas`，否则无法成功 build 和 merge。【事实】
+
+这意味着：
+
+- branch 内可以先把 pipeline 改出新的 schema；【事实 + 推断】
+- 但如果变更导致图上的 schema 不一致、下游条件不成立或 proposal 检查失败，必须先修复，不能直接合入主分支。【事实】
+
+#### 限制二：增量构建对 schema change 很敏感
+
+对于 incremental transforms，schema change 不是普通小改动：
+
+- Java 增量文档明确写到：如果依赖的 input dataset schema 变化，默认会被视为 `NEW_VIEW`，可能破坏 incrementality。【事实】
+- 只有 low-level Java transforms 才有显式“ignore schema change / use schema modification type”能力，而且官方明确警告它可能带来意外后果。【事实】
+- Python 增量文档明确写到：当用 `previous` 模式读取旧输出时，如果你给出的 schema 与上次输出的实际 schema 在列类型、nullability 或列顺序上不匹配，会抛 `SchemaMismatchError`。【事实】
+
+所以 branch 下 schema 变更的一个硬边界是：
+
+> 如果新 schema 让增量逻辑无法再安全解释旧 view / previous output，build 会失败，或者需要退回一次 full snapshot / non-incremental rebuild。【推断】
+
+#### 限制三：某些 schema drift 被官方建议拆成新 dataset
+
+Data Connection FAQ 对 append 场景给了很明确的处理原则：
+
+- 如果文件或 JDBC 表在增量 `APPEND` 事务之间发生真正的 schema 变化，原 dataset 可能开始报 schema mismatch。【事实】
+- 如果新 schema 与旧 schema 是根本不同的 table view，官方建议使用 **new dataset** 承接新 schema，并在名字里标版本，例如 `v1.0` / `v1.1`。【事实】
+
+这说明 Foundry 也不是把所有 schema evolution 都视为“同一个 dataset 内自然兼容”的问题；对于破坏性 drift，官方建议直接版本化 dataset，而不是强行在原数据集上续写。【事实 + 推断】
+
+### 8.3 历史数据与新 schema 不兼容时怎么处理
+
+这要分几种情况。
+
+#### 情况一：加列这类加法变更
+
+Python incremental examples 明确写到：如果只是给输出新增一列，下一次增量运行会为新写入的行带上新列，而历史行上的该列会是 `null`。【事实】
+
+如果你希望旧数据也补上这个新列：
+
+- 需要提高 transform 的 `semantic_version`，让它至少做一次 non-incremental/full recompute。【事实】
+
+这是最典型的“branch 下可以先改 schema，但历史数据默认不会自动回填”的处理方式。【推断】
+
+#### 情况二：列类型、列顺序、nullability 或关键列依赖变化
+
+如果变更不是简单加列，而是涉及：
+
+- 列类型变化
+- 列顺序变化
+- `previous` 读取时的 schema 不匹配
+- 被 transform 明确依赖的列被删除、重命名或改类型
+
+那么常见结果不是“历史数据自动适配”，而是：
+
+- incremental build 失败；【事实】
+- 或者需要先做一次新的 snapshot/full rebuild，重新生成全量输出；【事实 + 推断】
+- 若连 full rebuild 也不能合理解释旧数据，则要拆新 dataset。【推断】
+
+#### 情况三：源表/接入层 schema 发生根本变化
+
+对于 Data Connection append ingest，Palantir 官方 FAQ 的建议更强硬：
+
+- 暂停 sync；
+- 必要时回滚已写坏的 transaction；
+- 用新的 target dataset 接新 schema；
+- 需要时再把新旧 dataset union 到上层消费视图中。【事实】
+
+这说明“历史数据和新 schema 不兼容”的平台级兜底策略不是自动魔法迁移，而是：
+
+1. 停止继续污染旧 dataset；
+2. 把 schema break 当成版本切换；
+3. 通过新 dataset 或上层 union/semantic layer 处理兼容性。【推断】
+
+### 8.4 实操判断规则
+
+可以把 branch 下 schema 变化按下面规则判断：
+
+| 变更类型 | branch 下能否先存在 | 常见后果 | 推荐处理 |
+|---|---|---|---|
+| 新增可空列 | 可以 | 历史行该列为 `null` | 如需回填，做 full rebuild / bump `semantic_version` |
+| 新增列且下游/质量规则要求全量一致 | 可以，但可能卡在 expectations / proposal checks | build 或 merge 失败 | 先修 schema / expectations，再全量重算 |
+| 删除列、重命名列、改类型 | 可以改，但高风险 | incremental 失败、schema error、下游断裂 | 评估是否 full rebuild；必要时拆新 dataset |
+| input schema drift 发生在 append ingest 中 | 技术上会发生，但不应继续落原 dataset | schema mismatch / dataset 污染 | 停 sync、必要时回滚、切新 dataset 版本 |
+| streaming key / primary key 列被覆盖或删除 | 可以改，但 key metadata 会丢 | 去重/顺序保证变化 | 重新 `Key by` 或重新声明 key |
+
+### 8.5 关键产品决策：breaking change 是否要求历史兼容
+
+这确实是平台必须明确的决策点。公开资料反映的不是“平台自动帮你兼容一切历史数据”，而是：**不同类型的 schema 变化，应由产品显式决定是兼容演进、全量重算，还是切新 dataset 版本。**【推断】
+
+如果不先做这个决策，后面所有实现都会摇摆：
+
+- 增量是否还能继续跑；
+- 下游是否允许无感知读取；
+- 旧数据是否允许以 `null` 或默认值形式暴露；
+- 是否需要保留旧 contract 给历史消费者；
+- schema change impact 是 warning 还是 hard stop。
+
+#### 建议的三档策略
+
+| 决策档位 | 定义 | 历史数据要求 | 常见处置 |
+|---|---|---|---|
+| 向后兼容演进 | 新 schema 仍能解释旧数据；旧消费者不必立刻改 | 需要兼容 | 允许 branch merge；旧数据可保留 `null` / 默认值；必要时后台补算 |
+| 破坏性但允许重建 | 新 schema 不能安全解释旧数据，但可通过一次 full rebuild 重建成统一新视图 | 不要求原 transaction 直接兼容，但要求重建后兼容 | merge 前或 merge 后强制 full rebuild；提升 `semantic_version`；暂时阻断增量 |
+| 破坏性且不兼容 | 新旧 schema 代表不同数据 contract，历史数据不应再按新 schema 暴露 | 不兼容 | 新建 dataset 版本，如 `dataset_v2`；旧 dataset 继续服务旧消费者，逐步迁移 |
+
+#### 什么应判定为 breaking change
+
+建议把下面这些默认归入 breaking change，除非产品明确声明可以自动迁移：
+
+1. 删除列，且该列对下游可见或被下游依赖。
+2. 重命名列，但没有提供兼容别名/双写期。
+3. 列类型发生不兼容变化，例如 `string -> int`、`timestamp -> date`。
+4. 主键、去重键、streaming key、join key 变化。
+5. 字段语义变化但沿用旧字段名，例如金额单位、时区、枚举含义变化。
+6. nullability 从可空变成不可空，且历史数据无法满足。
+
+相对地，下面通常可视为非 breaking 或弱 breaking：
+
+1. 新增可空列。
+2. 新增下游可忽略的派生列。
+3. 增加新的 optional enum 值，但旧逻辑能容忍。
+
+#### 建议的默认产品立场
+
+如果目标是做 Foundry 风格的数据平台，而不是单纯文件落地系统，建议默认采用下面的决策：
+
+1. **默认假设 breaking change 不要求历史 transaction 原地兼容。**
+2. **但要求产品在 merge 前明确选择一种处置方式：**
+   - `compatible_evolution`
+   - `rebuild_required`
+   - `new_dataset_version_required`
+3. **凡是影响主键、join key、类型语义、下游公共 contract 的变更，默认至少进入 `rebuild_required`。**
+4. **凡是连 full rebuild 都无法给出可信统一语义的变更，直接进入 `new_dataset_version_required`。**
+
+这个立场更稳，因为它把“是否兼容历史”从隐式运行时事故，提升成显式治理决策。【建议】
+
+#### 对自研平台的最小落地要求
+
+如果接受上面的决策框架，自研平台最少要补四个能力：
+
+1. `schema_change_classification`：把 schema diff 标成 additive / compatible / breaking。
+2. `merge_gate`：breaking change 未声明处置策略时，不允许合入主分支。
+3. `rebuild_or_version_policy`：为 breaking change 指定 full rebuild 还是 new dataset version。
+4. `consumer_migration_notice`：把 contract 变化通知到下游 owner，而不是只在 build 日志里失败。
+
+---
+
+## 9. 参考资料
 
 ### 仓库内证据
 
@@ -175,3 +339,9 @@
 - Palantir Foundry - Define data expectations: https://www.palantir.com/docs/foundry/maintaining-pipelines/define-data-expectations
 - Palantir Foundry - Pipeline Builder Data Expectations Overview: https://www.palantir.com/docs/foundry/pipeline-builder/dataexpectations-overview
 - Palantir Foundry - Data Health Checks Reference: https://www.palantir.com/docs/foundry/data-health/checks-reference/
+- Palantir Foundry - Branching core concepts: https://www.palantir.com/docs/foundry/data-integration/branching
+- Palantir Foundry - Pipeline Builder branches approve a change: https://www.palantir.com/docs/foundry/pipeline-builder/branches-approve-a-change
+- Palantir Foundry - Incremental transforms usage guide (Python): https://www.palantir.com/docs/foundry/transforms-python/incremental-usage
+- Palantir Foundry - Incremental transforms examples (Python Spark): https://www.palantir.com/docs/foundry/transforms-python-spark/incremental-examples
+- Palantir Foundry - Incremental transforms (Java): https://www.palantir.com/docs/foundry/transforms-java/incremental-transforms
+- Palantir Foundry - Data Connection FAQ: https://www.palantir.com/docs/foundry/data-connection/faq
