@@ -247,11 +247,11 @@ documents:
     topics: [pipeline, execution-runtime, operator-platform]
     source_layer: topic
     issue_refs: [2, 3, 9, 11, 12, 14, 40, 46]
-    source_refs: [docs/synthesis/palantir-pipeline-deep-dive.md, docs/synthesis/operator-platform-design.md, docs/synthesis/palantir-pro-code-capability-research.md, docs/raw/01-pipeline-expression-dsl.md, docs/raw/02-execution-engine-spark.md, docs/raw/03-streaming-batch-architecture.md, docs/raw/14-transform-operator-library.md, docs/raw/25-transform-contract-dag.md, docs/raw/28-pipeline-builder-pro-code-interop.md, docs/raw/45-data-expectations-build-gates.md]
+    source_refs: [docs/synthesis/palantir-pipeline-deep-dive.md, docs/synthesis/operator-platform-design.md, docs/synthesis/palantir-pro-code-capability-research.md, docs/raw/01-pipeline-expression-dsl.md, docs/raw/02-execution-engine-spark.md, docs/raw/03-streaming-batch-architecture.md, docs/raw/14-transform-operator-library.md, docs/raw/25-transform-contract-dag.md, docs/raw/28-pipeline-builder-pro-code-interop.md, docs/raw/45-data-expectations-build-gates.md, docs/raw/57-pipeline-target-dataset-schema-primary-key.md]
     related_docs: [docs/topics/pro-code.md, docs/topics/scheduling.md, docs/topics/data-quality.md]
     canonical: false
     created: 2026-05-31
-    updated: 2026-05-31
+    updated: 2026-06-13
     last_reviewed: 2026-05-31
     confidence: high
     evidence_strength: strong
@@ -930,6 +930,17 @@ documents:
     source_layer: evidence
     issue_refs: [49, 56]
     source_refs: [docs/raw/50-data-integration-permission-source-map.md]
+    canonical: false
+  - id: raw-57-pipeline-target-dataset-schema-primary-key
+    path: docs/raw/57-pipeline-target-dataset-schema-primary-key.md
+    title: "Pipeline 目标 Dataset Schema 与主键确定机制调研"
+    type: raw
+    status: reviewed
+    topics: [pipeline, dataset, data-quality]
+    source_layer: evidence
+    issue_refs: []
+    source_refs: [docs/raw/21-pro-code-capability-deep-dive.md, docs/raw/29-lineage-branch-version-pipeline-sync.md, docs/raw/45-data-expectations-build-gates.md, docs/raw/46-data-health-health-checks.md, docs/topics/pipeline.md, docs/topics/dataset.md]
+    related_docs: [docs/synthesis/palantir-pipeline-deep-dive.md, docs/topics/pipeline.md, docs/topics/dataset.md]
     canonical: false
 
   - id: synthesis-dataset-permission-marking-architecture-summary

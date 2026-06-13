@@ -26,6 +26,7 @@
 | [docs/raw/25-transform-contract-dag.md](../raw/25-transform-contract-dag.md) | Transform Contract、DAG 推导和调度解析。 |
 | [docs/raw/28-pipeline-builder-pro-code-interop.md](../raw/28-pipeline-builder-pro-code-interop.md) | 低码/高码互操作、导出、IR/Contract 风险。 |
 | [docs/raw/45-data-expectations-build-gates.md](../raw/45-data-expectations-build-gates.md) | Pipeline build-time 质量门禁补充证据。 |
+| [docs/raw/57-pipeline-target-dataset-schema-primary-key.md](../raw/57-pipeline-target-dataset-schema-primary-key.md) | 说明目标 dataset schema 如何固化、Dataset 是否天然有主键，以及主键应如何建模。 |
 
 ## Related Issues
 
@@ -34,5 +35,6 @@
 ## Open Questions
 
 - Pipeline Builder 内部 IR、Registry、codegen pipeline 和错误诊断算法未公开。
+- Builder integrity checks 如何保存字段级 schema 推导结果、primary key expectation 是否进入统一元数据注册表，公开资料不足。
 - 低码 transform/expression 与自研算子注册中心字段的精确映射还需单独建表。
 - OpenLineage adapter、跨系统血缘导入导出和 Foundry 私有血缘模型的兼容边界仍待验证。
