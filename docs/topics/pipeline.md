@@ -11,6 +11,7 @@
 
 | 文档 | 用途 |
 | --- | --- |
+| [docs/synthesis/palantir-incremental-batch-chain-deep-dive.md](../synthesis/palantir-incremental-batch-chain-deep-dive.md) | 增量批链路的能力边界、实现主链路、关键控制点与自研启示。 |
 | [docs/synthesis/palantir-pipeline-deep-dive.md](../synthesis/palantir-pipeline-deep-dive.md) | Pipeline 表达层、执行引擎、流批、血缘、算子平台综合结论。 |
 | [docs/synthesis/operator-platform-design.md](../synthesis/operator-platform-design.md) | 自研算子平台架构设计参考。 |
 | [docs/synthesis/palantir-pro-code-capability-research.md](../synthesis/palantir-pro-code-capability-research.md) | 高码 Transform、Contract、DAG、调度和治理的补充结论。 |
@@ -22,8 +23,10 @@
 | [docs/raw/01-pipeline-expression-dsl.md](../raw/01-pipeline-expression-dsl.md) | Transform 装饰器、Pipeline 注册入口和 DAG 构建基础。 |
 | [docs/raw/02-execution-engine-spark.md](../raw/02-execution-engine-spark.md) | Spark 执行、增量计算、调度和资源配置证据。 |
 | [docs/raw/03-streaming-batch-architecture.md](../raw/03-streaming-batch-architecture.md) | 流批架构和 Pipeline Builder 技术形态。 |
+| [docs/raw/06-incremental-pipeline.md](../raw/06-incremental-pipeline.md) | 增量 transform、transaction history、fallback 与流批差异的既有证据整理。 |
 | [docs/raw/14-transform-operator-library.md](../raw/14-transform-operator-library.md) | Pipeline Builder 算子与 Code Repository SDK 算子库整理。 |
 | [docs/raw/25-transform-contract-dag.md](../raw/25-transform-contract-dag.md) | Transform Contract、DAG 推导和调度解析。 |
+| [docs/raw/27-incremental-scheduling-transaction.md](../raw/27-incremental-scheduling-transaction.md) | 增量、调度、Dataset transaction 三者的耦合证据。 |
 | [docs/raw/28-pipeline-builder-pro-code-interop.md](../raw/28-pipeline-builder-pro-code-interop.md) | 低码/高码互操作、导出、IR/Contract 风险。 |
 | [docs/raw/45-data-expectations-build-gates.md](../raw/45-data-expectations-build-gates.md) | Pipeline build-time 质量门禁补充证据。 |
 | [docs/raw/57-pipeline-target-dataset-schema-primary-key.md](../raw/57-pipeline-target-dataset-schema-primary-key.md) | 说明目标 dataset schema 如何固化、Dataset 是否天然有主键，以及主键应如何建模。 |

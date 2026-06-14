@@ -247,11 +247,11 @@ documents:
     topics: [pipeline, execution-runtime, operator-platform]
     source_layer: topic
     issue_refs: [2, 3, 9, 11, 12, 14, 40, 46]
-    source_refs: [docs/synthesis/palantir-pipeline-deep-dive.md, docs/synthesis/operator-platform-design.md, docs/synthesis/palantir-pro-code-capability-research.md, docs/raw/01-pipeline-expression-dsl.md, docs/raw/02-execution-engine-spark.md, docs/raw/03-streaming-batch-architecture.md, docs/raw/14-transform-operator-library.md, docs/raw/25-transform-contract-dag.md, docs/raw/28-pipeline-builder-pro-code-interop.md, docs/raw/45-data-expectations-build-gates.md, docs/raw/57-pipeline-target-dataset-schema-primary-key.md]
+    source_refs: [docs/synthesis/palantir-incremental-batch-chain-deep-dive.md, docs/synthesis/palantir-pipeline-deep-dive.md, docs/synthesis/operator-platform-design.md, docs/synthesis/palantir-pro-code-capability-research.md, docs/raw/01-pipeline-expression-dsl.md, docs/raw/02-execution-engine-spark.md, docs/raw/03-streaming-batch-architecture.md, docs/raw/06-incremental-pipeline.md, docs/raw/14-transform-operator-library.md, docs/raw/25-transform-contract-dag.md, docs/raw/27-incremental-scheduling-transaction.md, docs/raw/28-pipeline-builder-pro-code-interop.md, docs/raw/45-data-expectations-build-gates.md, docs/raw/57-pipeline-target-dataset-schema-primary-key.md]
     related_docs: [docs/topics/pro-code.md, docs/topics/scheduling.md, docs/topics/data-quality.md]
     canonical: false
     created: 2026-05-31
-    updated: 2026-06-13
+    updated: 2026-06-15
     last_reviewed: 2026-05-31
     confidence: high
     evidence_strength: strong
@@ -1040,6 +1040,24 @@ documents:
     source_layer: conclusion
     issue_refs: []
     source_refs: [docs/raw/01-pipeline-expression-dsl.md, docs/raw/02-execution-engine-spark.md, docs/raw/03-streaming-batch-architecture.md]
+    canonical: true
+  - id: synthesis-palantir-incremental-batch-chain-deep-dive
+    path: docs/synthesis/palantir-incremental-batch-chain-deep-dive.md
+    title: "Palantir 增量批链路能力与实现深度调研"
+    type: synthesis
+    status: canonical
+    topics: [pipeline, incremental, scheduling, dataset]
+    source_layer: conclusion
+    issue_refs: [11]
+    source_refs: [docs/raw/06-incremental-pipeline.md, docs/raw/27-incremental-scheduling-transaction.md]
+    related_docs: [docs/topics/pipeline.md, docs/topics/scheduling.md, docs/synthesis/palantir-pipeline-deep-dive.md, docs/synthesis/foundry-schedule-module-deep-dive.md]
+    created: 2026-06-15
+    updated: 2026-06-15
+    last_reviewed: 2026-06-15
+    confidence: high
+    evidence_strength: strong
+    owner: codex
+    reviewers: [codex]
     canonical: true
   - id: synthesis-palantir-pro-code-capability-research
     path: docs/synthesis/palantir-pro-code-capability-research.md
