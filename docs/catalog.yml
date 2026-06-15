@@ -1,5 +1,5 @@
 schema_version: 1
-updated: 2026-05-31
+updated: 2026-06-15
 status_vocabulary: [intake, draft, reviewed, canonical, superseded, archived]
 type_vocabulary: [raw, synthesis, library, topic, plan, spec, archive]
 field_definitions:
@@ -246,8 +246,8 @@ documents:
     status: reviewed
     topics: [pipeline, execution-runtime, operator-platform]
     source_layer: topic
-    issue_refs: [2, 3, 9, 11, 12, 14, 40, 46]
-    source_refs: [docs/synthesis/palantir-incremental-batch-chain-deep-dive.md, docs/synthesis/palantir-pipeline-deep-dive.md, docs/synthesis/operator-platform-design.md, docs/synthesis/palantir-pro-code-capability-research.md, docs/raw/01-pipeline-expression-dsl.md, docs/raw/02-execution-engine-spark.md, docs/raw/03-streaming-batch-architecture.md, docs/raw/06-incremental-pipeline.md, docs/raw/14-transform-operator-library.md, docs/raw/25-transform-contract-dag.md, docs/raw/27-incremental-scheduling-transaction.md, docs/raw/28-pipeline-builder-pro-code-interop.md, docs/raw/45-data-expectations-build-gates.md, docs/raw/57-pipeline-target-dataset-schema-primary-key.md]
+    issue_refs: [2, 3, 9, 11, 12, 14, 40, 46, 63, 64]
+    source_refs: [docs/synthesis/palantir-incremental-batch-chain-deep-dive.md, docs/synthesis/palantir-pipeline-deep-dive.md, docs/synthesis/operator-platform-design.md, docs/synthesis/palantir-pro-code-capability-research.md, docs/raw/01-pipeline-expression-dsl.md, docs/raw/02-execution-engine-spark.md, docs/raw/03-streaming-batch-architecture.md, docs/raw/06-incremental-pipeline.md, docs/raw/14-transform-operator-library.md, docs/raw/25-transform-contract-dag.md, docs/raw/27-incremental-scheduling-transaction.md, docs/raw/28-pipeline-builder-pro-code-interop.md, docs/raw/45-data-expectations-build-gates.md, docs/raw/57-pipeline-target-dataset-schema-primary-key.md, docs/raw/58-pipeline-schema-compatibility-breaking-change.md]
     related_docs: [docs/topics/pro-code.md, docs/topics/scheduling.md, docs/topics/data-quality.md]
     canonical: false
     created: 2026-05-31
@@ -941,6 +941,17 @@ documents:
     issue_refs: []
     source_refs: [docs/raw/21-pro-code-capability-deep-dive.md, docs/raw/29-lineage-branch-version-pipeline-sync.md, docs/raw/45-data-expectations-build-gates.md, docs/raw/46-data-health-health-checks.md, docs/topics/pipeline.md, docs/topics/dataset.md]
     related_docs: [docs/synthesis/palantir-pipeline-deep-dive.md, docs/topics/pipeline.md, docs/topics/dataset.md]
+    canonical: false
+  - id: raw-58-pipeline-schema-compatibility-breaking-change
+    path: docs/raw/58-pipeline-schema-compatibility-breaking-change.md
+    title: "Pipeline Output Dataset Schema 兼容性、破坏性变更与 Rename 判定调研"
+    type: raw
+    status: reviewed
+    topics: [pipeline, dataset, governance]
+    source_layer: evidence
+    issue_refs: [63, 64]
+    source_refs: [docs/raw/57-pipeline-target-dataset-schema-primary-key.md, docs/topics/pipeline.md]
+    related_docs: [docs/topics/pipeline.md, docs/synthesis/palantir-pipeline-deep-dive.md]
     canonical: false
 
   - id: synthesis-dataset-permission-marking-architecture-summary
