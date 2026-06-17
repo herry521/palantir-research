@@ -261,6 +261,10 @@ Foundry 通过二者配合，把“增量追加”和“全量重算替换”统
 
 如果不满足第 1 条或第 2 条，这个 dataset 通常就不适合作为 incremental input。【事实】
 
+Palantir build 不会自动理解“事实表”“维表”“配置表”这些业务分类；这些是开发者或建模者给输入赋予的语义。【推断】在官方公开机制里，build/runtime 区分输入角色的方式是 transform 定义：未列入 `snapshot_inputs` 的输入按 incremental input 处理，需要满足 append-only / retention 规则；列入 `snapshot_inputs` 的输入按当前完整 view 读取，并从普通 incremental input 的 start transaction 一致性检查中排除。【事实，[S2][S3]】
+
+因此，“事实表 append、维表 snapshot”不是 Foundry 自动推断出来的表类型规则，而是通过 `@incremental(snapshot_inputs=[...])` 或等价 pipeline 配置表达出来的运行契约。【事实+推断】官方示例中，`phone_numbers` 是增量输入，只读上次运行后未见过的电话号码；`country_codes` 被声明为 snapshot input，每次读完整国家码映射表，即使它被周期性整体重写也不阻断增量运行。【事实，[S3]】
+
 ### 2. 再判断 pipeline 逻辑是否“只需要处理新增交易”
 
 最核心的问题只有一个：
