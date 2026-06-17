@@ -249,6 +249,94 @@ Foundry 通过二者配合，把“增量追加”和“全量重算替换”统
 
 ---
 
+## 七、如何识别什么样的 dataset 和 pipeline 支持 incremental
+
+### 1. 先判断 dataset 是否具备增量输入资格
+
+满足下面三条，才值得继续看 pipeline 逻辑：【事实+推断】
+
+1. 输入 dataset 的新变更主要来自 `APPEND`，或来自“不修改已有文件”的 additive `UPDATE`。【事实，[S1][S3]】
+2. 输入 dataset 不会频繁出现 `SNAPSHOT`、覆盖式 `UPDATE` 或普通 `DELETE`。【事实，[S1][S3]】
+3. 数据规模足够大，且每次新增只占全量的一部分；否则 snapshot 重算也许更简单，收益不高。【事实+推断，[S7][S8]】
+
+如果不满足第 1 条或第 2 条，这个 dataset 通常就不适合作为 incremental input。【事实】
+
+### 2. 再判断 pipeline 逻辑是否“只需要处理新增交易”
+
+最核心的问题只有一个：
+
+> 本次新增输入到来时，是否需要改写历史已经输出的数据？
+
+如果答案是“不会”，通常可以 incremental；如果答案是“会”，默认就应该按 snapshot 看待。【推断】
+
+#### 通常支持 incremental 的逻辑
+
+- 纯过滤、映射、列派生、格式转换。【事实+推断，[S3][S7]】
+- 对新增事实数据做 append-only enrich，例如和稳定维表做 join。【事实+推断，[S3]】
+- 历史输出一旦写出就不需要再修改，只需要继续追加新结果。【事实+推断，[S3][S7]】
+- 聚合只针对“当前 transaction 批次”本身，而不是要求重算全历史窗口。【事实，[S7]】
+
+#### 默认不支持或要非常谨慎的逻辑
+
+- 新数据到来后会改变历史输出结论的全局聚合。【推断】
+  例如“全表 topN”“全量去重后再计数”“累计唯一用户数但不维护历史状态表”。
+- 依赖全历史重排的窗口函数、pivot、rank、全局 distinct。【事实+推断，[S7]】
+- 迟到数据会回补并改变历史分组结果，但输出又不能安全 merge/replace 对应历史分区。【推断】
+- 任何要求“修改已有输出文件/已有历史结果”的逻辑。【事实+推断，[S3][S7]】
+
+### 3. 聚合不等于一定不能 incremental
+
+这是最容易误判的点。
+
+【事实】Palantir 官方在 Pipeline Builder 文档里没有说“aggregation 一定不能 incremental”，而是说如果 pipeline 包含 `window functions, aggregations, or pivots`，需要确认它们“meant to operate on the current transaction only”。[S7]
+
+【事实】Palantir 官方代码示例还专门给了 `Incremental sum aggregation`，说明“聚合可以 incremental”，前提是你把逻辑写成“增量输入 + 历史输出/状态”的模式，而不是每次只对新增做一个局部 group by 就假装它等于全局结果。[S11]
+
+所以更准确的判断是：
+
+- “只对新增批次做局部聚合，然后追加一行结果”可能支持 incremental。【事实+推断】
+- “每来一批都要重算全历史聚合结果”默认不支持 append-only incremental。【推断】
+- “可以把历史结果当状态读出来，再和本批增量合并写回”则有机会支持，但通常需要显式设计 read/write mode 和状态表结构。【事实+推断，[S3][S11]】
+
+### 4. 可以用一个五步 checklist 快速判定
+
+1. 输入 dataset 最近的 transaction 类型是不是以 `APPEND` 为主。
+2. 新数据到来后，旧输出是否仍然保持正确。
+3. 如果逻辑里有 join / aggregation / window / distinct / pivot，它们是否只作用于本批新增，或者是否有明确的历史状态合并方案。
+4. 输出是否可以自然 append，或至少可以在非增量时安全 fallback 到 snapshot。
+5. 如果上游偶发 snapshot / retention / schema 变化，代码是否仍能正确运行。
+
+五步里只要第 2、3、4 任一明显失败，就不要把它当“天然 incremental pipeline”。【推断】
+
+### 5. 一个实用的分类法
+
+#### A 类：天然支持 incremental
+
+- append-only 明细表
+- append-only 事实表上的过滤、轻转换、稳定维表 enrich
+- “新增输入只产生新增输出”的链路
+
+这类最适合直接 incremental。【推断】
+
+#### B 类：可改造成 incremental
+
+- 日粒度/批次粒度聚合
+- 可维护状态表的累计指标
+- 可按分区 replace 或 merge 的局部重算链路
+
+这类不是“天然 incremental”，但通过显式状态管理、分区化输出、历史结果回读，通常能做成 incremental。【事实+推断】
+
+#### C 类：优先保持 snapshot
+
+- 全局排序 / 全局 topN
+- 强依赖全历史窗口重算
+- 高频历史修正、撤回、覆盖更新
+- 输入源天然不是 append-only
+
+这类强行 incremental，复杂度和正确性风险通常高于收益。【推断】
+
+---
+
 ## 参考来源
 
 - [S1] Palantir Foundry, Core concepts: Datasets: https://www.palantir.com/docs/foundry/data-integration/datasets
@@ -261,5 +349,6 @@ Foundry 通过二者配合，把“增量追加”和“全量重算替换”统
 - [S8] Palantir Foundry, Schedule troubleshooting: https://www.palantir.com/docs/foundry/building-pipelines/schedule-troubleshooting
 - [S9] Palantir Foundry, Data Lineage build datasets: https://www.palantir.com/docs/foundry/data-lineage/build-datasets
 - [S10] Palantir Foundry, Maintaining incremental performance: https://www.palantir.com/docs/foundry/building-pipelines/maintaining-incremental-performance
-- [S11] 仓库既有证据：`docs/raw/06-incremental-pipeline.md`
-- [S12] 仓库既有证据：`docs/raw/27-incremental-scheduling-transaction.md`
+- [S11] Palantir Foundry, Code examples: Incremental sum aggregation: https://www.palantir.com/docs/foundry/code-examples/incremental-transforms-transforms
+- [S12] 仓库既有证据：`docs/raw/06-incremental-pipeline.md`
+- [S13] 仓库既有证据：`docs/raw/27-incremental-scheduling-transaction.md`
