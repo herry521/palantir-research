@@ -45,6 +45,7 @@ HTML 预览入口见 [deliverables/pages/book-library.html](../deliverables/page
 | Lineage and Catalog | [docs/topics/lineage-and-catalog.md](topics/lineage-and-catalog.md) | 血缘坐标、branch/version、catalog 元数据和文档库索引。 |
 | Security and Marking | [docs/topics/security-and-marking.md](topics/security-and-marking.md) | Dataset/Data Integration 权限、Marking、Credential、传播、审计和外部通知安全。 |
 | Ontology | [docs/topics/ontology.md](topics/ontology.md) | Object Type、Property、Link、Action、语义层和业务操作模型。 |
+| Time Series | [docs/topics/time-series.md](topics/time-series.md) | TSP、sensor object、sync/projection/index、derived series 和 alerting。 |
 | Data Quality | [docs/topics/data-quality.md](topics/data-quality.md) | Data Expectations、Health Checks、Monitoring Views、告警和 issue 闭环。 |
 | Pro-Code | [docs/topics/pro-code.md](topics/pro-code.md) | Code Repositories、Transform Contract、运行时、CI 和工程治理。 |
 | AI FDE | [docs/topics/ai-fde.md](topics/ai-fde.md) | AI FDE 定位、context/tool/approval、branch、验证和自建边界。 |
@@ -77,6 +78,12 @@ HTML 预览入口见 [deliverables/pages/book-library.html](../deliverables/page
 2. 再读 [Palantir Data Quality 模块调研综合报告](synthesis/palantir-data-quality-module-research.md)。
 3. 按证据域读取 `docs/raw/44` 到 `docs/raw/49`。
 
+### Time Series
+
+1. 先从 [Time Series 主题索引](topics/time-series.md) 明确 Ontology 建模、sync/index 和应用消费边界。
+2. 再读 [Palantir Time Series 实现机制与特性调研综合报告](synthesis/palantir-time-series-implementation-research.md)。
+3. 按证据域读取 `docs/raw/59` 到 `docs/raw/62`。
+
 ### Pro-Code 与工程治理
 
 1. 先从 [Pro-Code 主题索引](topics/pro-code.md) 看高码 Contract、工程入口和治理证据链。
@@ -102,6 +109,7 @@ HTML 预览入口见 [deliverables/pages/book-library.html](../deliverables/page
 - Catalog Story: [#45](https://gitlabee.chehejia.com/huyongqiang/palantir-research/-/issues/45)
 - Book 阅读层与 HTML 预览 Story: [#60](https://gitlabee.chehejia.com/huyongqiang/palantir-research/-/issues/60)
 - Data Integration 权限体系 Epic: [#49](https://gitlabee.chehejia.com/huyongqiang/palantir-research/-/issues/49)
+- Time Series 实现与特性调研 Epic: [#66](https://gitlabee.chehejia.com/huyongqiang/palantir-research/-/issues/66)
 
 维护规则：
 

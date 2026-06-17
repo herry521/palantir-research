@@ -1,5 +1,5 @@
 schema_version: 1
-updated: 2026-06-15
+updated: 2026-06-18
 status_vocabulary: [intake, draft, reviewed, canonical, superseded, archived]
 type_vocabulary: [raw, synthesis, library, topic, plan, spec, archive]
 field_definitions:
@@ -1210,3 +1210,145 @@ documents:
     source_layer: planning
     issue_refs: [42]
     canonical: true
+  - id: topic-time-series
+    path: docs/topics/time-series.md
+    title: "Time Series"
+    type: topic
+    status: reviewed
+    topics: [time-series, ontology, pipeline, data-quality, self-build-roadmap]
+    source_layer: topic
+    issue_refs: [66]
+    source_refs: [docs/synthesis/palantir-time-series-implementation-research.md, docs/raw/59-time-series-source-map.md, docs/raw/60-time-series-ontology-model.md, docs/raw/61-time-series-sync-indexing.md, docs/raw/62-time-series-consumption-alerting.md, docs/raw/63-time-series-advanced-operations-permissions.md]
+    related_docs: [docs/topics/ontology.md, docs/topics/pipeline.md, docs/topics/data-quality.md, docs/topics/self-build-roadmap.md]
+    canonical: false
+    created: 2026-06-17
+    updated: 2026-06-17
+    last_reviewed: 2026-06-17
+    confidence: medium
+    evidence_strength: strong
+    owner: codex
+    reviewers: [codex]
+  - id: plan-palantir-time-series-research
+    path: docs/superpowers/plans/2026-06-17-palantir-time-series-research-plan.md
+    title: "Palantir Time Series 实现与特性调研计划"
+    type: plan
+    status: reviewed
+    topics: [time-series, self-build-roadmap]
+    source_layer: planning
+    issue_refs: [66]
+    related_docs: [docs/synthesis/palantir-time-series-implementation-research.md, docs/topics/time-series.md]
+    canonical: false
+    created: 2026-06-17
+    updated: 2026-06-17
+    last_reviewed: 2026-06-17
+    confidence: medium
+    evidence_strength: medium
+    owner: codex
+    reviewers: [codex]
+  - id: raw-59-time-series-source-map
+    path: docs/raw/59-time-series-source-map.md
+    title: "Palantir Time Series 资料源与术语基线"
+    type: raw
+    status: reviewed
+    topics: [time-series]
+    source_layer: evidence
+    issue_refs: [66]
+    related_docs: [docs/raw/60-time-series-ontology-model.md, docs/raw/61-time-series-sync-indexing.md, docs/raw/62-time-series-consumption-alerting.md, docs/raw/63-time-series-advanced-operations-permissions.md, docs/synthesis/palantir-time-series-implementation-research.md]
+    canonical: false
+    created: 2026-06-17
+    updated: 2026-06-18
+    last_reviewed: 2026-06-18
+    confidence: medium
+    evidence_strength: strong
+    owner: codex
+    reviewers: [codex]
+  - id: raw-60-time-series-ontology-model
+    path: docs/raw/60-time-series-ontology-model.md
+    title: "Palantir Time Series Ontology 建模机制"
+    type: raw
+    status: reviewed
+    topics: [time-series, ontology]
+    source_layer: evidence
+    issue_refs: [66]
+    source_refs: [docs/raw/59-time-series-source-map.md]
+    related_docs: [docs/raw/61-time-series-sync-indexing.md, docs/synthesis/palantir-time-series-implementation-research.md]
+    canonical: false
+    created: 2026-06-17
+    updated: 2026-06-17
+    last_reviewed: 2026-06-17
+    confidence: medium
+    evidence_strength: strong
+    owner: codex
+    reviewers: [codex]
+  - id: raw-61-time-series-sync-indexing
+    path: docs/raw/61-time-series-sync-indexing.md
+    title: "Palantir Time Series Sync、Projection 与索引机制"
+    type: raw
+    status: reviewed
+    topics: [time-series, pipeline, dataset]
+    source_layer: evidence
+    issue_refs: [66]
+    source_refs: [docs/raw/59-time-series-source-map.md]
+    related_docs: [docs/raw/60-time-series-ontology-model.md, docs/raw/62-time-series-consumption-alerting.md, docs/synthesis/palantir-time-series-implementation-research.md]
+    canonical: false
+    created: 2026-06-17
+    updated: 2026-06-17
+    last_reviewed: 2026-06-17
+    confidence: medium
+    evidence_strength: strong
+    owner: codex
+    reviewers: [codex]
+  - id: raw-62-time-series-consumption-alerting
+    path: docs/raw/62-time-series-consumption-alerting.md
+    title: "Palantir Time Series 消费、派生序列与告警能力"
+    type: raw
+    status: reviewed
+    topics: [time-series, data-quality, self-build-roadmap]
+    source_layer: evidence
+    issue_refs: [66]
+    source_refs: [docs/raw/59-time-series-source-map.md, docs/raw/60-time-series-ontology-model.md, docs/raw/61-time-series-sync-indexing.md]
+    related_docs: [docs/synthesis/palantir-time-series-implementation-research.md, docs/synthesis/palantir-data-quality-module-research.md]
+    canonical: false
+    created: 2026-06-17
+    updated: 2026-06-17
+    last_reviewed: 2026-06-17
+    confidence: medium
+    evidence_strength: strong
+    owner: codex
+    reviewers: [codex]
+  - id: raw-63-time-series-advanced-operations-permissions
+    path: docs/raw/63-time-series-advanced-operations-permissions.md
+    title: "Palantir Time Series 高级配置、权限与运行成本补充"
+    type: raw
+    status: reviewed
+    topics: [time-series, security-and-marking, data-quality, self-build-roadmap]
+    source_layer: evidence
+    issue_refs: [66]
+    source_refs: [docs/raw/59-time-series-source-map.md, docs/raw/61-time-series-sync-indexing.md, docs/raw/62-time-series-consumption-alerting.md]
+    related_docs: [docs/synthesis/palantir-time-series-implementation-research.md, docs/topics/time-series.md, docs/topics/security-and-marking.md, docs/topics/data-quality.md]
+    canonical: false
+    created: 2026-06-18
+    updated: 2026-06-18
+    last_reviewed: 2026-06-18
+    confidence: medium
+    evidence_strength: strong
+    owner: codex
+    reviewers: [codex]
+  - id: synthesis-palantir-time-series-implementation
+    path: docs/synthesis/palantir-time-series-implementation-research.md
+    title: "Palantir Time Series 实现机制与特性调研综合报告"
+    type: synthesis
+    status: reviewed
+    topics: [time-series, ontology, pipeline, data-quality, security-and-marking, self-build-roadmap]
+    source_layer: conclusion
+    issue_refs: [66]
+    source_refs: [docs/raw/59-time-series-source-map.md, docs/raw/60-time-series-ontology-model.md, docs/raw/61-time-series-sync-indexing.md, docs/raw/62-time-series-consumption-alerting.md, docs/raw/63-time-series-advanced-operations-permissions.md]
+    related_docs: [docs/topics/time-series.md, docs/topics/ontology.md, docs/topics/pipeline.md, docs/topics/data-quality.md]
+    canonical: true
+    created: 2026-06-17
+    updated: 2026-06-17
+    last_reviewed: 2026-06-17
+    confidence: medium
+    evidence_strength: strong
+    owner: codex
+    reviewers: [codex]
