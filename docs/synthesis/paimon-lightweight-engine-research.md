@@ -11,9 +11,9 @@
 
 1. 【事实】轻量引擎的核心不是“更小的 Spark”，而是单进程或单节点多线程的向量化执行路径：用 Arrow/列式内存、Parquet 裁剪、短生命周期容器和较少调度层级降低启动与执行开销。
 2. 【推断】基于 Paimon 做轻量引擎时，最关键的边界是“能否正确解释 Paimon 表语义”。Append 表可较容易映射为快照文件扫描；Primary Key 表由于 LSM、delete、merge engine、changelog 和 compaction，不能简单把底层 Parquet/ORC 文件交给 DuckDB/DataFusion 直接扫。
-3. 【建议】第一阶段应采用“Paimon Java Scan Service + Arrow Flight/IPC + DataFusion 或 Polars/DuckDB 执行”的桥接方案，先保证 Paimon 快照、filter/projection pushdown、主键表 latest view 和权限审计正确，再评估是否自研 Rust DataFusion `TableProvider`。
-4. 【建议】轻量引擎的产品定位应是 preview、小中规模 batch、append-only 增量、简单聚合/filter/join 和低成本快速构建；大 shuffle、复杂状态、流处理、长任务和高风险 upsert 输出应继续路由到 Spark/Flink。
-5. 【推断】自建 Engine Router 必须把数据量、查询形态、Paimon 表类型、增量语义、主键 merge 需求、依赖可解析性和治理约束一起作为输入，而不是只按 GB 阈值选择轻量或 Spark。
+3. 【建议】第一阶段应采用“Paimon Scan Adapter sidecar + Arrow IPC/Flight + DataFusion 主执行器”的桥接方案，而不是中心化 Scan Service。Scan Adapter 与轻量执行器同 Pod/同节点部署，复用 Paimon Java reader 保证表语义正确，DataFusion 负责剩余表达式、聚合和小规模 join。
+4. 【建议】Polars 和 DuckDB 不应在第一期与 DataFusion 同时成为一等执行内核。更稳妥的路线是：DataFusion 承担平台 SQL/Operator 主路径；Polars 作为 Python DataFrame API 路径；DuckDB 作为 SQL preview 或本地分析路径，均消费同一 Arrow scan stream。
+5. 【建议】轻量引擎的产品定位应是 preview、小中规模 batch、append-only 增量、简单聚合/filter/join 和低成本快速构建；大 shuffle、复杂状态、流处理、长任务和高风险 upsert 输出应继续路由到 Spark/Flink。
 
 ---
 
@@ -112,9 +112,33 @@ Paimon Java API 显示，batch read 会先在 coordinator/driver 生成 scan spl
 
 ---
 
-## 4. 推荐方案：Paimon Scan Service + 轻量执行器
+## 4. 推荐方案：Paimon Scan Adapter Sidecar + DataFusion
 
-### 4.1 目标架构
+### 4.1 决策结论
+
+“Paimon Java Scan Service + Arrow Flight/IPC + DataFusion/Polars/DuckDB”这个方向总体可行，但原表述有两个需要收敛的风险：
+
+1. 【风险】如果 Scan Service 做成中心化远程服务，所有数据都跨网络传给轻量执行器，容易抵消轻量引擎的低启动、低调度开销收益。
+2. 【风险】如果 DataFusion、Polars、DuckDB 第一阶段都做成一等执行内核，接口、类型映射、pushdown 语义和测试矩阵会膨胀。
+
+推荐收敛为：
+
+```text
+Paimon Scan Adapter sidecar + Arrow IPC/Flight + DataFusion primary executor
+```
+
+其中 Scan Adapter 与执行器同 Pod/同节点部署，主要负责 Paimon 表语义、snapshot、split planning、projection/filter pushdown、PK latest view materialization 和 Arrow batch 输出。DataFusion 是第一期主执行器，负责 residual predicate、表达式、聚合、小表 join、排序、limit、内存/spill 和 metrics。Polars/DuckDB 后续作为消费同一 Arrow stream 的二级路径接入。
+
+### 4.2 可选方案对比
+
+| 方案 | 架构 | 优点 | 主要风险 | 结论 |
+|---|---|---|---|---|
+| A | Java Scan Adapter sidecar + Arrow + DataFusion | 复用 Paimon Java reader，隔离 Paimon 表语义；DataFusion 易嵌入，适合平台内核 | Java `InternalRow` 到 Arrow 有转换成本；需要定义 pushdown 子集 | 推荐 L1/L2 |
+| B | Rust DataFusion 原生 Paimon `TableProvider` | 执行链路最短，少一层 Java/Arrow 桥接 | 需要重写 Paimon snapshot、LSM、merge、schema evolution、changelog 语义，正确性风险高 | L3 再评估 |
+| C | PyPaimon + Polars/DuckDB | POC 快，贴近 Python 生态 | 当前能力成熟度和生产验证弱于 Java API；多引擎一致性难管 | 仅 POC |
+| D | 中心化 Paimon Scan Service + Arrow Flight | 易统一治理和缓存 | 数据跨网络集中搬运，容易形成瓶颈；多租户隔离复杂 | 不推荐作为默认生产路径 |
+
+### 4.3 目标架构
 
 ```text
 Pipeline Builder / Pro Code
@@ -130,14 +154,14 @@ Engine Router
         +-- Lightweight Runtime
               |
               v
-        Paimon Scan Service
+        Paimon Scan Adapter sidecar
           - resolve catalog/table/snapshot
           - plan splits with filter/projection
           - materialize PK latest view when needed
           - expose Arrow Flight / Arrow IPC stream
               |
               v
-        DataFusion / Polars / DuckDB
+        DataFusion primary executor
           - execute vectorized plan
           - apply non-pushed expressions
           - spill within memory budget
@@ -149,15 +173,15 @@ Engine Router
           - lineage + build metadata
 ```
 
-### 4.2 为什么先用 Java Scan Service
+### 4.4 为什么先用 Java Scan Adapter
 
 Paimon 官方 Java API 是当前最完整的程序化入口，并明确覆盖 catalog、batch read、batch write、stream read、stream write、predicate 和 projection。【事实】
 
-先使用 Java Scan Service 的工程收益：
+先使用 Java Scan Adapter 的工程收益：
 
 - 复用 Paimon 官方 reader，避免重新实现 LSM、merge engine、schema evolution 和 changelog 语义。
 - 通过 Arrow Flight/IPC 输出列式 batch，轻量执行器仍可保留 Arrow-native 的低开销执行路径。
-- 可以在服务层统一做权限、审计、snapshot pin、split metrics、失败重试和缓存。
+- 可以在 Adapter 层统一做权限、审计、snapshot pin、split metrics、失败重试和局部缓存。
 - 未来如果 Rust/Python Paimon API 成熟，可逐步替换为原生 DataFusion `TableProvider`。
 
 代价：
@@ -166,26 +190,55 @@ Paimon 官方 Java API 是当前最完整的程序化入口，并明确覆盖 ca
 - Java Service 与 Rust/Python 执行器之间需要统一类型映射、错误模型和 backpressure。
 - 执行计划的 pushdown 需要做两段优化：能下推给 Paimon 的先下推，剩余表达式由轻量引擎执行。
 
-### 4.3 轻量执行器选择
+### 4.5 轻量执行器选择
 
 | 选择 | 适合场景 | 不适合场景 | 建议 |
 |---|---|---|---|
-| DataFusion | 自建平台内嵌查询执行、Rust 服务、TableProvider 可扩展 | Python 生态依赖重的 transform | 作为平台内核优先评估 |
-| Polars | Python DataFrame API、生产中等规模列式处理 | SQL-heavy、多表复杂优化 | 作为 Python transform 默认轻量路径 |
-| DuckDB | SQL-heavy、本地分析、Parquet 扫描、spill 友好 | 需要 DataFrame API 或深度平台内嵌自定义 | 作为 SQL lightweight 和 preview 路径 |
+| DataFusion | 自建平台内嵌查询执行、Rust 服务、TableProvider 可扩展 | Python 生态依赖重的 transform | 第一阶段主执行器 |
+| Polars | Python DataFrame API、生产中等规模列式处理 | SQL-heavy、多表复杂优化 | 第二阶段 Python 路径 |
+| DuckDB | SQL-heavy、本地分析、Parquet 扫描、spill 友好 | 需要 DataFrame API 或深度平台内嵌自定义 | 第二阶段 SQL preview 路径 |
 | pandas | 小数据、探索、生态兼容 | 生产中等规模、内存敏感任务 | 只作为兼容路径 |
 
-### 4.4 读路径
+### 4.6 读路径
 
 1. Runtime 固定输入 dataset 的 branch、snapshot 或 build input version。
 2. Router 判断表类型：append、primary key、是否 changelog、是否需要 latest view。
-3. 将可下推谓词、列裁剪、limit、partition filter 传给 Paimon Scan Service。
-4. Paimon Scan Service 使用 Paimon API 生成 splits，并在必要时合并 PK/LSM latest view。
-5. Scan Service 输出 Arrow RecordBatch。
-6. DataFusion/Polars/DuckDB 执行剩余表达式、join、aggregation 和排序。
+3. 将可下推谓词、列裁剪、limit、partition filter 传给 Paimon Scan Adapter。
+4. Paimon Scan Adapter 使用 Paimon API 生成 splits，并在必要时合并 PK/LSM latest view。
+5. Scan Adapter 输出 Arrow RecordBatch。
+6. DataFusion 执行剩余表达式、join、aggregation 和排序。
 7. Runtime 收集 metrics：扫描文件数、裁剪文件数、实际 bytes、峰值内存、spill、耗时。
 
-### 4.5 写路径
+### 4.7 Scan Adapter 接口草案
+
+`ScanRequest` 必须显式包含：
+
+| 字段 | 说明 |
+|---|---|
+| `catalog` / `database` / `table` | Paimon 表定位 |
+| `branch` / `snapshotId` / `tag` | 读版本锚点；生产构建必须固定 snapshot 或 tag |
+| `projection` | 需要读取的列 |
+| `candidatePredicates` | DataFusion planner 认为可尝试下推的谓词 |
+| `limit` | 仅用于 preview/sample 等允许短路的请求 |
+| `readMode` | `APPEND_SNAPSHOT`、`APPEND_DELTA`、`PK_LATEST_VIEW` |
+| `batchSize` | Arrow batch 行数或字节目标 |
+| `traceId` / `buildId` / `user` | 审计、metrics 和 lineage 关联 |
+
+`ScanResponse` 必须返回：
+
+| 字段 | 说明 |
+|---|---|
+| `resolvedSnapshotId` | 实际绑定的 Paimon snapshot |
+| `resolvedSchema` | Arrow schema 与 Paimon schema 映射结果 |
+| `acceptedPredicates` | Adapter 已安全下推的谓词 |
+| `residualPredicates` | 必须交给 DataFusion 再执行的谓词 |
+| `splitCount` / `estimatedBytes` | 路由和观测指标 |
+| `streamTicket` | Arrow IPC/Flight stream 标识 |
+| `scanMetrics` | 文件数、裁剪数、读 bytes、耗时等 |
+
+关键原则：Adapter 只承诺它能安全解释的 predicate pushdown。不能安全下推的表达式必须回到 DataFusion 执行，不能为了性能牺牲结果一致性。【建议】
+
+### 4.8 写路径
 
 轻量写入应从保守能力开始：
 
