@@ -933,12 +933,12 @@ documents:
     canonical: false
   - id: raw-57-pipeline-target-dataset-schema-primary-key
     path: docs/raw/57-pipeline-target-dataset-schema-primary-key.md
-    title: "Pipeline 目标 Dataset Schema 与主键确定机制调研"
+    title: "Pipeline 目标 Dataset Schema、分区布局与主键确定机制调研"
     type: raw
     status: reviewed
     topics: [pipeline, dataset, data-quality]
     source_layer: evidence
-    issue_refs: []
+    issue_refs: [68]
     source_refs: [docs/raw/21-pro-code-capability-deep-dive.md, docs/raw/29-lineage-branch-version-pipeline-sync.md, docs/raw/45-data-expectations-build-gates.md, docs/raw/46-data-health-health-checks.md, docs/topics/pipeline.md, docs/topics/dataset.md]
     related_docs: [docs/synthesis/palantir-pipeline-deep-dive.md, docs/topics/pipeline.md, docs/topics/dataset.md]
     canonical: false
@@ -1210,6 +1210,96 @@ documents:
     source_layer: planning
     issue_refs: [42]
     canonical: true
+  - id: synthesis-palantir-dataset-implementation-self-build
+    path: docs/synthesis/palantir-dataset-implementation-and-self-build-design.md
+    title: "Palantir Dataset 实现机制与自研对齐设计"
+    type: synthesis
+    status: reviewed
+    topics: [dataset, pipeline, lineage-and-catalog, security-and-marking, data-quality, self-build-roadmap]
+    source_layer: conclusion
+    issue_refs: []
+    source_refs: [docs/topics/dataset.md, docs/raw/39-foundry-dataset-transaction-view-evidence.md, docs/raw/57-pipeline-target-dataset-schema-primary-key.md, docs/raw/42-governance-lineage-audit-contracts.md, docs/synthesis/dataset-permission-marking-architecture-summary.md, docs/synthesis/palantir-data-quality-module-research.md, docs/synthesis/palantir-pipeline-deep-dive.md]
+    related_docs: [docs/synthesis/palantir-dataset-no-dt-partition-impact.md, docs/synthesis/palantir-dataset-vs-data-warehouse.md, docs/topics/self-build-roadmap.md]
+    canonical: true
+    created: 2026-06-17
+    updated: 2026-06-17
+    last_reviewed: 2026-06-17
+    confidence: medium
+    evidence_strength: strong
+    owner: codex
+    reviewers: [codex]
+  - id: synthesis-palantir-branch-collaboration-data-integration
+    path: docs/synthesis/palantir-branch-collaboration-data-integration.md
+    title: "Palantir DataIntegration 分支模型应用调研"
+    type: synthesis
+    status: reviewed
+    topics: [dataset, pipeline, lineage-and-catalog, ontology, scheduling, self-build-roadmap]
+    source_layer: conclusion
+    issue_refs: []
+    source_refs: [docs/raw/18-branching-data-connection.md, docs/raw/29-lineage-branch-version-pipeline-sync.md, docs/raw/27-incremental-scheduling-transaction.md, docs/topics/lineage-and-catalog.md, docs/topics/dataset.md]
+    related_docs: [docs/synthesis/palantir-dataset-implementation-and-self-build-design.md, docs/synthesis/palantir-pipeline-deep-dive.md, docs/topics/pipeline.md, docs/topics/dataset.md]
+    canonical: true
+    created: 2026-06-22
+    updated: 2026-06-22
+    last_reviewed: 2026-06-22
+    confidence: medium
+    evidence_strength: strong
+    owner: codex
+    reviewers: [codex]
+  - id: spec-paimon-lightweight-scan-adapter-design
+    path: docs/superpowers/specs/2026-06-18-paimon-lightweight-scan-adapter-design.md
+    title: "Paimon 轻量级扫描适配器设计"
+    type: spec
+    status: reviewed
+    topics: [time-series, self-build-roadmap]
+    source_layer: planning
+    issue_refs: []
+    source_refs: [docs/synthesis/paimon-lightweight-engine-research.md]
+    related_docs: [docs/topics/time-series.md]
+    canonical: false
+    created: 2026-06-18
+    updated: 2026-06-18
+    last_reviewed: 2026-06-18
+    confidence: medium
+    evidence_strength: medium
+    owner: codex
+    reviewers: [codex]
+  - id: spec-palantir-like-dataset-design
+    path: docs/superpowers/specs/2026-06-18-palantir-like-dataset-design.md
+    title: "Palantir-like Dataset 技术方案设计"
+    type: spec
+    status: reviewed
+    topics: [dataset, security-and-marking, data-quality, lineage-and-catalog, self-build-roadmap]
+    source_layer: planning
+    issue_refs: []
+    source_refs: [docs/synthesis/palantir-dataset-implementation-and-self-build-design.md, docs/topics/dataset.md, docs/synthesis/dataset-permission-marking-architecture-summary.md, docs/synthesis/palantir-data-quality-module-research.md]
+    related_docs: [docs/synthesis/palantir-dataset-no-dt-partition-impact.md, docs/synthesis/palantir-dataset-vs-data-warehouse.md, docs/topics/self-build-roadmap.md]
+    canonical: true
+    created: 2026-06-18
+    updated: 2026-06-18
+    last_reviewed: 2026-06-18
+    confidence: medium
+    evidence_strength: strong
+    owner: codex
+    reviewers: [codex]
+  - id: synthesis-paimon-lightweight-engine-research
+    path: docs/synthesis/paimon-lightweight-engine-research.md
+    title: "基于 Paimon 数据湖的轻量引擎调研与实现方案"
+    type: synthesis
+    status: reviewed
+    topics: [pipeline, pro-code, self-build-roadmap]
+    source_layer: conclusion
+    issue_refs: [67]
+    source_refs: [docs/raw/17-faster-engine-deep-dive.md, docs/raw/24-pro-code-runtime-compute-engines.md]
+    related_docs: [docs/topics/pipeline.md, docs/topics/pro-code.md, docs/topics/self-build-roadmap.md]
+    canonical: false
+    created: 2026-06-17
+    updated: 2026-06-17
+    last_reviewed: 2026-06-17
+    confidence: medium
+    evidence_strength: medium
+    owner: codex
+    reviewers: [codex]
   - id: topic-time-series
     path: docs/topics/time-series.md
     title: "Time Series"
