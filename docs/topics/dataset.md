@@ -14,6 +14,7 @@
 | [docs/synthesis/palantir-dataset-no-dt-partition-impact.md](../synthesis/palantir-dataset-no-dt-partition-impact.md) | Dataset transaction/view 与传统 `dt` 分区模型差异主结论。 |
 | [docs/synthesis/palantir-dataset-vs-data-warehouse.md](../synthesis/palantir-dataset-vs-data-warehouse.md) | Dataset / Ontology 与传统数仓建模范式对比。 |
 | [docs/synthesis/dataset-permission-marking-architecture-summary.md](../synthesis/dataset-permission-marking-architecture-summary.md) | Dataset 权限、Marking、传播和访问控制结论。 |
+| [docs/synthesis/palantir-dataset-implementation-and-self-build-design.md](../synthesis/palantir-dataset-implementation-and-self-build-design.md) | Dataset 实现机制推断与自研能力对齐蓝图。 |
 
 ## Supporting Evidence
 

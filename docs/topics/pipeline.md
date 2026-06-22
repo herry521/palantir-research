@@ -29,12 +29,12 @@
 | [docs/raw/27-incremental-scheduling-transaction.md](../raw/27-incremental-scheduling-transaction.md) | 增量、调度、Dataset transaction 三者的耦合证据。 |
 | [docs/raw/28-pipeline-builder-pro-code-interop.md](../raw/28-pipeline-builder-pro-code-interop.md) | 低码/高码互操作、导出、IR/Contract 风险。 |
 | [docs/raw/45-data-expectations-build-gates.md](../raw/45-data-expectations-build-gates.md) | Pipeline build-time 质量门禁补充证据。 |
-| [docs/raw/57-pipeline-target-dataset-schema-primary-key.md](../raw/57-pipeline-target-dataset-schema-primary-key.md) | 说明目标 dataset schema 如何固化、Dataset 是否天然有主键，以及主键应如何建模。 |
+| [docs/raw/57-pipeline-target-dataset-schema-primary-key.md](../raw/57-pipeline-target-dataset-schema-primary-key.md) | 说明目标 dataset schema 如何固化、分区/分桶布局如何确定、Dataset 是否天然有主键，以及主键应如何建模。 |
 | [docs/raw/58-pipeline-schema-compatibility-breaking-change.md](../raw/58-pipeline-schema-compatibility-breaking-change.md) | 聚焦 output schema 兼容性判定、破坏性变更处置，以及 rename 与 drop+add 的识别边界。 |
 
 ## Related Issues
 
-#2、#3、#9、#11、#12、#14、#40、#46、#63、#64
+#2、#3、#9、#11、#12、#14、#40、#46、#63、#64、#68
 
 ## Open Questions
 
