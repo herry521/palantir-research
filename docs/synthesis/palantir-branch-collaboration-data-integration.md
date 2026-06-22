@@ -1,7 +1,7 @@
 # Palantir DataIntegration 分支模型应用调研
 
-**日期：** 2026-06-22  
-**范围：** 重新对齐 Palantir 官方 `Data connectivity & integration` 语义，覆盖 Dataset、Build、Pipeline Builder、Code Repositories、Data Connection、Schedules、Data Lineage、Streams、Iceberg tables。  
+**日期：** 2026-06-22
+**范围：** 重新对齐 Palantir 官方 `Data connectivity & integration` 语义，覆盖 Dataset、Build、Pipeline Builder、Code Repositories、Data Connection、Schedules、Data Lineage、Streams、Iceberg tables。
 **证据边界：** 官方公开资料能确认产品语义和用户可见行为；不能确认内部表结构、SyncRun/BuildRun 全量字段、Data Connection batch sync 是否可显式写任意 feature dataset branch。
 
 ## 摘要与洞察

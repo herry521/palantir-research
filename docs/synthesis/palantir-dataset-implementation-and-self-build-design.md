@@ -1,7 +1,7 @@
 # Palantir Dataset 实现机制与自研对齐设计
 
-**日期：** 2026-06-17  
-**类型：** 技术调研 / 自研平台架构设计  
+**日期：** 2026-06-17
+**类型：** 技术调研 / 自研平台架构设计
 **覆盖方向：** Foundry Dataset / transaction / branch / schema / build / lineage / permission / quality / self-build blueprint
 
 ---

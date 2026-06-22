@@ -1,9 +1,9 @@
 # Palantir-like Dataset 技术方案设计
 
-**日期：** 2026-06-18  
-**状态：** Design Approved Draft  
-**范围：** P0 + P1 生产闭环  
-**目标底座：** Apache Iceberg + 对象存储 + 自研 Dataset Control Plane  
+**日期：** 2026-06-18
+**状态：** Design Approved Draft
+**范围：** P0 + P1 生产闭环
+**目标底座：** Apache Iceberg + 对象存储 + 自研 Dataset Control Plane
 **设计目标：** 在能力上对齐 Palantir Foundry Dataset 的核心语义：Dataset transaction/view、branch、schema version、Marking、quality gate、run ledger、lineage、active pointer 和受控读取。
 
 ---
@@ -76,19 +76,19 @@ Object Storage
 
 ### 3.1 核心原则
 
-1. **Dataset transaction/view 是对外契约**  
+1. **Dataset transaction/view 是对外契约**
    所有 API、SQL、BI、模型训练、审计、血缘都引用 Dataset transaction/view，而不是直接引用 Iceberg snapshot。
 
-2. **Iceberg snapshot 是内部物理绑定**  
+2. **Iceberg snapshot 是内部物理绑定**
    Iceberg 提供物理一致性、manifest、partition、schema evolution、time travel 和多引擎扫描基础，但不是生产发布的权威状态。
 
-3. **`PROD` 是 Dataset active pointer**  
+3. **`PROD` 是 Dataset active pointer**
    `PROD` 指向通过 release gate 的 Dataset transaction。它不是 Iceberg current snapshot，也不是 Iceberg branch。
 
-4. **所有读写导出必须经过 PEP**  
+4. **所有读写导出必须经过 PEP**
    Dataset Gateway、SQL gateway、Spark credential vending、BI connector、export service 都必须执行同一套 policy enforcement。
 
-5. **Marking 是 P0 一等能力**  
+5. **Marking 是 P0 一等能力**
    Marking 不只是标签字段，而是写入、派生、读取、发布、导出和审计的强制约束。
 
 ---
