@@ -17,6 +17,22 @@
 
 ---
 
+## 1.1 2026-06-23 补充：时序数据进入 Foundry 的方式
+
+1. 【事实】时序点值进入 Time Series 能力的标准承载是 `time series sync`，sync 可以 backed by dataset 或 stream；最小数据列是 `seriesId`、`timestamp`、`value`，streaming 场景还可有 ingestion time。
+2. 【事实】已有 time series dataset 可通过 Time Series Catalog 创建 sync；Pipeline Builder 也可以在 pipeline 输出中创建 time series sync target，部署后同时创建 backing dataset 和 time series sync。
+3. 【事实】高级/高码场景可用 Code Repositories 手动生成 formatted time series dataset 或 stream，再配置 time series sync；官方建议一般优先用 Pipeline Builder，因为它会自动应用相关 transform optimizations。
+4. 【事实】实时高频时序可走 stream-backed sync。官方建议 streaming time series 按 `Series ID` key stream，并按吞吐设置 partitions；streaming time series 输入可以通过 streaming pipeline 或 streaming sync 配置。
+5. 【事实】除 dataset/stream-backed sync 外，Quiver 还支持 function-backed time series：由 tagged Foundry function 返回 numeric time series，用于实时预测类 workflow；这更像动态计算序列，不是普通点值事实源入湖。
+
+| 入口 | 官方形态 | 适用场景 | 关键要求 |
+| --- | --- | --- | --- |
+| Dataset-backed time series sync | Time Series Catalog 或 Pipeline Builder sync target | 历史批量、分钟级更新、大规模可索引点值 | `seriesId + timestamp + value`，建议增量构建，projection/index 保持更新 |
+| Stream-backed time series sync | Streaming pipeline 输出 time series sync，或 Data Connection streaming sync / push stream 后建 sync | 实时高频、低延迟传感器/遥测 | stream key 只用 `Series ID`，按吞吐配置 partitions，关注乱序和 checkpoint |
+| Pipeline Builder 自动生成 | pipeline import/transform 后创建 time series sync target | 低码标准化、自动生成 backing dataset + sync | 先把数据转成 sync 所需列 |
+| Code Repositories 高级生成 | 手写 transform 生成 formatted dataset/stream，再建 sync | 需要低层控制或 PB 未覆盖的高级功能 | 手工保证 schema、分区/排序、object backing dataset |
+| Function-backed time series | Foundry function 返回 numeric time series | Quiver 预测、按需动态计算 | tagged function + time series SDK，不替代 dataset/stream sync |
+
 ## 2. 实现主链路
 
 ```text

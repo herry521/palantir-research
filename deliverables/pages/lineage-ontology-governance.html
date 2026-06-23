@@ -80,6 +80,7 @@
             <a data-nav href="expression-and-operators.html"><svg class="icon sm" aria-hidden="true"><use href="#i-brackets"></use></svg><span>表达</span></a>
             <a data-nav href="execution-and-incremental.html"><svg class="icon sm" aria-hidden="true"><use href="#i-cpu"></use></svg><span>执行</span></a>
             <a data-nav href="foundry-schedule-module.html"><svg class="icon sm" aria-hidden="true"><use href="#i-nodes"></use></svg><span>调度</span></a>
+            <a data-nav href="branch-collaboration.html"><svg class="icon sm" aria-hidden="true"><use href="#i-nodes"></use></svg><span>分支</span></a>
             <a data-nav href="streaming-architecture.html"><svg class="icon sm" aria-hidden="true"><use href="#i-wave"></use></svg><span>流式</span></a>
             <a data-nav href="lineage-ontology-governance.html"><svg class="icon sm" aria-hidden="true"><use href="#i-nodes"></use></svg><span>治理</span></a>
             <a data-nav href="dataset-permission-marking.html"><svg class="icon sm" aria-hidden="true"><use href="#i-file"></use></svg><span>权限</span></a>
@@ -94,10 +95,11 @@
         <section class="topic-header">
           <p class="eyebrow">Topic 04</p>
           <h1>血缘、Ontology 与治理</h1>
-          <p class="intro-note">Palantir 最大的平台壁垒，往往不在算子或引擎，而在 Dataset 版本、Lineage、Marking、Ontology 和 Writeback 共同组成的治理闭环。</p>
+          <p class="intro-note">Palantir 最大的平台壁垒，往往不在算子或引擎，而在 Dataset 版本、分支协作、Lineage、Marking、Ontology 和 Writeback 共同组成的治理闭环。</p>
           <div class="topic-meta">
             <span class="tag">Lineage</span>
             <span class="tag">Dataset Branch</span>
+            <span class="tag">Branch Fallback</span>
             <span class="tag">Transaction</span>
             <span class="tag">Ontology</span>
             <span class="tag">治理</span>
@@ -109,6 +111,7 @@
             <strong>本页导航</strong>
             <a href="#conclusion">结论</a>
             <a href="#lineage-map">血缘关系图</a>
+            <a href="#branch-collaboration">分支协作</a>
             <a href="#mechanism">关键机制</a>
             <a href="#dataset-lineage-build">自建方案</a>
             <a href="#implication">对我们的启发</a>
@@ -139,6 +142,12 @@
                     <span class="title-row"><svg class="icon sm" aria-hidden="true"><use href="#i-spark"></use></svg><span>Sync 和 Pipeline 必须进入同一张版本图</span></span>
                   </h3>
                   <p class="muted">SyncRun 产出 raw transaction，BuildRun 读写 transaction range，Ontology 再把结果映射到业务对象。</p>
+                </article>
+                <article class="detail-card">
+                  <h3>
+                    <span class="title-row"><svg class="icon sm" aria-hidden="true"><use href="#i-spark"></use></svg><span>分支协作要分清三层语义</span></span>
+                  </h3>
+                  <p class="muted">Global/Pipeline/Code branch 合并逻辑配置，Build branch 解析 fallback，Dataset branch 保存 transaction 指针；观察层不能自动混入 fallback 数据。</p>
                 </article>
               </div>
             </section>
@@ -183,7 +192,7 @@
                 <div class="lineage-branch-strip">
                   <div>
                     <span class="tag">Global Branch</span>
-                    <p>承载 Pipeline Builder、Code Repository、Ontology、Workshop 的逻辑/配置变更。</p>
+                    <p>承载 Pipeline Builder、Code Repository、Ontology 等逻辑/配置变更；proposal merge 合并配置，不合并数据 transaction。</p>
                   </div>
                   <div>
                     <span class="tag">Dataset Branch</span>
@@ -191,7 +200,7 @@
                   </div>
                   <div>
                     <span class="tag">Data Lineage</span>
-                    <p>按 branch-aware graph 展示资源、build history、staleness 和 dataset-to-ontology link。</p>
+                    <p>按 branch-aware graph 展示资源、build history、staleness 和 dataset-to-ontology link；Global Branch 视图不自动展示 fallback dataset。</p>
                   </div>
                 </div>
               </div>
@@ -208,6 +217,84 @@
                   <h3>分支血缘</h3>
                   <p class="muted">解释 Global Branch、Dataset Branch 和 fallback resolution 的差异，避免误判开发分支实际读写路径。</p>
                 </article>
+              </div>
+            </section>
+
+            <section class="section-card" id="branch-collaboration">
+              <p class="section-kicker">Branch Collaboration</p>
+              <h2>
+                <span class="title-row"><svg class="icon lg" aria-hidden="true"><use href="#i-nodes"></use></svg><span>DataIntegration 分支协作逻辑</span></span>
+              </h2>
+              <div class="branch-collab-panel" aria-label="Palantir DataIntegration 分支协作逻辑图">
+                <div class="branch-lane authoring">
+                  <div class="branch-lane-head">
+                    <span>Authoring / 配置协作层</span>
+                    <strong>合并逻辑，不合并数据</strong>
+                  </div>
+                  <div class="branch-node-grid">
+                    <div class="branch-node">Global Branch<br /><small>跨应用 proposal</small></div>
+                    <div class="branch-node">Pipeline Builder<br /><small>graph / nodes</small></div>
+                    <div class="branch-node">Code Repo<br /><small>code / JobSpecs</small></div>
+                    <div class="branch-node">Object Type<br /><small>metadata / links</small></div>
+                    <div class="branch-node">Data Connection<br /><small>sync config sandbox</small></div>
+                  </div>
+                </div>
+                <div class="branch-lane runtime">
+                  <div class="branch-lane-head">
+                    <span>Build / 运行解析层</span>
+                    <strong>按 branch + fallback chain 解析</strong>
+                  </div>
+                  <div class="branch-runtime-flow">
+                    <div class="branch-runtime-step">JobSpec fallback<br /><small>feature → integration → main</small></div>
+                    <div class="branch-runtime-step">Input Dataset fallback<br /><small>逐 input dataset 命中 resolved branch</small></div>
+                    <div class="branch-runtime-step solid">Output transaction<br /><small>只写 build branch</small></div>
+                  </div>
+                </div>
+                <div class="branch-lane data">
+                  <div class="branch-lane-head">
+                    <span>数据版本与观察层</span>
+                    <strong>数据指针和分支视图分开解释</strong>
+                  </div>
+                  <div class="branch-observe-grid">
+                    <div class="branch-node">Raw Dataset main<br /><small>sync transaction</small></div>
+                    <div class="branch-node">Curated Dataset feature<br /><small>build output</small></div>
+                    <div class="branch-node">Object Type branch view<br /><small>branch metadata / indexing</small></div>
+                    <div class="branch-node warning">Lineage Global Branch view<br /><small>不自动混入 fallback data</small></div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="branch-rule-grid">
+                <article class="mechanism-card">
+                  <h3>1. 分支不是一个对象</h3>
+                  <p class="muted">同一个 <code>feature-x</code> 名字可能同时出现在 Global Branch、Pipeline Builder branch、Code Repo branch、Build branch 和 Dataset branch；它们共享协作意图，但不是同一份状态。</p>
+                </article>
+                <article class="mechanism-card">
+                  <h3>2. fallback 是 branch/workflow 级配置</h3>
+                  <p class="muted">Pipeline Builder 和 Code Repositories 可给 branch 配置有序 fallback list；运行时对每个 input dataset 分别解析命中结果，不是给每个 Dataset 单独配置策略。</p>
+                </article>
+                <article class="mechanism-card">
+                  <h3>3. output 没有输入式 fallback</h3>
+                  <p class="muted">Build 可以从 fallback branch 读取 JobSpec 和 input dataset，但 output transaction 只写 build branch；不能隐式写回 main 或其它 fallback branch。</p>
+                </article>
+                <article class="mechanism-card">
+                  <h3>4. Object Type branch 不自动兜底</h3>
+                  <p class="muted">Object Type branch 管 metadata、properties、links 和 indexing；它不会在 branch view 里把缺失的 Dataset branch 自动显示成 fallback main 数据。</p>
+                </article>
+              </div>
+
+              <div class="branch-case">
+                <div>
+                  <p class="section-kicker">Feature Branch Case</p>
+                  <h3>feature-x 上游缺失时，执行层和观察层必须分开</h3>
+                  <p class="muted">开发者只修改 B 的 transform 和 Customer Object Type 元数据，没有创建 <code>A(feature-x)</code>。Build 可以读取 <code>A(main)</code> 作为 fallback input，然后写出 <code>B(feature-x)</code>；但 Data Lineage / Object Type branch view 不应把 <code>A(main)</code> 伪装成 <code>A(feature-x)</code>。</p>
+                </div>
+                <div class="branch-case-flow" aria-label="feature-x fallback 案例">
+                  <div><span>Input</span><strong>A(main)</strong><small>fallback resolved</small></div>
+                  <div><span>Build</span><strong>feature-x</strong><small>feature logic</small></div>
+                  <div><span>Output</span><strong>B(feature-x)</strong><small>new transaction</small></div>
+                  <div><span>Ontology</span><strong>Customer(feature-x)</strong><small>branch metadata</small></div>
+                </div>
               </div>
             </section>
 
@@ -228,11 +315,12 @@
                     </ul>
                   </div>
                   <div class="detail-card mechanism-card">
-                    <h3>2. Dataset Branch 支持实验，但不支持 Merge</h3>
+                    <h3>2. Dataset Branch 支持实验，但不支持数据 Merge</h3>
                     <ul>
                       <li>分支本质是 transaction pointer。</li>
                       <li>数据分支不像代码分支那样可以直接合并。</li>
                       <li>Global Branch merge 是逻辑/配置 merge，不是数据 merge。</li>
+                      <li>feature 分支发布到 main 后通常需要在 main rebuild / reindex。</li>
                     </ul>
                   </div>
                 </div>
@@ -255,7 +343,7 @@
                 </article>
                 <article class="detail-card mechanism-card">
                   <h3>4. Data Lineage 是 branch-aware，但自身不是分支资源</h3>
-                  <p class="muted">选择 Global Branch 后可查看分支上的 Dataset、Ontology 和 link 状态；但图配置不会作为分支资源 merge 回 Main。</p>
+                  <p class="muted">选择 Global Branch 后可查看分支上的 Dataset、Ontology 和 link 状态；但图配置不会作为分支资源 merge 回 Main，且 branch view 不会自动混入 fallback dataset。</p>
                 </article>
               </div>
             </section>
@@ -276,7 +364,7 @@
                 </article>
                 <article class="detail-card mechanism-card">
                   <h3>3. 运行时记录实际解析结果</h3>
-                  <p class="muted">BuildRun / SyncRun 必须落 run_input 和 run_output，尤其是 requested branch、resolved branch、transaction range 和 output transaction。</p>
+                  <p class="muted">BuildRun / SyncRun 必须落 run_input 和 run_output，尤其是 requested branch、fallback chain snapshot、resolved branch、transaction range 和 output transaction。</p>
                 </article>
                 <article class="detail-card mechanism-card">
                   <h3>4. 分支不要承诺 Git 式数据合并</h3>
@@ -290,7 +378,7 @@
                 </article>
                 <article class="mechanism-card">
                   <h3>P1：分支与调度</h3>
-                  <p class="muted">声明式 I/O、branch/fallback resolution、staleness 和 schedule 集成，支撑分支视图和影响分析。</p>
+                  <p class="muted">声明式 I/O、branch/workflow 级 fallback policy、resolved branch 证据、staleness 和 schedule 集成，支撑分支视图和影响分析。</p>
                 </article>
                 <article class="mechanism-card">
                   <h3>P2/P3：治理闭环</h3>
@@ -310,6 +398,7 @@
                 <li>如果希望平台走向业务语义层，就不能只停留在 Dataset，需要逐步建立对象模型和回写入口。</li>
                 <li>治理能力要尽量自动化传播，而不是依赖大量手工配置和人工维护。</li>
                 <li>Branch 的设计要区分“代码/配置分支”和“数据分支”，避免混淆 Git 语义与数据版本语义。</li>
+                <li>UI 上要同时展示 requested branch、resolved branch、fallback_used 和 Object Type metadata branch，避免把执行事实和观察视图混成一件事。</li>
               </ul>
             </section>
 
@@ -337,6 +426,9 @@
                 <a class="source-link" href="../../docs/raw/29-lineage-branch-version-pipeline-sync.md"
                   ><svg class="icon sm" aria-hidden="true"><use href="#i-file"></use></svg><span>docs/raw/29-lineage-branch-version-pipeline-sync.md</span></a
                 >
+                <a class="source-link" href="../../docs/synthesis/palantir-branch-collaboration-data-integration.md"
+                  ><svg class="icon sm" aria-hidden="true"><use href="#i-file"></use></svg><span>docs/synthesis/palantir-branch-collaboration-data-integration.md</span></a
+                >
               </div>
             </section>
           </div>
@@ -346,7 +438,7 @@
       <footer class="site-footer">
         <div class="page-footer">
           <div>Palantir Foundry / Pipeline 调研材料库</div>
-          <div class="footer-note">统一入口：首页 / 总览 / 蓝图 / 算子总览 / 十个专题页</div>
+          <div class="footer-note">统一入口：首页 / 总览 / 蓝图 / 算子总览 / 十一个专题页</div>
         </div>
       </footer>
     </div>

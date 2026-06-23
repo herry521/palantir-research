@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>分支协作与 Fallback 逻辑</title>
+    <link rel="stylesheet" href="../styles.css" />
+    <script defer src="../app.js"></script>
+  </head>
+  <body class="detail-body branch-page">
+    <div class="site-shell">
+      <svg class="icon-sprite" xmlns="http://www.w3.org/2000/svg">
+        <symbol id="i-home" viewBox="0 0 24 24">
+          <path d="M12 3l8 6v11a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V9l8-6Z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" />
+          <path d="M9 21v-8h6v8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" />
+        </symbol>
+        <symbol id="i-map" viewBox="0 0 24 24">
+          <path d="M9 4 3 6v14l6-2 6 2 6-2V4l-6 2-6-2Z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" />
+          <path d="M9 4v14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
+          <path d="M15 6v14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
+        </symbol>
+        <symbol id="i-brackets" viewBox="0 0 24 24">
+          <path d="M9 6 5 12l4 6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" />
+          <path d="M15 6l4 6-4 6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" />
+          <path d="M13 6l-2 12" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
+        </symbol>
+        <symbol id="i-cpu" viewBox="0 0 24 24">
+          <path d="M9 9h6v6H9V9Z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" />
+          <path d="M9 2v3M15 2v3M9 19v3M15 19v3M2 9h3M2 15h3M19 9h3M19 15h3" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
+          <path d="M7 7h10v10H7V7Z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" />
+        </symbol>
+        <symbol id="i-wave" viewBox="0 0 24 24">
+          <path d="M3 14c2 0 2-4 4-4s2 4 4 4 2-4 4-4 2 4 4 4 2-4 4-4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" />
+        </symbol>
+        <symbol id="i-nodes" viewBox="0 0 24 24">
+          <path d="M7 7h0M17 7h0M12 17h0" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
+          <path d="M7 7 12 17 17 7" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" />
+        </symbol>
+        <symbol id="i-wrench" viewBox="0 0 24 24">
+          <path d="M14 7a4 4 0 0 0-6 3.5l-5 5a2 2 0 1 0 2.8 2.8l5-5A4 4 0 0 0 17 9l-3 3-2-2 2-3Z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" />
+        </symbol>
+        <symbol id="i-spark" viewBox="0 0 24 24">
+          <path d="M12 2l1.5 6.5L20 10l-6.5 1.5L12 18l-1.5-6.5L4 10l6.5-1.5L12 2Z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" />
+        </symbol>
+        <symbol id="i-layers" viewBox="0 0 24 24">
+          <path d="M12 3 2.5 8 12 13l9.5-5L12 3Z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" />
+          <path d="M2.5 12 12 17l9.5-5M2.5 16 12 21l9.5-5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round" />
+        </symbol>
+        <symbol id="i-file" viewBox="0 0 24 24">
+          <path d="M7 3h7l3 3v15a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1Z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" />
+          <path d="M14 3v4h4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" />
+        </symbol>
+      </svg>
+
+      <header class="site-nav">
+        <div class="nav-inner">
+          <a class="brand-mark" href="../index.html">
+            <span class="brand-dot"></span>
+            <span>Palantir Research Summary</span>
+          </a>
+          <nav class="nav-links">
+            <a data-nav href="../index.html"><svg class="icon sm" aria-hidden="true"><use href="#i-home"></use></svg><span>首页</span></a>
+            <a data-nav href="overview.html"><svg class="icon sm" aria-hidden="true"><use href="#i-map"></use></svg><span>总览</span></a>
+            <a data-nav href="pro-code-capability.html"><svg class="icon sm" aria-hidden="true"><use href="#i-brackets"></use></svg><span>高码</span></a>
+            <a data-nav href="data-engineering-platform-map.html"><svg class="icon sm" aria-hidden="true"><use href="#i-layers"></use></svg><span>蓝图</span></a>
+            <a data-nav href="expression-and-operators.html"><svg class="icon sm" aria-hidden="true"><use href="#i-brackets"></use></svg><span>表达</span></a>
+            <a data-nav href="execution-and-incremental.html"><svg class="icon sm" aria-hidden="true"><use href="#i-cpu"></use></svg><span>执行</span></a>
+            <a data-nav href="foundry-schedule-module.html"><svg class="icon sm" aria-hidden="true"><use href="#i-nodes"></use></svg><span>调度</span></a>
+            <a data-nav href="branch-collaboration.html"><svg class="icon sm" aria-hidden="true"><use href="#i-nodes"></use></svg><span>分支</span></a>
+            <a data-nav href="streaming-architecture.html"><svg class="icon sm" aria-hidden="true"><use href="#i-wave"></use></svg><span>流式</span></a>
+            <a data-nav href="lineage-ontology-governance.html"><svg class="icon sm" aria-hidden="true"><use href="#i-nodes"></use></svg><span>治理</span></a>
+            <a data-nav href="dataset-permission-marking.html"><svg class="icon sm" aria-hidden="true"><use href="#i-file"></use></svg><span>权限</span></a>
+            <a data-nav href="data-quality.html"><svg class="icon sm" aria-hidden="true"><use href="#i-file"></use></svg><span>质量</span></a>
+            <a data-nav href="data-integration-permission-system.html"><svg class="icon sm" aria-hidden="true"><use href="#i-file"></use></svg><span>集成权限</span></a>
+            <a data-nav href="engineering-and-ecosystem.html"><svg class="icon sm" aria-hidden="true"><use href="#i-wrench"></use></svg><span>工程</span></a>
+          </nav>
+        </div>
+      </header>
+
+      <main>
+        <section class="topic-header branch-hero">
+          <div class="branch-hero-copy">
+            <p class="eyebrow">Branch Collaboration</p>
+            <h1>分支协作与 <span class="branch-title-keep">Fallback 逻辑</span></h1>
+            <p class="intro-note">本页专门解释 Palantir DataIntegration 中的分支模型：从 Sync 到 Pipeline 再到 OSet 的加工过程中，哪些层支持分支，哪些节点会 fallback，以及执行层和观察层为什么必须分开解释。</p>
+            <div class="topic-meta">
+              <span class="tag">Dataset Branch</span>
+              <span class="tag">Build Branch</span>
+              <span class="tag">Branch Fallback</span>
+              <span class="tag">Object Set</span>
+              <span class="tag">Lineage View</span>
+            </div>
+          </div>
+          <aside class="branch-model-panel" aria-label="分支模型摘要">
+            <div class="branch-model-head">
+              <span>Model Snapshot</span>
+              <strong>三层分支，两类边界</strong>
+            </div>
+            <div class="branch-model-rail">
+              <div>
+                <span>Authoring</span>
+                <strong>配置与逻辑分支</strong>
+                <p>Pipeline、Code、Object Type metadata 的变更被 proposal 管理。</p>
+              </div>
+              <div>
+                <span>Runtime</span>
+                <strong>Build branch 解析</strong>
+                <p>JobSpec 与 input Dataset 按 fallback chain 解析并记录证据。</p>
+              </div>
+              <div>
+                <span>Observe</span>
+                <strong>OSet branch view</strong>
+                <p>观察层展示分支状态，不自动混入 fallback 数据。</p>
+              </div>
+            </div>
+            <div class="branch-boundary-note">
+              <span>Boundary</span>
+              <p>fallback 命中是运行时事实；OSet / Lineage 需要单独暴露 resolved branch，不能把 main 数据伪装成 feature 数据。</p>
+            </div>
+          </aside>
+        </section>
+
+        <div class="detail-layout">
+          <aside class="section-nav">
+            <strong>本页导航</strong>
+            <a href="#summary">结论</a>
+            <a href="#scenario">场景流程图</a>
+            <a href="#fallback-nodes">Fallback 节点</a>
+            <a href="#case">案例拆解</a>
+            <a href="#build-design">自建建模</a>
+            <a href="#sources">相关来源</a>
+          </aside>
+
+          <div class="detail-main">
+            <section class="section-card branch-summary-card" id="summary">
+              <div class="branch-section-head">
+                <div>
+                  <p class="section-kicker">Summary</p>
+                  <h2><span class="title-row"><svg class="icon lg" aria-hidden="true"><use href="#i-spark"></use></svg><span>先给结论</span></span></h2>
+                </div>
+                <p>把“分支”和“fallback”拆成配置层、执行层、观察层三件事，避免把 runtime 解析结果误读成 OSet 观察结果。</p>
+              </div>
+              <div class="branch-summary-layout">
+                <article class="branch-summary-primary">
+                  <span class="branch-summary-label">Core Finding</span>
+                  <h3>fallback 是执行解析机制，不是观察层自动混合</h3>
+                  <p>JobSpec 和 input Dataset 可以按 fallback chain 命中其他 branch；但 output 只写 build branch，OSet / Lineage branch view 不会自动把 fallback main 数据展示成 feature 数据。</p>
+                  <div class="branch-summary-badges">
+                    <span>BuildRun records resolved branch</span>
+                    <span>Output stays on build branch</span>
+                    <span>OSet shows branch state</span>
+                  </div>
+                </article>
+                <div class="branch-summary-facts">
+                  <article>
+                    <span>01</span>
+                    <h3>分支分三层</h3>
+                    <p>Global / Pipeline / Code branch 合并逻辑配置；Build branch 做运行时解析；Dataset branch 保存 transaction pointer。</p>
+                  </article>
+                  <article>
+                    <span>02</span>
+                    <h3>fallback 粒度不是 Dataset 级开关</h3>
+                    <p>fallback list 更像 branch / workflow / build graph 级策略；per input dataset 只是运行时命中结果。</p>
+                  </article>
+                  <article>
+                    <span>03</span>
+                    <h3>Sync 更像 raw producer</h3>
+                    <p>Data Connection 支持 sync 配置沙箱和 transaction 血缘，但不应等同于 Transform build 的任意分支写入能力。</p>
+                  </article>
+                </div>
+              </div>
+            </section>
+
+            <section class="section-card" id="scenario">
+              <p class="section-kicker">Scenario Flow</p>
+              <h2><span class="title-row"><svg class="icon lg" aria-hidden="true"><use href="#i-nodes"></use></svg><span>Sync → Pipeline → OSet UML 流程图</span></span></h2>
+              <div class="uml-diagram-frame" aria-label="从 Sync 到 Pipeline 到 OSet 的专业 UML 泳道流程图">
+                <div class="diagram-variant-label">SVG UML</div>
+                <svg class="branch-uml-svg" viewBox="0 0 1180 620" role="img" aria-labelledby="branch-uml-title branch-uml-desc">
+                  <title id="branch-uml-title">Sync 到 Pipeline 到 OSet 的分支协作流程图</title>
+                  <desc id="branch-uml-desc">三泳道 UML 流程图，展示 Sync、Pipeline Build 和 OSet 观察层中的分支协作及 fallback 节点。</desc>
+                  <defs>
+                    <marker id="umlArrow" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto">
+                      <path d="M0,0 L10,5 L0,10 Z" class="uml-arrow-head" />
+                    </marker>
+                    <marker id="umlFallbackArrow" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto">
+                      <path d="M0,0 L10,5 L0,10 Z" class="uml-fallback-head" />
+                    </marker>
+                  </defs>
+
+                  <rect class="uml-svg-bg" x="0" y="0" width="1180" height="620" rx="18" />
+                  <rect class="uml-lane-bg" x="24" y="52" width="344" height="520" rx="14" />
+                  <rect class="uml-lane-bg" x="418" y="52" width="344" height="520" rx="14" />
+                  <rect class="uml-lane-bg" x="812" y="52" width="344" height="520" rx="14" />
+
+                  <text class="uml-lane-label" x="196" y="36" text-anchor="middle">Sync / Raw</text>
+                  <text class="uml-lane-label" x="590" y="36" text-anchor="middle">Pipeline Build</text>
+                  <text class="uml-lane-label" x="984" y="36" text-anchor="middle">OSet / Observe</text>
+
+                  <rect class="uml-pill" x="76" y="82" width="240" height="42" rx="21" />
+                  <text class="uml-pill-text" x="196" y="108" text-anchor="middle">Start: feature-x</text>
+
+                  <rect class="uml-node-box" x="76" y="160" width="240" height="66" rx="8" />
+                  <text class="uml-node-kicker" x="196" y="184" text-anchor="middle">CONFIG BRANCH</text>
+                  <text class="uml-node-title" x="196" y="207" text-anchor="middle">Sync config sandbox</text>
+
+                  <rect class="uml-node-box data" x="76" y="268" width="240" height="66" rx="8" />
+                  <text class="uml-node-kicker" x="196" y="292" text-anchor="middle">TRANSACTION</text>
+                  <text class="uml-node-title" x="196" y="315" text-anchor="middle">raw_orders@main/T10</text>
+
+                  <polygon class="uml-decision-svg" points="196,372 266,430 196,488 126,430" />
+                  <text class="uml-decision-text" x="196" y="426" text-anchor="middle">raw@feature?</text>
+                  <text class="uml-yes-label" x="282" y="406">Yes</text>
+                  <text class="uml-no-label" x="58" y="432">No</text>
+
+                  <rect class="uml-note-svg warning" x="38" y="500" width="300" height="44" rx="8" />
+                  <text class="uml-note-text" x="188" y="527" text-anchor="middle">fallback to raw@main</text>
+
+                  <rect class="uml-handoff-svg" x="470" y="82" width="240" height="42" rx="21" />
+                  <text class="uml-handoff-text" x="590" y="108" text-anchor="middle">resolved input</text>
+
+                  <rect class="uml-node-box focal" x="470" y="160" width="240" height="66" rx="8" />
+                  <text class="uml-node-kicker" x="590" y="184" text-anchor="middle">BUILD BRANCH</text>
+                  <text class="uml-node-title" x="590" y="207" text-anchor="middle">Build(feature-x)</text>
+
+                  <polygon class="uml-decision-svg" points="590,262 660,320 590,378 520,320" />
+                  <text class="uml-decision-text" x="590" y="314" text-anchor="middle">JobSpec / input?</text>
+                  <text class="uml-yes-label" x="676" y="296">Yes</text>
+                  <text class="uml-no-label" x="454" y="324">No</text>
+
+                  <rect class="uml-note-svg" x="446" y="398" width="288" height="50" rx="8" />
+                  <text class="uml-note-text" x="590" y="419" text-anchor="middle">fallback chain</text>
+                  <text class="uml-note-subtext" x="590" y="438" text-anchor="middle">feature-x → integration → main</text>
+
+                  <rect class="uml-node-box data" x="470" y="484" width="240" height="66" rx="8" />
+                  <text class="uml-node-kicker" x="590" y="508" text-anchor="middle">OUTPUT</text>
+                  <text class="uml-node-title" x="590" y="531" text-anchor="middle">customer_features@feature-x/T23</text>
+
+                  <rect class="uml-handoff-svg" x="864" y="82" width="240" height="42" rx="21" />
+                  <text class="uml-handoff-text" x="984" y="108" text-anchor="middle">branch output</text>
+
+                  <rect class="uml-node-box observe" x="864" y="160" width="240" height="66" rx="8" />
+                  <text class="uml-node-kicker" x="984" y="184" text-anchor="middle">ONTOLOGY BRANCH</text>
+                  <text class="uml-node-title" x="984" y="207" text-anchor="middle">Object Type metadata</text>
+
+                  <rect class="uml-node-box observe" x="864" y="294" width="240" height="66" rx="8" />
+                  <text class="uml-node-kicker" x="984" y="318" text-anchor="middle">OBJECT SET</text>
+                  <text class="uml-node-title" x="984" y="341" text-anchor="middle">Customer OSet(feature-x)</text>
+
+                  <rect class="uml-pill end" x="864" y="430" width="240" height="42" rx="21" />
+                  <text class="uml-pill-text" x="984" y="456" text-anchor="middle">End: branch state</text>
+
+                  <rect class="uml-note-svg warning" x="836" y="500" width="296" height="44" rx="8" />
+                  <text class="uml-note-text" x="984" y="527" text-anchor="middle">no auto-mix fallback Dataset</text>
+
+                  <path class="uml-flow-line" d="M196 124 V160" marker-end="url(#umlArrow)" />
+                  <path class="uml-flow-line" d="M196 226 V268" marker-end="url(#umlArrow)" />
+                  <path class="uml-flow-line" d="M196 334 V372" marker-end="url(#umlArrow)" />
+                  <path class="uml-flow-line" d="M266 430 C330 430 388 103 470 103" marker-end="url(#umlArrow)" />
+                  <path class="uml-fallback-line" d="M126 430 C82 450 64 472 72 500" marker-end="url(#umlFallbackArrow)" />
+
+                  <path class="uml-flow-line" d="M590 124 V160" marker-end="url(#umlArrow)" />
+                  <path class="uml-flow-line" d="M590 226 V262" marker-end="url(#umlArrow)" />
+                  <path class="uml-flow-line" d="M660 320 C708 354 712 442 590 484" marker-end="url(#umlArrow)" />
+                  <path class="uml-fallback-line" d="M520 320 C474 346 458 374 472 398" marker-end="url(#umlFallbackArrow)" />
+                  <path class="uml-flow-line" d="M710 517 C770 517 806 103 864 103" marker-end="url(#umlArrow)" />
+
+                  <path class="uml-flow-line" d="M984 124 V160" marker-end="url(#umlArrow)" />
+                  <path class="uml-flow-line" d="M984 226 V294" marker-end="url(#umlArrow)" />
+                  <path class="uml-flow-line" d="M984 360 V430" marker-end="url(#umlArrow)" />
+                  <path class="uml-fallback-line" d="M984 472 V500" marker-end="url(#umlFallbackArrow)" />
+                </svg>
+                <div class="uml-svg-legend">
+                  <span><i class="legend-solid"></i> 主流程</span>
+                  <span><i class="legend-dashed"></i> fallback / 观察边界</span>
+                  <span><i class="legend-decision"></i> 判定节点</span>
+                </div>
+              </div>
+              <div class="branch-layer-board">
+                <div>
+                  <span class="tag">Authoring</span>
+                  <strong>Global / Pipeline / Code / Object Type branch</strong>
+                  <p>修改 graph、transform code、JobSpec、Object Type metadata；proposal merge 的是配置和逻辑。</p>
+                </div>
+                <div>
+                  <span class="tag">Runtime</span>
+                  <strong>Build branch + fallback chain</strong>
+                  <p>一次 build 记录 requested branch、fallback chain snapshot、每个 input 的 resolved branch。</p>
+                </div>
+                <div>
+                  <span class="tag">Data / Observe</span>
+                  <strong>Dataset branch + OSet branch view</strong>
+                  <p>Dataset branch 是 transaction 指针；OSet branch view 是观察状态，不是执行解析证据。</p>
+                </div>
+              </div>
+            </section>
+
+            <section class="section-card" id="fallback-nodes">
+              <p class="section-kicker">Fallback Nodes</p>
+              <h2><span class="title-row"><svg class="icon lg" aria-hidden="true"><use href="#i-layers"></use></svg><span>哪些节点有 fallback，哪些没有</span></span></h2>
+              <div class="fallback-node-grid">
+                <article class="fallback-node enabled">
+                  <span>有 fallback</span>
+                  <h3>JobSpec compilation</h3>
+                  <p>feature branch 没有某 output 的 JobSpec 时，Build 从 fallback branch 读取 JobSpec。</p>
+                </article>
+                <article class="fallback-node enabled">
+                  <span>有 fallback</span>
+                  <h3>Pipeline input Dataset</h3>
+                  <p>input 优先读 build branch；没有则按 fallback chain 找第一个存在的 branch/view。</p>
+                </article>
+                <article class="fallback-node limited">
+                  <span>配置入口</span>
+                  <h3>Pipeline / Code branch</h3>
+                  <p>fallback list 属于 branch/workflow 级配置；运行时命中结果才是 per input dataset。</p>
+                </article>
+                <article class="fallback-node disabled">
+                  <span>无输入式 fallback</span>
+                  <h3>Pipeline output Dataset</h3>
+                  <p>output transaction 只写 build branch；不能因为 fallback 读了 main 就把结果写回 main。</p>
+                </article>
+                <article class="fallback-node disabled">
+                  <span>不是数据 fallback</span>
+                  <h3>Data Connection sync</h3>
+                  <p>sync 配置可以分支沙箱；raw sync 输出是否任意写 feature Dataset branch 公开资料不足。</p>
+                </article>
+                <article class="fallback-node disabled">
+                  <span>观察层不混入</span>
+                  <h3>OSet / Lineage branch view</h3>
+                  <p>执行层可能读 fallback Dataset；OSet 和 Data Lineage 的 branch view 不把 fallback 数据自动显示成 feature 数据。</p>
+                </article>
+              </div>
+            </section>
+
+            <section class="section-card" id="case">
+              <p class="section-kicker">Concrete Case</p>
+              <h2><span class="title-row"><svg class="icon lg" aria-hidden="true"><use href="#i-map"></use></svg><span>feature-x 上游缺失时发生什么</span></span></h2>
+              <div class="branch-case">
+                <div>
+                  <p class="section-kicker">Execution Layer</p>
+                  <h3>执行层形成混合版本链</h3>
+                  <p class="muted">开发者在 <code>feature-x</code> 修改 B 的 transform 和 Customer Object Type metadata，但没有构建 <code>A(feature-x)</code>。Build 会读取 <code>A(main)</code>，再写出 <code>B(feature-x)</code>。</p>
+                </div>
+                <div class="branch-case-flow" aria-label="feature-x 混合版本链">
+                  <div><span>Input</span><strong>A(main)</strong><small>fallback resolved</small></div>
+                  <div><span>Build</span><strong>feature-x</strong><small>feature logic</small></div>
+                  <div><span>Output</span><strong>B(feature-x)</strong><small>new transaction</small></div>
+                  <div><span>OSet</span><strong>Customer(feature-x)</strong><small>branch metadata</small></div>
+                </div>
+              </div>
+              <div class="branch-compare-grid">
+                <article class="mechanism-card">
+                  <h3>Build 证据应该记录</h3>
+                  <p class="muted"><code>requested_branch=feature-x</code>、<code>resolved_branch=main</code>、<code>fallback_used=true</code>、<code>resolved_transaction=A_T10</code>。</p>
+                </article>
+                <article class="mechanism-card">
+                  <h3>OSet 视图应该展示</h3>
+                  <p class="muted">Customer 的 feature metadata、B(feature-x) 的输出状态，以及 A(feature-x) 缺失；不要把 A(main) 伪装成 A(feature-x)。</p>
+                </article>
+                <article class="mechanism-card">
+                  <h3>用户最容易误解</h3>
+                  <p class="muted">看到 feature OSet 有数据，就以为整条链路都来自 feature branch；实际上输入可能来自 fallback main。</p>
+                </article>
+              </div>
+            </section>
+
+            <section class="section-card" id="build-design">
+              <p class="section-kicker">Build Your Own</p>
+              <h2><span class="title-row"><svg class="icon lg" aria-hidden="true"><use href="#i-wrench"></use></svg><span>自建平台要落哪些模型</span></span></h2>
+              <div class="detail-grid mechanism-grid">
+                <article class="detail-card mechanism-card">
+                  <h3>1. fallback policy 不挂 Dataset</h3>
+                  <p class="muted">建成 <code>branch_fallback_policy(scope, branch_name, ordered_fallbacks)</code>，scope 可是 pipeline、code_repo 或 build_graph。</p>
+                </article>
+                <article class="detail-card mechanism-card">
+                  <h3>2. run 记录配置快照</h3>
+                  <p class="muted">BuildRun 保存 <code>fallback_chain_snapshot</code>，避免事后按当前配置反推历史运行。</p>
+                </article>
+                <article class="detail-card mechanism-card">
+                  <h3>3. input 记录解析结果</h3>
+                  <p class="muted">RunInput 必须有 <code>requested_branch</code>、<code>resolved_branch</code>、<code>fallback_used</code> 和 transaction/view。</p>
+                </article>
+                <article class="detail-card mechanism-card">
+                  <h3>4. output 和 OSet 分开</h3>
+                  <p class="muted">RunOutput 只写 build branch；OSet 记录 Object Type branch metadata、backing Dataset branch 和 indexing 状态。</p>
+                </article>
+              </div>
+            </section>
+
+            <section class="section-card" id="sources">
+              <p class="section-kicker">Sources</p>
+              <h2><span class="title-row"><svg class="icon lg" aria-hidden="true"><use href="#i-file"></use></svg><span>相关来源</span></span></h2>
+              <div class="source-list">
+                <a class="source-link" href="../../docs/synthesis/palantir-branch-collaboration-data-integration.md"><svg class="icon sm" aria-hidden="true"><use href="#i-file"></use></svg><span>docs/synthesis/palantir-branch-collaboration-data-integration.md</span></a>
+                <a class="source-link" href="../../docs/raw/18-branching-data-connection.md"><svg class="icon sm" aria-hidden="true"><use href="#i-file"></use></svg><span>docs/raw/18-branching-data-connection.md</span></a>
+                <a class="source-link" href="../../docs/raw/29-lineage-branch-version-pipeline-sync.md"><svg class="icon sm" aria-hidden="true"><use href="#i-file"></use></svg><span>docs/raw/29-lineage-branch-version-pipeline-sync.md</span></a>
+              </div>
+            </section>
+          </div>
+        </div>
+      </main>
+
+      <footer class="site-footer">
+        <div class="page-footer">
+          <div>Palantir Foundry / Pipeline 调研材料库</div>
+          <div class="footer-note">统一入口：首页 / 总览 / 蓝图 / 算子总览 / 十一个专题页</div>
+        </div>
+      </footer>
+    </div>
+  </body>
+</html>

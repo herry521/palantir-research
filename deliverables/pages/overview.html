@@ -80,6 +80,7 @@
             <a data-nav href="expression-and-operators.html"><svg class="icon sm" aria-hidden="true"><use href="#i-brackets"></use></svg><span>表达</span></a>
             <a data-nav href="execution-and-incremental.html"><svg class="icon sm" aria-hidden="true"><use href="#i-cpu"></use></svg><span>执行</span></a>
             <a data-nav href="foundry-schedule-module.html"><svg class="icon sm" aria-hidden="true"><use href="#i-nodes"></use></svg><span>调度</span></a>
+            <a data-nav href="branch-collaboration.html"><svg class="icon sm" aria-hidden="true"><use href="#i-nodes"></use></svg><span>分支</span></a>
             <a data-nav href="streaming-architecture.html"><svg class="icon sm" aria-hidden="true"><use href="#i-wave"></use></svg><span>流式</span></a>
             <a data-nav href="lineage-ontology-governance.html"><svg class="icon sm" aria-hidden="true"><use href="#i-nodes"></use></svg><span>治理</span></a>
             <a data-nav href="dataset-permission-marking.html"><svg class="icon sm" aria-hidden="true"><use href="#i-file"></use></svg><span>权限</span></a>
@@ -155,6 +156,117 @@
                   <p>Ontology、Writeback、AIP 和上层应用把“处理结果”变成“业务对象能力”，也是平台从数据系统走向业务系统的关键层。</p>
                 </div>
               </article>
+            </div>
+          </div>
+        </section>
+
+        <section class="page-section">
+          <div class="section-head">
+            <div>
+              <p class="section-kicker">Pipeline Relationship</p>
+              <h2>
+                <span class="title-row"><svg class="icon lg" aria-hidden="true"><use href="#i-nodes"></use></svg><span>Pipeline 开发入口与类型关系</span></span>
+              </h2>
+            </div>
+            <p>这张关系图把开发入口和 Pipeline 类型拆开看：Pipeline Builder 与 Code Repositories 是 authoring surface；Batch、Incremental、Streaming 是 Pipeline 类型；Faster 是 Batch / Incremental 的变体。</p>
+          </div>
+
+          <div class="pipeline-relation-panel" aria-label="Pipeline Builder、Code Repositories、Batch、Incremental、Streaming 和 Faster 的关系图">
+            <div class="pipeline-relation-top">
+              <div>
+                <span class="tag">Foundry Building Pipelines</span>
+                <h3>先分开发入口，再分 Pipeline 类型</h3>
+              </div>
+              <div class="relation-legend" aria-label="图例">
+                <span><i class="legend-dot builder"></i>低码配置</span>
+                <span><i class="legend-dot code"></i>高码工程</span>
+                <span><i class="legend-dot faster"></i>执行变体</span>
+              </div>
+            </div>
+
+            <div class="pipeline-relation-grid">
+              <article class="relation-column builder-column">
+                <div class="relation-column-head">
+                  <span class="relation-eyebrow">Low-code surface</span>
+                  <h4>Pipeline Builder</h4>
+                  <p>图形化配置、受控算子、预览和快速建模。</p>
+                </div>
+                <div class="relation-type-list">
+                  <div class="relation-type-card">
+                    <div>
+                      <strong>Batch pipeline</strong>
+                      <p>常规批处理，适合标准清洗、join、聚合和输出。</p>
+                    </div>
+                    <span class="mode-chip">Standard</span>
+                    <span class="mode-chip faster">Faster</span>
+                  </div>
+                  <div class="relation-type-card">
+                    <div>
+                      <strong>Incremental pipeline</strong>
+                      <p>基于 transaction 语义处理新增或变化数据。</p>
+                    </div>
+                    <span class="mode-chip">Standard</span>
+                    <span class="mode-chip faster">Faster</span>
+                  </div>
+                  <div class="relation-type-card stream">
+                    <div>
+                      <strong>Streaming pipeline</strong>
+                      <p>低延迟持续处理，使用 Pipeline Builder 的 streaming 算子。</p>
+                    </div>
+                    <span class="mode-chip stream">Flink</span>
+                  </div>
+                </div>
+              </article>
+
+              <article class="relation-column code-column">
+                <div class="relation-column-head">
+                  <span class="relation-eyebrow">Pro-code surface</span>
+                  <h4>Code Repositories</h4>
+                  <p>Git、PR、测试、共享库和高码 Transform 工程入口。</p>
+                </div>
+                <div class="relation-type-list">
+                  <div class="relation-type-card code">
+                    <div>
+                      <strong>Batch pipeline</strong>
+                      <p>Python / SQL / Java 高码路径，覆盖复杂逻辑和依赖库。</p>
+                    </div>
+                    <span class="mode-chip code">Python</span>
+                    <span class="mode-chip code">SQL</span>
+                    <span class="mode-chip code">Java</span>
+                  </div>
+                  <div class="relation-type-card code">
+                    <div>
+                      <strong>Incremental pipeline</strong>
+                      <p>Python / Java 增量 API，用于更强 transaction 控制。</p>
+                    </div>
+                    <span class="mode-chip code">Python</span>
+                    <span class="mode-chip code">Java</span>
+                  </div>
+                  <div class="relation-type-card code stream">
+                    <div>
+                      <strong>Streaming pipeline</strong>
+                      <p>高级用户路径，主要面向 Java / UDF 和 streaming runtime 兼容。</p>
+                    </div>
+                    <span class="mode-chip advanced">Advanced</span>
+                    <span class="mode-chip code">Java + UDF</span>
+                  </div>
+                </div>
+              </article>
+            </div>
+
+            <div class="relation-notes">
+              <div class="relation-note">
+                <span>01</span>
+                <p><strong>Streaming 不是 Batch 子类。</strong>Batch、Incremental、Streaming 应作为 Pipeline 类型并列。</p>
+              </div>
+              <div class="relation-note">
+                <span>02</span>
+                <p><strong>Faster 不是独立类型。</strong>它是 Batch / Incremental 的执行变体，不覆盖 Streaming。</p>
+              </div>
+              <div class="relation-note">
+                <span>03</span>
+                <p><strong>CodeRepo 支持 Stream。</strong>但属于 advanced users，不能等同于 Python Transform streaming。</p>
+              </div>
             </div>
           </div>
         </section>
@@ -296,8 +408,18 @@
                 <li>业务周期与 freshness 拆分</li>
               </ul>
             </a>
-            <a class="topic-summary" href="streaming-architecture.html">
+            <a class="topic-summary" href="branch-collaboration.html">
               <span class="tag">专题 04</span>
+              <h3>分支协作与 Fallback 逻辑</h3>
+              <p class="muted">回答“从 Sync 到 Pipeline 到 OSet，加工链路如何跨分支协作”。</p>
+              <ul>
+                <li>三层 branch 语义</li>
+                <li>fallback 节点</li>
+                <li>执行层与观察层边界</li>
+              </ul>
+            </a>
+            <a class="topic-summary" href="streaming-architecture.html">
+              <span class="tag">专题 05</span>
               <h3>流式架构</h3>
               <p class="muted">回答“它的实时能力到底做到哪一层，以及边界在哪里”。</p>
               <ul>
@@ -307,7 +429,7 @@
               </ul>
             </a>
             <a class="topic-summary" href="lineage-ontology-governance.html">
-              <span class="tag">专题 05</span>
+              <span class="tag">专题 06</span>
               <h3>血缘、Ontology 与治理</h3>
               <p class="muted">回答“它如何从数据平台走向业务语义平台”。</p>
               <ul>
@@ -317,7 +439,7 @@
               </ul>
             </a>
             <a class="topic-summary" href="engineering-and-ecosystem.html">
-              <span class="tag">专题 06</span>
+              <span class="tag">专题 07</span>
               <h3>工程化与生态边界</h3>
               <p class="muted">回答“平台成熟度来自哪些工程能力，以及它的开放性边界在哪里”。</p>
               <ul>
@@ -327,7 +449,7 @@
               </ul>
             </a>
             <a class="topic-summary" href="dataset-permission-marking.html">
-              <span class="tag">专题 07</span>
+              <span class="tag">专题 08</span>
               <h3>Dataset 权限与 Marking 架构</h3>
               <p class="muted">回答“它如何把敏感数据资格、资源角色和血缘传播做成强制访问控制”。</p>
               <ul>
@@ -337,7 +459,7 @@
               </ul>
             </a>
             <a class="topic-summary" href="data-integration-permission-system.html">
-              <span class="tag">专题 08</span>
+              <span class="tag">专题 09</span>
               <h3>Data Integration 权限控制面</h3>
               <p class="muted">回答“数据接入、运行时、外发和审计如何成为同一套权限控制面”。</p>
               <ul>
@@ -347,7 +469,7 @@
               </ul>
             </a>
             <a class="topic-summary" href="data-quality.html">
-              <span class="tag">专题 09</span>
+              <span class="tag">专题 10</span>
               <h3>Data Quality 质量控制面</h3>
               <p class="muted">回答“质量规则、构建阻断、运行监控、告警 issue 和治理生命周期如何闭环”。</p>
               <ul>
@@ -452,7 +574,7 @@
       <footer class="site-footer">
         <div class="page-footer">
           <div>Palantir Foundry / Pipeline 调研材料库</div>
-          <div class="footer-note">统一入口：首页 / 总览 / 蓝图 / 算子总览 / 十个专题页</div>
+          <div class="footer-note">统一入口：首页 / 总览 / 蓝图 / 算子总览 / 十一个专题页</div>
         </div>
       </footer>
     </div>

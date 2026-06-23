@@ -17,6 +17,70 @@
 
 ---
 
+## 2026-06-23 快速结论：Incremental pipeline 解决什么问题，与普通 Batch 有何差异
+
+1. 【事实】官方术语是 `Incremental pipeline`，不是 `Increment batch`。它解决的是“上游持续追加新数据时，下游不必每次全量重算”的问题。
+2. 【事实】普通 Batch pipeline 在运行时会完整重算发生变化的 dataset；Incremental pipeline 只处理自上次成功运行后变化的新数据，因此适合大数据集、小增量、分钟级追新、成本敏感的场景。
+3. 【事实】Incremental pipeline 的基础是 `APPEND` transaction 和 transform build history；普通 Batch 的基础是 `SNAPSHOT` transaction。换句话说，增量批依赖数据版本历史和已处理范围，而普通批依赖当前完整视图。
+4. 【事实】Incremental pipeline 不是免费加速开关。官方明确说 incremental pipeline 的编写和维护复杂度高于 batch；输入被全量重写、更新或删除旧文件、逻辑版本变化、首次构建等场景会触发 snapshot/fallback 或失败。
+5. 【推断】选型上：数据小、逻辑复杂、历史频繁修正、可接受全量重算时用普通 Batch；数据大、每次只新增少量、上游 append-only、希望降低周期性重算成本时用 Incremental；低于分钟级/秒级实时需求则应看 Streaming。
+
+---
+
+## 2026-06-23 补充：部分数据有更新时，Palantir 的具体建议
+
+1. 【事实】Palantir 官方 CDC 文档把 CDC 定位为处理“正在被编辑的数据”的模式，而不是 immutable / append-only feed；CDC changelog 需要 primary key、ordering column 和 deletion column。
+2. 【事实】CDC 的当前状态解析策略是：按 primary key 分组，取 ordering column 最大的记录；如果该记录 deletion column 为 true，则删除该对象/行。
+3. 【事实】Foundry 对 CDC 的支持不是单点能力：Data Connection 可按 source 支持 CDC sync；Ontology 支持 batch/stream-backed object 的 CDC indexing；Pipeline Builder 支持 full CDC stream processing 和 partial CDC streams with backfill；Streams 支持 full CDC live/archive views；Transforms 对普通 datasets 是 append-only incremental，对 Iceberg tables 可支持 full changelog incremental。
+4. 【事实】如果仍走普通 Foundry Dataset incremental，官方建议文件只新增时使用 `APPEND`；如果外部系统会修改已有文件才使用 `UPDATE`，但 `UPDATE` 会阻断下游 incremental processing，必须回退 `SNAPSHOT` batch。
+5. 【事实+推断】因此“部分数据有更新”的推荐建模不是在普通增量链路里覆盖旧文件，而是把更新变成追加 changelog 事件，再用 CDC metadata / View primary key projection / Ontology CDC indexing / Iceberg changelog 能力解析当前状态。
+
+官方短引：
+- CDC 文档：CDC is useful for data "being edited, rather than immutable or append-only data feeds".
+- Dataset transactions 文档：`UPDATE` transactions "break the append-only requirement for incremental pipelines".
+- Views 文档：primary-key View 推荐用于 backing datasets 只有 `APPEND` 或 "strictly additive UPDATE" 的场景。
+
+设计含义：
+
+| 更新形态 | Palantir 推荐/边界 | 适用性 |
+| --- | --- | --- |
+| 业务实体更新，但源端输出 changelog append | 用 CDC metadata：primary key + ordering + deletion column，按最新事件解析当前状态 | 适合 |
+| 文件只新增，不改旧文件 | 用 `APPEND`，端到端 incremental 最稳定 | 适合 |
+| 严格 additive `UPDATE`，只加文件不覆盖旧文件 | 可用于 View primary key projection 等场景，但仍需确认下游 incremental 语义 | 谨慎适合 |
+| 外部系统修改已有文件 | 只有 unavoidable 时用 `UPDATE`，下游不能稳定 incremental，需 snapshot/batch | 不适合普通 incremental |
+| 需要完整 changelog incremental transform | 优先评估 Iceberg tables / CDC stream 路径 | 适合 CDC/merge 设计 |
+
+参考来源：
+- Palantir Docs — [Change data capture (CDC)](https://www.palantir.com/docs/foundry/data-integration/change-data-capture/)
+- Palantir Docs — [Datasets core concepts](https://www.palantir.com/docs/foundry/data-integration/datasets/)
+- Palantir Docs — [Views core concepts](https://www.palantir.com/docs/foundry/data-integration/views/)
+- Palantir Docs — [Incremental transforms usage guide](https://www.palantir.com/docs/foundry/transforms-python/incremental-usage/)
+- Palantir Docs — [Create historical dataset from snapshots](https://www.palantir.com/docs/foundry/transforms-python/create-historical-dataset/)
+
+---
+
+## 2026-06-23 补充：CDC indexing 是不是外部 CDC 直接转成 index？
+
+1. 【事实】不是简单“外部 CDC 直接变索引”。Palantir 的 CDC 模型先要求 CDC data 包含 metadata：primary key、ordering column、deletion column；这些 metadata 可来自 Data Connection CDC sync，也可手动在 CDC sync 的 Schema tab 或后续 pipeline 中配置。
+2. 【事实】Data Connection 对支持的 source 可创建 CDC sync，它会持续捕获数据库 change log 并产生 Foundry stream，且会 infer schema and primary keys，并对输出 stream 打上完整 CDC metadata。
+3. 【事实】Ontology/Funnel indexing 消费的是 object type 配置的 input datasource，也就是带 CDC metadata 的 Foundry stream/dataset；Data Connection CDC sync 是上游接入/产出该 datasource 的同步资源，不是 Ontology indexing 直接消费的对象。
+4. 【事实】Ontology CDC indexing 是消费这些带 CDC metadata 的 batch/stream datasource，把 changelog 解析为对象当前状态：同一 primary key 下按 ordering 取最新记录，若 deletion column 为 true，则删除对象。
+5. 【事实】对于 stream-backed object types，Data Sources 页面可选择 `Create CDC stream type`，此时用户在 object type datasource 上配置 primary key、ordering column、deletion column；对象数量可能小于原始 stream 行数，因为多条 changelog row 会合并成一个 object。
+6. 【事实+推断】所以准确链路是：外部 CDC -> Data Connection CDC sync -> Foundry CDC stream/dataset with metadata -> 可选 Pipeline Builder 处理/补 backfill -> Ontology datasource CDC indexing -> Object Storage / Ontology 当前视图。CDC indexing 是 Ontology/object indexing 阶段，不是绕过 Foundry stream/dataset 的直接外部索引写入。
+
+注意边界：
+
+- 【事实】stream archive view 会保留所有 changelog row；live view 和 Object Storage 会根据 primary key/ordering/deletion 计算当前状态。
+- 【事实】文档说明 Ontology 不使用 ordering column 来排序事件，而是按 streaming 行到达顺序处理；如果 ordered column 较小的事件先到，后续 ordered column 较大的事件会更新 object。如果到达顺序和业务顺序不一致，仍需谨慎设计 source ordering、keying 和 late/out-of-order 策略。
+- 【推断】因此 CDC indexing 适合“把外部数据库变更日志物化为对象当前状态”，不适合不经建模就把任意更新流当作稳定对象真相源。
+
+官方短引：
+- CDC 文档：Data Connection CDC sync "outputs a stream with complete CDC metadata".
+- CDC 文档：Ontology CDC indexing supports "CDC indexing for both batch- and stream-backed objects".
+- Funnel streaming pipelines 文档：object type datasource 可以选择 "Create CDC stream type"，并配置 "primary key column, the ordering column, and the deletion column".
+
+---
+
 ## 可信度规则
 
 - 【事实】：能被本次检索到的 Palantir 官方文档直接支持。

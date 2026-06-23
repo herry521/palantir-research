@@ -6,6 +6,7 @@
 2. 【事实】批处理主要基于托管 Spark；增量能力由 Dataset transaction 类型驱动，`APPEND` 支持增量，`UPDATE` / `SNAPSHOT` 会触发或要求全量重算。
 3. 【推断】自研算子平台不能只做函数库，应建设 Operator Registry、类型化 IR、Spec / Executor 分离、执行适配器和质量/血缘契约。
 4. 【事实】Pipeline Builder 可导出到 Java transforms repository，但导出是单向接管，不保证语义无损，且存在不可导出节点和破坏性写入风险。
+5. 【推断】Batch 的高码边界主要来自依赖库、文件/API 访问、增量 API 和工程治理；Streaming 的高码边界更集中在自定义逻辑、Java/UDF、状态、checkpoint、join 限制和 runtime 兼容性。
 
 ## Canonical Documents
 
@@ -31,6 +32,7 @@
 | [docs/raw/45-data-expectations-build-gates.md](../raw/45-data-expectations-build-gates.md) | Pipeline build-time 质量门禁补充证据。 |
 | [docs/raw/57-pipeline-target-dataset-schema-primary-key.md](../raw/57-pipeline-target-dataset-schema-primary-key.md) | 说明目标 dataset schema 如何固化、分区/分桶布局如何确定、Dataset 是否天然有主键，以及主键应如何建模。 |
 | [docs/raw/58-pipeline-schema-compatibility-breaking-change.md](../raw/58-pipeline-schema-compatibility-breaking-change.md) | 聚焦 output schema 兼容性判定、破坏性变更处置，以及 rename 与 drop+add 的识别边界。 |
+| [docs/raw/64-batch-stream-pro-code-boundary.md](../raw/64-batch-stream-pro-code-boundary.md) | Batch 与 Streaming Pipeline 哪些能力需要高码支持的边界矩阵。 |
 
 ## Related Issues
 
@@ -42,4 +44,5 @@
 - Builder integrity checks 如何保存字段级 schema 推导结果、primary key expectation 是否进入统一元数据注册表，公开资料不足。
 - 字段级 lineage / refactor 能否对 rename 给出稳定、可机读的官方判定，当前公开资料不足。
 - 低码 transform/expression 与自研算子注册中心字段的精确映射还需单独建表。
+- Python UDF 在具体 streaming pipeline 中的可用性和限制需要真实 Foundry enrollment 实测；公开资料同时存在“PB 支持 Python UDF”和“streaming 不支持 Python transforms”的边界差异。
 - OpenLineage adapter、跨系统血缘导入导出和 Foundry 私有血缘模型的兼容边界仍待验证。
