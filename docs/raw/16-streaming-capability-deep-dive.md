@@ -1,10 +1,44 @@
 # Palantir Foundry Stream 能力深度调研
 
-**调研日期：** 2026-04-28（更新：2026-04-28）  
-**调研方向：** Stream 产品能力全景 / 与 Batch 链路差异 / 技术实现架构  
+**调研日期：** 2026-04-28（更新：2026-06-23）<br>
+**调研方向：** Stream 产品能力全景 / 与 Batch 链路差异 / 技术实现架构<br>
 **可信度标注：** 🟢 事实（官方文档原文/可直接验证） 🟡 推断（间接证据/逻辑推理） 🔴 猜测（无直接证据）
 
 ---
+
+## 零、2026-06-23 快速结论：Streaming Pipeline 能否通过 Pipeline Builder 配置
+
+1. 【事实】可以。Palantir 官方教程明确提供 `Create a streaming pipeline with Pipeline Builder` 流程：创建 Stream 后，从 Stream 页面进入 `Start pipelining`，在新建 Pipeline 弹窗中选择 `Streaming pipeline` 类型，再在 Pipeline Builder 图上配置转换。
+2. 【事实】Pipeline Builder 官方 Overview 将 `Streaming capability` 列为能力之一，说明 Pipeline Builder 可编写实时延迟执行的 pipeline；但该能力不是所有 Foundry 环境都启用，需要联系 Palantir representative 开通或确认。
+3. 【事实】Streaming pipeline 的配置不是普通 batch pipeline 的简单开关。流场景有持续运行、状态管理、计算成本、1MB 单行限制、状态变更风险等约束；官方建议只有低延迟强需求时才选 Streaming。
+4. 【事实】Pipeline Builder 支持流式 Join 等专门 streaming transform；例如可在同一个 Pipeline Builder graph 中配置 stream-batch join 或 stream-stream join，但流式 join 有缓存时间、状态上界、batch 侧不能先在同一图中转换等限制。
+5. 【推断】工程选型上，若只是分钟级时效，优先考虑 Incremental/Faster pipeline；只有明确要求小于 1 分钟、实时告警、实时 Ontology/Rules/Quiver 消费时，才值得用 Pipeline Builder 的 Streaming pipeline。
+
+参考来源：
+- Palantir Docs — [Create a streaming pipeline with Pipeline Builder](https://www.palantir.com/docs/foundry/building-pipelines/create-stream-pipeline-pb/)
+- Palantir Docs — [Pipeline Builder Overview](https://www.palantir.com/docs/foundry/pipeline-builder/overview/)
+- Palantir Docs — [Types of pipelines: Streaming](https://www.palantir.com/docs/foundry/building-pipelines/pipeline-types/)
+- Palantir Docs — [Joins in streaming Pipeline Builder pipelines](https://www.palantir.com/docs/foundry/pipeline-builder/transforms-streaming-joins/)
+
+## 零点五、2026-06-23 快速结论：Stream 解决什么问题，为什么不支持 UserEdit
+
+1. 【事实】Stream 解决的是“持续到达的数据如何以低延迟进入 Foundry 并被实时消费”的问题，不是为了替代所有 batch pipeline。官方给出的典型效果是 streaming data 平均可在 15 秒内进入 Ontology，并可被 Quiver、Foundry Rules 等实时分析应用使用。
+2. 【事实】Stream 的核心价值在热路径：低延迟访问、持续处理、实时 Ontology 水合、实时 time series ingest、告警和 streaming export；冷路径仍会归档成 dataset，供 Contour 等非实时应用读取归档数据。
+3. 【事实】Streaming object type 当前不支持 User edits / Actions。官方 Object edits overview 明确说 `Actions are not yet supported on object types with Foundry stream datasources`；Indexing 文档也列出 `User edits are not supported on streaming object types`。
+4. 【事实】直接原因线索是 Object Storage V2 streaming 使用 `most recent update wins` 策略，每个 stream 被当成 changelog stream；如果事件乱序，Ontology 中的数据可能变错。
+5. 【事实】官方给出的 workaround 是：把用户编辑作为 data change 推入 input stream，或配置一个额外的 non-streaming input datasource object type 让用户在辅助对象类型上编辑。
+6. 【推断】UserEdit 本质是另一条人工写入路径；若同时对同一个 streaming object type 开放 UserEdit，下一条源流事件可能马上覆盖用户编辑，且乱序事件还会让“谁是最新状态”变得不可判定。因此产品上禁止该组合。
+
+官方原文短引：
+- Object edits overview: "Actions are not yet supported on object types with Foundry stream datasources."
+- Funnel streaming pipelines: "User edits are not supported on streaming object types"; workaround includes "push user edits as a data change into the input stream" or an auxiliary object type backed by a "non-streaming input datasource".
+
+参考来源：
+- Palantir Docs — [Streaming Overview](https://www.palantir.com/docs/foundry/building-pipelines/streaming-overview/)
+- Palantir Docs — [Comparison: Streaming vs batch](https://www.palantir.com/docs/foundry/building-pipelines/stream-vs-batch/)
+- Palantir Docs — [Object edits and materializations overview](https://www.palantir.com/docs/foundry/object-edits/overview/)
+- Palantir Docs — [Funnel streaming pipelines](https://www.palantir.com/docs/foundry/object-indexing/funnel-streaming-pipelines/)
+- Palantir Docs — [How user edits are applied](https://www.palantir.com/docs/foundry/object-edits/how-edits-applied/)
 
 ## 一、产品能力全景
 
@@ -26,8 +60,8 @@
 
 ### 1.2 数据处理能力
 
-**🟢 事实** — Pipeline Builder 是流处理的主要开发界面，Code Repository 在流场景中仅用于定义 UDF：  
-证据：[stream-vs-batch feature table](https://www.palantir.com/docs/foundry/building-pipelines/stream-vs-batch/)（"Pipeline Builder support: Yes (streaming)"）
+**🟢 事实** — Pipeline Builder 是 Foundry Streaming pipeline 的主要低码配置界面，官方提供了从 Stream 页面启动并在新建弹窗中选择 `Streaming pipeline` 类型的教程：<br>
+证据：[Create a streaming pipeline with Pipeline Builder](https://www.palantir.com/docs/foundry/building-pipelines/create-stream-pipeline-pb/)；[Pipeline Builder Overview](https://www.palantir.com/docs/foundry/pipeline-builder/overview/) 将 `Streaming capability` 列为 Pipeline Builder 能力之一，并注明不是所有 Foundry 环境都启用。
 
 **🟢 事实** — Python Transform 在流处理中**完全不支持**，Java 支持：  
 证据：[stream-vs-batch feature table](https://www.palantir.com/docs/foundry/building-pipelines/stream-vs-batch/) 官方原文：
