@@ -127,6 +127,10 @@
               <h3>术语核对与中文解读</h3>
               <p class="muted">识别自研抽象、术语偏差和中文解释口径。</p>
             </a>
+            <a class="detail-card" href="../../docs/synthesis/data-integration-research-coverage-audit.md">
+              <h3>研究主题覆盖度反查</h3>
+              <p class="muted">基于当前 Palantir research 主题反向校验能力地图缺口。</p>
+            </a>
           </div>
         </section>
       </main>
@@ -173,6 +177,7 @@
             { id: "sources", name: "Sources", zhName: "数据源", core: true, children: ["source exploration"] },
             { id: "batch-sync", name: "Batch sync", zhName: "批量同步", core: true, children: ["full sync", "file-based sync"] },
             { id: "streaming-sync", name: "Streaming sync", zhName: "流式同步", core: true, children: ["push data into a stream"] },
+            { id: "time-series-sync", name: "Time series sync", zhName: "时序同步", core: false, children: ["seriesId", "timestamp", "value"] },
             { id: "incremental-sync", name: "Incremental sync / CDC-related ingestion", zhName: "增量同步 / CDC", core: false, children: ["watermark", "cursor", "change data capture"] },
             { id: "exports", name: "Exports", zhName: "数据外发", core: false, children: ["dataset export", "stream export"] },
             { id: "webhooks-listeners", name: "Webhooks / Listeners", zhName: "Webhook 与监听器", core: false, children: ["HTTPS", "WebSocket", "Email"] }
@@ -189,6 +194,8 @@
             { id: "transactions", name: "Transactions", zhName: "事务", core: true, children: ["SNAPSHOT", "APPEND", "UPDATE", "DELETE"] },
             { id: "views", name: "Views", zhName: "视图", core: true, children: ["backing datasets"] },
             { id: "branches", name: "Branches", zhName: "分支", core: true, children: ["branch-specific data state"] },
+            { id: "branch-views", name: "Branch views / fallback resolution", zhName: "分支视图与回退解析", core: false, children: ["branch view", "fallback resolution"] },
+            { id: "target-schema-primary-key", name: "Target dataset schema / primary key", zhName: "目标数据集 Schema / 主键", core: false, children: ["schema compatibility", "primary key"] },
             { id: "streams", name: "Streams", zhName: "流", core: true, children: ["stream data", "partitions"] },
             { id: "media-sets", name: "Media sets", zhName: "媒体集", core: false, children: ["unstructured files"] },
             { id: "virtual-tables", name: "Virtual tables", zhName: "虚拟表", core: false, children: ["external query source"] },
@@ -204,6 +211,9 @@
           capabilities: [
             { id: "pipeline-builder", name: "Pipeline Builder", zhName: "低码 Pipeline Builder", core: true, children: ["graph and form-based authoring", "transforms", "expressions", "outputs"] },
             { id: "code-repositories", name: "Code Repositories", zhName: "高码 Code Repositories", core: true, children: ["Git", "pull requests", "preview", "debug"] },
+            { id: "input-output-declarations", name: "Input / Output declarations", zhName: "输入输出声明", core: true, children: ["DAG inference", "parameters"] },
+            { id: "pr-ci-preview", name: "PR / CI / preview governance", zhName: "PR、CI 与预览治理", core: false, children: ["pull requests", "unit tests", "preview"] },
+            { id: "repository-upgrades", name: "Repository upgrades", zhName: "仓库升级", core: false, children: ["language versions", "dependencies"] },
             { id: "python-transforms", name: "Python transforms", zhName: "Python 转换", core: true, children: ["PySpark", "lightweight Python"] },
             { id: "sql-transforms", name: "SQL transforms", zhName: "SQL 转换", core: false, children: ["Spark SQL"] },
             { id: "java-transforms", name: "Java transforms", zhName: "Java 转换", core: false, children: ["Java APIs", "UDF"] },
@@ -220,6 +230,7 @@
             { id: "batch-pipelines", name: "Batch pipelines", zhName: "批处理 Pipeline", core: true, children: ["fully recompute changed datasets"] },
             { id: "incremental-pipelines", name: "Incremental pipelines", zhName: "增量 Pipeline", core: true, children: ["process data changed since last run"] },
             { id: "streaming-pipelines", name: "Streaming pipelines", zhName: "流式 Pipeline", core: true, children: ["run continuously", "process new data as it arrives"] },
+            { id: "batch-stream-pro-code-boundary", name: "Batch / Streaming pro-code boundary", zhName: "流批高码边界", core: false, children: ["Java / UDF", "state", "checkpoint"] },
             { id: "faster-pipelines", name: "Faster versions", zhName: "Faster 变体", core: false, children: ["faster batch", "faster incremental"] }
           ]
         },
@@ -251,8 +262,11 @@
             { id: "link-types", name: "Link types", zhName: "关系类型", core: false, children: ["object relationships"] },
             { id: "object-sets", name: "Object sets", zhName: "对象集合", core: true, children: ["static", "dynamic", "temporary", "permanent"] },
             { id: "actions", name: "Actions", zhName: "对象动作", core: true, children: ["user edits", "writeback"] },
+            { id: "interfaces-value-types", name: "Interfaces / Value types", zhName: "接口与值类型", core: false, children: ["interfaces", "value types"] },
+            { id: "time-series-properties", name: "Time Series Properties", zhName: "时序属性", core: false, children: ["root object TSP", "sensor object type"] },
             { id: "object-data-funnel", name: "Object Data Funnel", zhName: "对象数据漏斗", core: true, children: ["datasources", "user edits", "object databases"] },
             { id: "object-indexing", name: "Object indexing", zhName: "对象索引", core: true, children: ["indexing service", "freshness"] },
+            { id: "osdk-consumption", name: "OSDK consumption", zhName: "OSDK 消费", core: false, children: ["typed APIs", "React"] },
             { id: "functions-on-objects", name: "Functions on Objects", zhName: "对象函数", core: false, children: ["computed logic"] }
           ]
         },
@@ -268,7 +282,9 @@
             { id: "data-expectations", name: "Data Expectations", zhName: "数据期望", core: true, children: ["FAIL", "WARN"] },
             { id: "output-checks", name: "Output checks", zhName: "输出检查", core: true, children: ["row count", "primary key"] },
             { id: "data-health", name: "Data Health", zhName: "数据健康", core: true, children: ["dashboard", "issue"] },
-            { id: "monitoring-views", name: "Monitoring views", zhName: "监控视图", core: false, children: ["alerts"] }
+            { id: "monitoring-views", name: "Monitoring views", zhName: "监控视图", core: false, children: ["alerts"] },
+            { id: "notification-issue-loop", name: "Notifications / issue loop", zhName: "通知与 Issue 闭环", core: false, children: ["email", "PagerDuty", "Foundry issue"] },
+            { id: "time-series-alerting", name: "Time series alerting", zhName: "时序告警", core: false, children: ["derived series", "alerting"] }
           ]
         },
         {
@@ -281,36 +297,52 @@
             { id: "roles-permissions", name: "Roles / resource permissions", zhName: "角色与资源权限", core: true, children: ["owner", "editor", "viewer"] },
             { id: "organizations", name: "Organizations", zhName: "组织边界", core: true, children: ["organization membership"] },
             { id: "markings", name: "Markings", zhName: "标记", core: true, children: ["requirements", "propagation"] },
+            { id: "source-credential-boundary", name: "Source / credential boundary", zhName: "Source 与凭据边界", core: true, children: ["source editor", "credential use"] },
             { id: "pipeline-security", name: "Pipeline security", zhName: "Pipeline 安全", core: false, children: ["remove inherited markings", "guidance on removing markings"] },
             { id: "object-security", name: "Object security policies", zhName: "对象安全策略", core: true, children: ["object visibility"] },
             { id: "property-security", name: "Property security policies", zhName: "属性安全策略", core: true, children: ["property visibility"] },
-            { id: "audit", name: "Audit-related capabilities", zhName: "审计能力", core: false, children: ["access", "change"] }
+            { id: "export-policy", name: "Export policy", zhName: "外发策略", core: true, children: ["download", "API", "external sink"] },
+            { id: "audit", name: "Audit-related capabilities", zhName: "审计能力", core: false, children: ["access", "change", "SIEM"] }
+          ]
+        },
+        {
+          id: "ai-engineering-execution",
+          zone: "support",
+          name: "AI FDE / Engineering Execution",
+          zhName: "AI FDE 与工程执行面",
+          description: "用受控 agent session、工具审批、分支/PR、preview/CI 将数据工程任务接入可审计执行闭环。",
+          capabilities: [
+            { id: "ai-fde-session", name: "AI FDE session", zhName: "AI FDE 会话", core: false, children: ["user session", "permission inheritance"] },
+            { id: "tool-approval-mode", name: "Tool approval / mode control", zhName: "工具审批与模式控制", core: false, children: ["skills", "approvals"] },
+            { id: "branch-pr-handoff", name: "Branch / proposal / PR handoff", zhName: "分支、Proposal 与 PR 交接", core: false, children: ["branch", "pull request", "proposal"] },
+            { id: "preview-ci-evals", name: "Preview / CI / eval validation", zhName: "预览、CI 与评测验证", core: false, children: ["preview", "CI", "evals"] },
+            { id: "audit-attribution", name: "Audit and usage attribution", zhName: "审计与用量归因", core: false, children: ["audit logs", "LLM usage"] }
           ]
         }
       ];
 
       const DI_REPORT_CONTENT = {
-        title: "主链路已形成端到端闭环，下一阶段聚焦实时链路与对象服务补强",
+        title: "主链路覆盖已从接入加工扩展到对象服务、质量治理与 AI 工程执行面",
         subtitle:
-          "基于 Palantir 官方能力对象组织，从 Connectivity、Datasets、Pipeline、Builds 到 Lineage / Schedules 与 Ontology，展示能力完备性、风险和下一步动作。",
+          "基于 Palantir research 主题反查，从 Connectivity、Datasets、Pipeline、Builds 到 Lineage / Schedules、Ontology、Time Series、Quality、Security 与 AI FDE，展示能力完备性、风险和下一步动作。",
         insights: [
           {
             id: "progress",
             label: "关键进展",
             tone: "done",
-            text: "Connectivity、Datasets、Builds 支撑核心链路闭环，具备从接入到构建的基础完备性。"
+            text: "Connectivity、Datasets、Builds 与 Pipeline 主链路已能承载从接入、版本化、加工到构建执行的基础闭环。"
           },
           {
             id: "gap",
             label: "主要缺口",
             tone: "risk",
-            text: "Streaming Pipeline、Schedules 编排、Ontology serving freshness 是规模化落地风险集中区。"
+            text: "Time Series、Branch/Version 解释、Data Quality 运行闭环、细粒度权限和 AI FDE 执行治理需要在路线图中显式跟踪。"
           },
           {
             id: "next",
             label: "下一步动作",
             tone: "in-progress",
-            text: "按主链路补齐实时处理、调度治理和对象新鲜度验证，形成可复制的业务接入模板。"
+            text: "按研究主题补齐可配置状态，优先形成实时/时序、质量门禁、权限审计和工程执行的业务接入模板。"
           }
         ]
       };
@@ -326,6 +358,7 @@
             "data-connection.sources",
             "data-connection.batch-sync",
             "data-connection.streaming-sync",
+            "data-connection.time-series-sync",
             "data-connection.exports"
           ]
         },
@@ -337,7 +370,9 @@
           capabilityRefs: [
             "core-data-objects.datasets",
             "core-data-objects.transactions",
+            "core-data-objects.views",
             "core-data-objects.branches",
+            "core-data-objects.branch-views",
             "core-data-objects.streams"
           ]
         },
@@ -349,9 +384,12 @@
           capabilityRefs: [
             "pipeline-authoring.pipeline-builder",
             "pipeline-authoring.code-repositories",
+            "pipeline-authoring.input-output-declarations",
+            "pipeline-authoring.pr-ci-preview",
             "pipeline-types.batch-pipelines",
             "pipeline-types.incremental-pipelines",
-            "pipeline-types.streaming-pipelines"
+            "pipeline-types.streaming-pipelines",
+            "pipeline-types.batch-stream-pro-code-boundary"
           ]
         },
         {
@@ -375,6 +413,7 @@
             "data-lineage.lineage-graph",
             "data-lineage.build-timeline",
             "data-lineage.stale-analysis",
+            "data-lineage.permission-impact",
             "schedules.schedule",
             "schedules.time-trigger",
             "schedules.data-updated-trigger"
@@ -389,8 +428,14 @@
             "ontology-object-backend.object-types",
             "ontology-object-backend.object-sets",
             "ontology-object-backend.actions",
+            "ontology-object-backend.time-series-properties",
             "ontology-object-backend.object-data-funnel",
-            "ontology-object-backend.object-indexing"
+            "ontology-object-backend.object-indexing",
+            "health-quality.data-expectations",
+            "health-quality.data-health",
+            "security-governance.markings",
+            "security-governance.export-policy",
+            "ai-engineering-execution.branch-pr-handoff"
           ]
         }
       ];
