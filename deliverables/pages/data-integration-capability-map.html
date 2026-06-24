@@ -416,8 +416,70 @@
         });
       }
 
+      function diExportJson() {
+        const payload = {
+          version: 1,
+          updatedAt: new Date().toISOString(),
+          statuses: diMapStatuses
+        };
+        const text = JSON.stringify(payload, null, 2);
+        navigator.clipboard
+          .writeText(text)
+          .then(() => alert("状态 JSON 已复制到剪贴板。"))
+          .catch(() => {
+            const blob = new Blob([text], { type: "application/json" });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement("a");
+            link.href = url;
+            link.download = "palantir-data-integration-capability-status.json";
+            link.click();
+            URL.revokeObjectURL(url);
+          });
+      }
+
+      function diImportJson() {
+        const raw = prompt("粘贴导出的状态 JSON：");
+        if (!raw) return;
+        try {
+          const parsed = JSON.parse(raw);
+          if (!parsed || typeof parsed !== "object" || !parsed.statuses || typeof parsed.statuses !== "object") {
+            alert("JSON 格式无效：缺少 statuses 对象。");
+            return;
+          }
+          const allowed = new Set(DI_STATUS_ORDER);
+          const nextStatuses = {};
+          Object.entries(parsed.statuses).forEach(([key, value]) => {
+            if (allowed.has(value)) {
+              nextStatuses[key] = value;
+            }
+          });
+          diMapStatuses = nextStatuses;
+          diSaveStatuses();
+          diRenderCapabilityMap();
+        } catch (_error) {
+          alert("JSON 解析失败，请检查内容。");
+        }
+      }
+
+      function diResetStatuses() {
+        if (!confirm("确认重置全部状态为未开始？")) return;
+        diMapStatuses = {};
+        diSaveStatuses();
+        diRenderCapabilityMap();
+      }
+
+      function diTogglePresentationMode() {
+        diPresentationMode = !diPresentationMode;
+        document.getElementById("di-toggle-presentation").textContent = diPresentationMode ? "退出演示模式" : "演示模式";
+        diRenderCapabilityMap();
+      }
+
       document.addEventListener("DOMContentLoaded", () => {
         diLoadStatuses();
+        document.getElementById("di-toggle-presentation").addEventListener("click", diTogglePresentationMode);
+        document.getElementById("di-export-json").addEventListener("click", diExportJson);
+        document.getElementById("di-import-json").addEventListener("click", diImportJson);
+        document.getElementById("di-reset-status").addEventListener("click", diResetStatuses);
         diRenderCapabilityMap();
       });
     </script>
