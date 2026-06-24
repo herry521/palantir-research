@@ -7,10 +7,10 @@
 ## 摘要与洞察
 
 1. 【事实】Palantir 的 Integration 权限不是单一 RBAC；默认表达是 `Resource role / operation` 与 `Organization / Marking / Classification / lineage-derived data requirements` 叠加，角色不能绕过 Marking。
-2. 【事实】Data Connection 的 `Agent`、`Source`、`Sync`、`Plugin/JDBC Driver`、`Webhook`、`External connection from code` 都是 Foundry resources，可放入 Project/folder 并继承角色、Organizations 和 Markings。
-3. 【事实】`Source Editor` 是接入侧最高风险默认角色之一：它可改 source 配置、改 assigned agents、创建/编辑 sync、运行数据库 SQL、preview/explore source、share source，并可 import source to code resource。
-4. 【推断】Palantir 的 RBAC 实际落点是“role 包含 operation，operation 由应用在具体资源动作上检查”；Data Integration 自研时不应只复刻 Owner/Editor/Viewer，而应拆出 preview、run_sql、sync_config、sync_run、secret_use、code_import、export_enable 等 capability-level permissions。
-5. 【建议】授权矩阵应按对象分层：连接/凭据/运行/输出/外发/治理分开授权；默认 deny 外发与 secret 明文读取，所有 source preview、sync、build、query、download、export、webhook、logs 入口都写 access decision snapshot。
+2. 【事实】Palantir 的 role 是 operation 的集合；operation 是应用检查的单个权限点，具有 name 和 unique identifier。公开示例包括 Code Repository 的 `stemma:mutate-default-branch`，但 Data Connection 多数细项只公开了角色行为，未公开 operation identifier。
+3. 【事实】Data Connection 的 `Agent`、`Source`、`Sync`、`Plugin/JDBC Driver`、`Webhook`、`External connection from code` 都是 Foundry resources，可放入 Project/folder 并继承角色、Organizations 和 Markings。
+4. 【事实】`Source Editor` 是接入侧最高风险默认角色之一：它可改 source 配置、改 assigned agents、创建/编辑 sync、运行数据库 SQL、preview/explore source、share source，并可 import source to code resource。
+5. 【事实】Palantir 公开且命名的 Integration 相关 scope/operation 包括 `webhooks:read-privileged-data`、`audit-export:view`、`audit-export:orchestrate-v3`，以及 OAuth/API 的 operation scopes；export enable 由 `Information Security Officer` role 和 unmarking permission 共同约束。
 
 ## 1. 权限表达总模型
 
@@ -35,7 +35,23 @@ AND satisfies_action_specific_policy(user, action, destination_or_runtime)
 - Marking/Organization 会沿文件层级和数据血缘传播。
 - `stop_propagating` / `stop_requiring` 只用于 Marking/Organization 传播中断，不用于 role 传播。
 
-## 2. 默认角色与操作语义
+## 2. Palantir 官方权限规划与 scope 层次
+
+本节只列 Palantir 公开文档能直接支持的规划和 scope；不把自研建议伪装成 Palantir 内部设计。
+
+| 层次 | Palantir scope / 权限规划 | 授权给哪些角色 / 主体 | Integration 落点 | 公开边界 |
+|---|---|---|---|---|
+| Resource role scope | `Owner`、`Editor`、`Viewer`、`Discoverer` 是默认角色；role grant 通常在 Project 层授予，并继承到 child resources | 同级或更高 role 可授予相同或更低 role；默认可 custom | Agent、Source、Dataset、Code Repository、Developer Console application 等 Foundry resources | 默认角色的精确 operation 列表未全部公开，且环境可用 custom roles 改写 |
+| Operation scope | operation 是单个应用权限点，有 name 和 unique identifier；role 是 operation 集合 | Organization administrator 可在 Foundry Settings / Roles 管理 custom role set 和 operation | 公开示例：Code Repository 的 `stemma:mutate-default-branch` | Data Connection 的 preview、run SQL、sync edit 等 operation identifier 未公开 |
+| Data Connection resource scope | agents、sources、syncs、plugins、webhooks、external connections from code 都作为 resources 管理 | 默认按资源 role 授权：Owner / Editor / Viewer | Data Connection 的核心权限面 | 官方强调这些是默认权限，custom roles 可能改变行为 |
+| Source capability scope | Source `Editor` 聚合 delete、agent assignment、configuration update、sync create/edit/delete、SQL query、share、explore/preview、import to code | Source `Editor`；部分动作还要求 agent `Editor` 或 output dataset `Editor` | Source 是外部系统账号能力的代理 | 公开文档没有把这些 capability 拆成独立 operation identifiers |
+| Webhook privileged history scope | `webhooks:read-privileged-data` | 可加入 custom 或 default role；官方推荐新建 `Webhook Privileged Data Viewer` role | 查看可访问 webhook 的 full request/response history | webhook CRUD/execute 仍继承 source View/Edit |
+| Export security scope | export target source 必须 enable exports；配置 exportable markings/orgs | `Information Security Officer` role；添加 exportable marking/org 还需对应 unmarking permission | Dataset/Stream 向外部系统导出 | 外部 credential 还必须有目标系统写权限；export job 具体 role matrix 公开不完整 |
+| Marking / Organization eligibility scope | Markings/Organizations 是 access requirements，不是 role；普通 Marking 是 all-of | Marking member / Organization member 或 guest member；移除继承需 `Remove marking` / `Expand access` | Source requirements 传播到 sync output dataset；Dataset data requirement 控制读取 | role 不能绕过；`stop_propagating` / `stop_requiring` 只作用于 Marking/Organization |
+| OAuth / API operation scope | token scope = application restrictions、用户/服务用户权限、token request operation scope 的交集 | Developer Console application / OAuth client；authorization-code user 或 client-credentials service user | 外部应用、OSDK、MCP、API 型集成 | API scope 授予的是权限集合，不严格等同单个 endpoint；应用 restrictions 与用户权限同时生效 |
+| Audit export organization scope | `audit-export:view` 用于 Audit API/SIEM 读取；`audit-export:orchestrate-v3` 用于导出 audit.3 到 Foundry dataset | Organization permissions 中给 client/user 授 role；`audit-export:orchestrate-v3` 可通过 Organization administrator role 授予 | 审计日志 SIEM / Foundry dataset export | audit dataset 默认应加 organization marking；audit.3 用户组字段当前不填充，需下游 enrich |
+
+## 3. 官方默认角色与操作语义
 
 | 角色 / 主体 | 权限表达 | 默认授权语义 | Integration 相关风险 |
 |---|---|---|---|
@@ -49,73 +65,93 @@ AND satisfies_action_specific_policy(user, action, destination_or_runtime)
 | Marking/Organization approver | marking/org 特定高危权限 | 对 Marking/Organization 移除、传播中断或扩大访问进行审批 | 与数据读取资格应分离，避免审批人天然可读数据 |
 | Runtime / service principal | 执行身份 | sync/build/export/webhook/audit export 的 effective principal | 必须记录 human actor、on_behalf_of、runtime principal、credential scope |
 
-## 3. Integration 对象权限矩阵
+## 4. 官方 Data Connection 对象权限矩阵
 
 | 对象 | 配置的权限 / 要求 | 权限点如何定义 | 默认授权给哪些角色 / 主体 |
 |---|---|---|---|
 | `Project` / folder | role grants；Organization；Marking；Classification | 资源容器；roles 和 access requirements 向子资源继承 | `Owner` 可授权同级或更低角色；`Editor` 可编辑范围内资源；`Viewer` 可查看；`Discoverer` 可发现。Organization/Marking 由治理主体授予资格 |
 | `Agent` | `Owner` / `Editor` / `Viewer`；Project role；Organizations/Markings | 连接运行位置和网络路径。`Editor` 可 deploy source 到 agent、配置 plugins/configs、restart agent、share、delete；`Viewer` 看配置和状态；`Owner` 可重下 agent 或 regenerate token | Agent 创建需要所在 Project `Editor`；管理 agent 通常需要 Project `Owner`。部署 source 到 agent 需要 agent `Editor` |
 | `Source` / `DataConnection` | `Owner` / `Editor` / `Viewer`；assigned agents；allowed capabilities；Organizations/Markings；export configuration | 外部系统连接实例，包含 endpoint、worker/network、credentials。`Editor` 可 delete、更新配置、改 assigned agents、rename、创建/编辑/删除 sync、运行 SQL、share、explore/preview、import to code。`Viewer` 看配置。`Owner` 继承 Editor，并可修改 export configuration、允许 import to code | `Owner` / `Editor` / `Viewer` 直接授在 source 或父 Project。改 assigned agents 还需被添加 agent 的 `Editor`。source editor 只应授予可信 pipeline developer |
-| `Credential` / `Secret` | secret admin/use/read/expose-to-code（公开文档未完整披露内部 ACL） | 用于 source authentication，可是 password、token、API key、OIDC、cloud identity。Palantir 说明 secrets 加密存储；source import to code 后 repo editor 可通过代码使用 connection details，包括 secret values | 【推断】默认应只让 runtime `use`，不授明文 `read`。source import to code 由 source `Editor` 触发；code repo `Editor` 可写代码接触 imported connection details |
-| `ExternalSystemPrincipal` | external grants；scope；rotation owner；source binding | 外部 DB user、cloud IAM role、OAuth client 或 service account。平台权限不能替代外部系统最小授权 | 外部系统管理员授予；平台侧应由 source owner/security 记录 owner、scope、last_used、rotation |
-| `Sync` / `SyncJob` | 派生自 source 和 output dataset | View sync = source `View` + output dataset `View`；Edit/Delete sync = source `Edit` + output dataset `Edit`; Run sync = output dataset `Edit` | 不是单独默认 role；由 source role 与 output dataset role 组合派生。自研建议把 `sync.run` 与 `sync.edit_config` 再拆开 |
+| `Credential` / `Secret` | 公开文档未披露独立 secret ACL / operation identifier | 用于 source authentication，可是 password、token、API key、OIDC、cloud identity。Palantir 说明 secrets 加密存储；source import to code 后 repo editor 可通过代码使用 connection details，包括 secret values | 公开可证实路径是：source `Editor` 完成 import；code resource / repository `Editor` 可写代码使用 imported source details |
+| `ExternalSystemPrincipal` | external grants；source credential scope | 外部 DB user、cloud IAM role、OAuth client 或 service account；credential 权限首先由外部系统决定 | 外部系统管理员授予；Palantir 公开文档强调 source credentials 允许什么，sync/SQL 就可能影响什么 |
+| `Sync` / `SyncJob` | 派生自 source 和 output dataset | View sync = source `View` + output dataset `View`；Edit/Delete sync = source `Edit` + output dataset `Edit`; Run sync = output dataset `Edit` | 不是单独默认 role；由 source role 与 output dataset role 组合派生 |
 | `Plugin` / JDBC Driver | `Owner` / `Editor` / `Viewer`；agent attachment | `Viewer` 可 view/download，并可 add plugin to agent；add 还需 agent `Editor`。`Editor` 可 delete plugin/driver，前提是未被 agents 使用。`Owner` 继承 Editor | Plugin/driver role 直接授予或从 Project 继承；add-to-agent 组合检查 plugin `Viewer` + agent `Editor` |
 | `Webhook` | 完全继承关联 source 权限；可额外授 `webhooks:read-privileged-data` | View/Create/Edit/Delete/configure Action/Execute Webhook 都要求 source 对应 View/Edit。默认只有执行者可看自己的 response history；full request/response history 需要额外 operation | source `Viewer` 可看 webhook config；source `Editor` 可创建、编辑、删除、配置 Action、执行。`webhooks:read-privileged-data` 建议放入专门 custom role，如 `Webhook Privileged Data Viewer` |
 | External connection from code | source import permission；code resource editor；repo/build role | Import source into transform/pipeline/compute module requires source `Editor`。触发使用 imported source 的 build 只需 code resource `Editor`，不再要求 source 权限。移除 imported source 需要 source `Editor` 或 code resource `Editor` | source `Editor` 是 import gate；repo/code resource `Editor` 是代码使用与 build gate。高危点是 repo editor 可写代码访问 secret values |
 | Export configuration / ExportPolicy | enable exports；exportable markings/orgs；destination credential write scope | 目标 source 必须 enable exports，并配置允许外发的 Markings/Organizations；未列入的 markings/orgs 数据会 fail export。添加 exportable marking/org 需要 `Information Security Officer` 且具备对应 unmarking permission。目标 credential 还需外部写权限，如 S3 `PutObject` 或表 truncate/insert | `Information Security Officer` 执行 enable/exportable scope；source owner 可修改 export config 但仍受 marking/org unmarking 条件约束；export runtime 使用 destination credential |
-| Export job | internal read + export policy + destination write | 不是 Dataset Viewer 的自然延伸；必须同时满足内部 dataset/stream 读取、target source exportable scope、destination credential write、payload/redaction policy | 【建议】自研拆成 `export.create`、`export.run`、`export.manage_policy`、`export.view_history`，不要把它们并入 source `Editor` 或 dataset `Viewer` |
+| Export job | internal read + export configuration + destination write | Export management page 支持 manual run、schedule、view history、modify configuration；export 使用 Foundry build system 运行 | 公开文档未给完整默认 role matrix；可证实的是 target source export configuration、exportable markings/orgs、destination credential write 权限共同约束 |
 | Output `Dataset` / transaction / view | resource role；file requirements；lineage-derived data requirements；branch/view/transaction requirements | `Viewer` 只表示可尝试查看资源；读 view 数据还需满足上游继承 Markings/Organizations/Classifications。用户可能能看 metadata 但不能读 data | Project/Dataset `Viewer` + 所有 Marking/Org eligibility。`Editor` 常用于写 output dataset / run sync/build。Marking 资格由 Marking admin 或数据治理授予 |
-| `Stream` / streaming sync output | stream resource role；data requirements；consumer group/checkpoint ACL（公开细节不足） | streaming sync 写入 stream；hot subscription 是持续消费，不应等同一次 dataset read | 【待验证】Palantir hot stream 权限细节未完整公开。自研建议拆 `stream.subscribe`、`stream.reset_checkpoint`、`stream.export_sink` |
+| `Stream` / streaming sync output | stream resource role；data requirements；consumer group/checkpoint ACL（公开细节不足） | streaming sync 写入 stream；streaming export 可从 stream 推到外部 message queue | 【待验证】Palantir hot stream、checkpoint reset、streaming export sink 的默认角色矩阵未完整公开 |
 | `Code Repository` / Transform contract | repo role；branch protection；PR reviewer；CI publish/register；output dataset ownership | 代码编辑、PR review、protected branch merge、CI register、manual build、scheduled build 分属不同主体。Build 需要 input read、output write、runtime principal 合规 | repo `Editor` 可写代码和触发 build；protected branch 政策要求 reviewer/approver；CI principal 负责 register；output dataset `Editor` / owner 约束写入 |
-| `Schedule` / scheduled build | schedule owner/identity；target scope；runtime principal | 调度触发 build 时需要 schedule identity 未失权，runtime 能读 inputs、写 outputs，并满足 Markings/Organizations | 【推断】生产应优先 service/project scoped identity；user-scoped schedule 应做失活/失权告警 |
+| `Schedule` / scheduled build | schedule 与 export/build job 关联 | export 可配置 schedule，export job 通过 Foundry build system 运行 | 公开文档未在 Data Connection permission reference 中给出 schedule identity 的完整默认角色矩阵 |
 | Ontology Object Type / Object / Property | project-based ontology resource role；backing datasource access；object/property policy | Object Type schema 可由 project role 控制；要看 object instances，还需 backing datasource access 或 object/property security policy。Object policy 控制实例，Property policy 控制属性值 | Object type `Viewer` 可看类型；看对象需 object type `Viewer` + datasource `Viewer` 或相应 object/property security policy |
 | Audit logs / audit export dataset | audit export operations；dataset marking；Organization | Audit logs 回答 who/what/when/where，内容可能含 PII 和敏感 usage data。导出 audit.3 需要 `audit-export:orchestrate-v3`；SIEM API 读取需要 `audit-export:view` | Organization administrator 可授相关 audit export operation；导出的 audit dataset 应加 Organization/Marking，仅给安全运营和合规人员 |
 
-## 4. 关键权限点定义
+## 5. Palantir 公开 operation / scope 对齐表
 
-### 4.1 接入连接侧
+| 官方公开名称 | 类型 | 定义 / 触发动作 | 授权位置 / 角色 | 证据强度 |
+|---|---|---|---|---|
+| `Owner` | Default resource role | 默认最高资源角色，通常继承 `Editor`；可授予同级或更低 role | Project/folder/file/resource role grant | 高 |
+| `Editor` | Default resource role | 默认编辑角色；在 Source 上聚合配置、sync、SQL、preview、share、code import 等动作 | Project/folder/file/resource role grant | 高 |
+| `Viewer` | Default resource role | 默认查看角色；在 Source 上可看配置和 assigned agents；读取数据仍需满足 Marking/Org/data requirements | Project/folder/file/resource role grant | 高 |
+| `Discoverer` | Default resource role | 默认低权限发现角色 | Project/folder/file/resource role grant | 高 |
+| `stemma:mutate-default-branch` | Operation identifier | Code Repository “Change default branch” operation 的公开示例 | 默认 Owner 包含，lesser roles 不包含；可通过 custom roles 调整 | 高，但非 Data Connection |
+| `webhooks:read-privileged-data` | Operation identifier | 查看可访问 webhook 的 full request/response history | 加入 custom 或 default role；官方推荐 `Webhook Privileged Data Viewer` | 高 |
+| `Information Security Officer` | Enrollment-level default role | enable exports to source；添加 exportable markings/orgs 时还需对应 unmarking permission | Control Panel / Enrollment permissions | 高 |
+| `Remove marking` | Marking-specific permission | approve/remove inherited Marking；用于 `stop_propagating` 审批 | Marking 相关权限 | 高 |
+| `Expand access` | Organization / Marking expansion permission | approve/remove inherited Organization requirement；用于 `stop_requiring` 审批 | Organization / Marking 相关权限 | 高 |
+| `audit-export:view` | Organization operation | Audit API / SIEM 读取 audit.3 logs 的 gatekeeper operation | Organization permissions 中授予 client/user role | 高 |
+| `audit-export:orchestrate-v3` | Organization operation | 导出 `audit.3` logs 到 Foundry dataset | Organization permissions；可由 Organization administrator role 授予 | 高 |
+| OAuth operation scopes, e.g. `api:ontologies-read`, `api:ontologies-write` | OAuth/API scope | OAuth token request 的 operation scope；实际访问为 user/service permissions、application restrictions、requested scope 的交集 | Developer Console / OAuth client restrictions + token request | 高，但不专属于 Data Connection |
+| Source preview / SQL / sync config operation ids | 未公开 | 官方只公开这些动作属于 Source `Editor`，未公开 identifier | Source `Editor` 默认聚合 | 公开行为高，operation id 未披露 |
+| Credential `secret.use` / `secret.read` operation ids | 未公开 | 官方说明 source credential 加密存储；source import to code 后 repo editor 可访问 secret values | Source `Editor` + code resource `Editor` 形成可访问路径 | 公开行为高，ACL/operation id 未披露 |
 
-| 权限点 | 定义 | Palantir 默认归属 | 自研拆分建议 |
+## 6. 官方默认动作到角色授权
+
+### 6.1 接入连接侧
+
+| 动作 / scope | 官方定义 | Palantir 默认归属 | 是否有公开 operation identifier |
 |---|---|---|---|
-| `connection.view_config` | 查看 source 配置、assigned agents、状态 | source `Viewer` | 保留为低风险配置查看，但隐藏 secret |
-| `connection.preview_data` | explore/preview source 中的数据 | source `Editor` | 从 `Editor` 拆出，按源数据敏感要求单独授权 |
-| `connection.run_sql` | 在数据库 source 上执行 SQL | source `Editor` | 单独高危权限，限制 DDL/DML 或加审批 |
-| `connection.manage_agent_assignment` | 改 source assigned agents / worker path | source `Editor` + agent `Editor` | 单独授权，防止扩大网络路径 |
-| `connection.manage_sync_config` | 创建、编辑、删除 sync | source `Editor` + output dataset `Editor` | 拆为 create/edit/delete；高危修改需 review |
-| `connection.import_to_code` | 将 source 导入 code resource | source `Editor`，source `Owner` 可允许 import | 高危审批；绑定 repo、branch、runtime egress policy |
-| `secret.use` | runtime 注入 secret，不暴露明文 | 公开文档未完整披露 | 默认允许 sync/build/export runtime use |
-| `secret.read` / `secret.expose_to_code` | 代码或调试路径读取 secret value | imported source + repo `Editor` 可通过代码访问 | 默认禁止；仅审批后短期开放并强审计 |
+| View source configuration | 查看 source configuration 和 assigned agents | Source `Viewer` | 未公开 |
+| Explore / preview source | 查看支持该能力的源数据样本或 schema | Source `Editor` | 未公开 |
+| Run SQL queries | 在 database source 上运行 SQL | Source `Editor` | 未公开 |
+| Change assigned agents | 修改 source 的 assigned agents | Source `Editor` + every added Agent `Editor` | 未公开 |
+| Update source configuration | 更新 source configuration | Source `Editor` + assigned Agent `Editor` | 未公开 |
+| Create / edit / delete syncs | 管理 source 下 sync | Source `Editor`；具体 sync edit/delete 还要求 output dataset `Editor` | 未公开 |
+| Import source to code resource | 将 source 导入 transform / pipeline / compute module | Source `Editor`；Source `Owner` 可 allow import | 未公开 |
+| Access secret values from code | imported source 后，repo editor 可写代码使用 connection details including secret values | Code resource / repository `Editor`，且 source 已被 import | 未公开，公开文档仅描述行为 |
 
-### 4.2 运行与构建侧
+### 6.2 运行与构建侧
 
-| 权限点 | 定义 | Palantir 默认归属 | 自研拆分建议 |
+| 动作 / scope | 官方定义 | Palantir 默认归属 | 是否有公开 operation identifier |
 |---|---|---|---|
-| `sync.view` | 查看 sync 配置 | source `View` + dataset `View` | 同步继承即可 |
-| `sync.edit` / `sync.delete` | 修改或删除 sync | source `Edit` + dataset `Edit` | 与 `sync.run` 分离 |
-| `sync.run` | 执行同步，写 output dataset | output dataset `Edit` | 增加 source/config/credential version 快照 |
-| `build.trigger` | 手工触发 build / preview | code resource `Editor`、output dataset `Editor`、input read requirements | 明确 triggering actor 与 runtime principal |
-| `ci.publish` / `contract.register` | 注册 Transform/job spec | CI principal + repo/output ownership | 禁止作者 token 直写生产 spec |
-| `schedule.run` | 调度触发生产 build | schedule identity + runtime principal | service-scoped 优先，user-scoped 做失权检测 |
-| `runtime.egress` | transform/build/webhook 对外调用 | 与 source/export/webhook policy 相关 | 默认 deny；必须绑定 destination、credential、export policy |
+| View sync | 查看 sync | Source `View` + output Dataset `View` | 未公开 |
+| Edit sync | 编辑 sync | Source `Edit` + output Dataset `Edit` | 未公开 |
+| Delete sync | 删除 sync | Source `Edit` + output Dataset `Edit` | 未公开 |
+| Run sync | 执行 sync | Output Dataset `Edit` | 未公开 |
+| Trigger build using imported source | 触发使用 imported source 的 build | Code resource `Editor`；不再要求 source permission | 未公开 |
+| Remove imported source | 从 code resource 移除 imported source | Source `Editor` 或 code resource `Editor` | 未公开 |
+| External code egress policy | 用户代码访问外部 destination 必须绑定 network egress policy | Source / code runtime 相关配置 | 未公开为 role operation |
 
-### 4.3 消费、外发与治理侧
+### 6.3 消费、外发与治理侧
 
-| 权限点 | 定义 | Palantir 默认归属 | 自研拆分建议 |
+| 动作 / scope | 官方定义 | Palantir 默认归属 | 是否有公开 operation identifier |
 |---|---|---|---|
-| `dataset.view_metadata` | 打开资源、看 schema/history 等 metadata | Dataset/Project `Viewer`，还需 file requirements | 与 data read 分开 |
-| `dataset.read_view` | 读取 branch/view/transaction 数据 | Dataset `Viewer` + data requirements | 服务端统一 PDP/PEP |
-| `dataset.download` | 下载文件或查询结果 | 官方公开细节不足 | 独立于 preview/query，强 audit + purpose |
-| `export.enable_source` | 允许 source 作为导出目的地 | `Information Security Officer` | 与 source edit 分离 |
-| `export.manage_allowlist` | 配置 exportable markings/orgs | ISO + corresponding unmarking permission | 单独审批，记录 policy version |
-| `webhook.execute` | 调用外部 webhook | source `Editor`；通过 Action 执行另有 Action 权限 | 单独路由策略、payload redaction、secret scope |
-| `webhook.read_full_history` | 看所有 request/response history | `webhooks:read-privileged-data` operation | 专门 custom role |
-| `audit.export` | 导出 audit logs | `audit-export:orchestrate-v3` 或 `audit-export:view` | 专用安全运营角色，导出 dataset 加 marking |
-| `marking.stop_propagating` | 在 protected branch 上移除 inherited Marking | 需要 Marking 相关 remove/unmarking permission 和审批 | 绑定 input/output/requirement/branch/approval |
-| `organization.stop_requiring` | 在 protected branch 上移除 inherited Organization requirement | 需要 `Expand access` 类权限和审批 | 绑定跨组织共享依据与审计 |
+| Enable exports for source | 打开 source export configuration | `Information Security Officer` role | 未公开具体 operation id |
+| Add exportable markings/orgs | 配置可导出的 Markings / Organizations | `Information Security Officer` + corresponding unmarking permission | 未公开具体 operation id |
+| Run / schedule / view export history | export management page 可 manual run、set schedule、view history、modify configuration | 公开文档未给完整 role matrix | 未公开 |
+| Execute webhook | 执行 webhook | Source `Editor`；通过 Action 执行 webhook 时不要求此 permission | 未公开 |
+| Read full webhook history | 查看 full request/response history | role 包含 `webhooks:read-privileged-data` | `webhooks:read-privileged-data` |
+| Ingest audit logs via API | SIEM 读取 audit.3 logs | client/user token 必须有 organization 上 `audit-export:view` | `audit-export:view` |
+| Export audit.3 logs to Foundry dataset | 创建 audit log export dataset | organization 上 `audit-export:orchestrate-v3`；可由 Organization administrator role 授予 | `audit-export:orchestrate-v3` |
+| Remove inherited Markings | `stop_propagating` 审批 | `Remove marking` permission | 公开权限名称，非 role operation id |
+| Remove inherited Organizations | `stop_requiring` 审批 | `Expand access` permission | 公开权限名称，非 role operation id |
 
-## 5. 授权模式建议
+## 7. 非 Palantir 官方：自研角色包建议
 
-### 5.1 最小角色包
+以下角色包是自研平台对齐 Palantir 默认行为后的拆分建议，不是 Palantir 官方默认角色。
+
+### 7.1 最小角色包
 
 | 建议角色包 | 包含权限 | 不应包含 |
 |---|---|---|
@@ -130,7 +166,7 @@ AND satisfies_action_specific_policy(user, action, destination_or_runtime)
 | Webhook Privileged Data Viewer | `webhooks:read-privileged-data` | webhook execute、source edit |
 | Audit Operator | audit export/read | broad project Owner、source Editor |
 
-### 5.2 授权校验最小快照
+### 7.2 授权校验最小快照
 
 每次关键动作至少记录：
 
@@ -154,27 +190,31 @@ trace_id
 timestamp
 ```
 
-## 6. 设计结论
+## 8. 设计结论
 
 1. 【结论】Integration 权限主轴不是“Source ACL”，而是 source / credential / sync / code import / output dataset / export policy / audit 的分层授权。
-2. 【结论】默认 `Source Editor` 聚合了太多高危 operation；自研平台应拆成 capability-level permissions，并把 source preview、run SQL、code import、export enable 单独审批。
+2. 【结论】Palantir 公开默认模型里，`Source Editor` 聚合了多项高危动作；公开文档没有披露这些动作的 operation identifier。自研平台若要更细分，是在 Palantir 行为对齐基础上的增强，而不是 Palantir 已公开的默认拆分。
 3. 【结论】RBAC 只能表达“能执行什么操作”，不能表达“是否有资格接触某类数据”；Marking/Organization/Classifications 必须作为强制要求参与每个数据读写与外发决策。
 4. 【结论】外发链路必须独立建模。Dataset Viewer、Source Editor 或 Pipeline Developer 都不应天然获得 download/export/webhook/Kafka/SIEM 外发权。
 5. 【结论】审计应记录 access decision snapshot，而不是只记录 grant/revoke；否则无法证明某人某时刻读取了哪版数据、满足了哪些 Marking/Organization、用了哪个 credential 和 runtime principal。
 
-## 7. 证据边界
+## 9. 证据边界
 
-1. 【待验证】Palantir 未公开 Data Connection secret ACL、runtime 解密、source import 后 secret redaction 与 audit event schema 的完整内部结构。
-2. 【待验证】Schedule identity、build runtime effective principal、CI publish principal 的精确内部映射未公开。
-3. 【待验证】Stream hot subscription、consumer group/checkpoint reset、stream export sink 的默认角色矩阵未完整公开。
-4. 【待验证】Download/export 的字段级 redaction、水印、purpose justification 是否按产品/环境可配置，需要具体租户验证。
-5. 【说明】Palantir 文档提示 default permission behavior 可能被 custom roles 改写；本文矩阵以公开默认行为为基线。
+1. 【待验证】Palantir 未公开 Data Connection 细项 operation identifiers；公开文档只列默认角色行为。
+2. 【待验证】Palantir 未公开 Data Connection secret ACL、runtime 解密、source import 后 secret redaction 与 audit event schema 的完整内部结构。
+3. 【待验证】Schedule identity、build runtime effective principal、CI publish principal 的精确内部映射未公开。
+4. 【待验证】Stream hot subscription、consumer group/checkpoint reset、stream export sink 的默认角色矩阵未完整公开。
+5. 【待验证】Download/export 的字段级 redaction、水印、purpose justification 是否按产品/环境可配置，需要具体租户验证。
+6. 【说明】Palantir 文档提示 default permission behavior 可能被 custom roles 改写；本文矩阵以公开默认行为为基线。
 
-## 8. 来源
+## 10. 来源
 
 - Palantir Data Connection permissions: <https://www.palantir.com/docs/foundry/data-connection/permissions>
 - Palantir Data Connection core concepts: <https://www.palantir.com/docs/foundry/data-connection/core-concepts>
 - Palantir Data Connection exports: <https://www.palantir.com/docs/foundry/data-connection/export-overview>
+- Palantir Developer Console application restrictions: <https://www.palantir.com/docs/foundry/developer-console/application-restrictions>
+- Palantir API authentication and OAuth2 scope: <https://www.palantir.com/docs/foundry/api/general/overview/authentication/>
+- Palantir Developer Console permissions: <https://www.palantir.com/docs/foundry/developer-console/permissions>
 - Palantir Projects and roles: <https://www.palantir.com/docs/foundry/security/projects-and-roles>
 - Palantir Manage roles: <https://www.palantir.com/docs/foundry/platform-security-management/manage-roles>
 - Palantir Markings: <https://www.palantir.com/docs/foundry/security/markings/>
