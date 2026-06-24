@@ -15,6 +15,7 @@
 | [docs/synthesis/dataset-permission-marking-architecture-summary.md](../synthesis/dataset-permission-marking-architecture-summary.md) | Dataset 权限、Marking、传播和访问控制主结论。 |
 | [docs/synthesis/data-integration-permission-system-roadmap.md](../synthesis/data-integration-permission-system-roadmap.md) | Data Integration 全链路权限建设缺口、P0/P1/P2 路线和专家评审结论。 |
 | [docs/synthesis/palantir-integration-rbac-permission-expression.md](../synthesis/palantir-integration-rbac-permission-expression.md) | Integration 对象权限表达、RBAC 默认角色/operation 授权矩阵和自研拆分建议。 |
+| [docs/synthesis/palantir-resource-scope-configuration-reference.md](../synthesis/palantir-resource-scope-configuration-reference.md) | 可直接用于权限配置的 Dataset、Pipeline、Build、Schedule、Sync scope 清单。 |
 
 ## Supporting Evidence
 

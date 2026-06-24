@@ -301,7 +301,7 @@ documents:
     topics: [security-and-marking, governance]
     source_layer: topic
     issue_refs: [19, 42, 43, 46, 49, 50, 51, 52, 53, 54, 55, 56, 57, 71]
-    source_refs: [docs/synthesis/dataset-permission-marking-architecture-summary.md, docs/synthesis/data-integration-permission-system-roadmap.md, docs/synthesis/palantir-integration-rbac-permission-expression.md, docs/raw/30-dataset-permission-marking-architecture.md, docs/raw/06-security-and-permissions.md, docs/raw/11-marking-mechanism-deep-dive.md, docs/raw/12-dataset-marking-implementation.md, docs/raw/13-marking-advanced-deep-dive.md, docs/raw/49-data-quality-external-notification-security.md, docs/raw/51-ingestion-connection-credential-permission-boundary.md, docs/raw/52-transform-runtime-build-permission-boundary.md, docs/raw/53-consumption-export-access-control.md, docs/raw/54-lineage-marking-policy-propagation-model.md, docs/raw/55-permission-governance-audit-lifecycle.md, docs/synthesis/palantir-data-quality-module-research.md]
+    source_refs: [docs/synthesis/dataset-permission-marking-architecture-summary.md, docs/synthesis/data-integration-permission-system-roadmap.md, docs/synthesis/palantir-integration-rbac-permission-expression.md, docs/synthesis/palantir-resource-scope-configuration-reference.md, docs/raw/30-dataset-permission-marking-architecture.md, docs/raw/06-security-and-permissions.md, docs/raw/11-marking-mechanism-deep-dive.md, docs/raw/12-dataset-marking-implementation.md, docs/raw/13-marking-advanced-deep-dive.md, docs/raw/49-data-quality-external-notification-security.md, docs/raw/51-ingestion-connection-credential-permission-boundary.md, docs/raw/52-transform-runtime-build-permission-boundary.md, docs/raw/53-consumption-export-access-control.md, docs/raw/54-lineage-marking-policy-propagation-model.md, docs/raw/55-permission-governance-audit-lifecycle.md, docs/synthesis/palantir-data-quality-module-research.md]
     related_docs: [docs/topics/dataset.md, docs/topics/data-quality.md, docs/topics/ontology.md]
     canonical: false
     created: 2026-05-31
@@ -985,6 +985,24 @@ documents:
     issue_refs: [71]
     source_refs: [docs/raw/50-data-integration-permission-source-map.md, docs/raw/51-ingestion-connection-credential-permission-boundary.md, docs/raw/52-transform-runtime-build-permission-boundary.md, docs/raw/53-consumption-export-access-control.md, docs/raw/54-lineage-marking-policy-propagation-model.md, docs/raw/55-permission-governance-audit-lifecycle.md, docs/synthesis/data-integration-permission-system-roadmap.md, docs/synthesis/dataset-permission-marking-architecture-summary.md]
     related_docs: [docs/topics/security-and-marking.md, docs/synthesis/data-integration-permission-system-roadmap.md]
+    canonical: true
+    created: 2026-06-25
+    updated: 2026-06-25
+    last_reviewed: 2026-06-25
+    confidence: high
+    evidence_strength: strong
+    owner: codex
+    reviewers: [codex]
+  - id: synthesis-palantir-resource-scope-configuration-reference
+    path: docs/synthesis/palantir-resource-scope-configuration-reference.md
+    title: "Palantir 资源 Scope 权限配置参照表"
+    type: synthesis
+    status: canonical
+    topics: [data-integration, security-and-marking, governance]
+    source_layer: conclusion
+    issue_refs: [71]
+    source_refs: [docs/raw/50-data-integration-permission-source-map.md, docs/raw/51-ingestion-connection-credential-permission-boundary.md, docs/raw/52-transform-runtime-build-permission-boundary.md, docs/raw/53-consumption-export-access-control.md, docs/raw/54-lineage-marking-policy-propagation-model.md, docs/raw/55-permission-governance-audit-lifecycle.md, docs/synthesis/data-integration-permission-system-roadmap.md, docs/synthesis/palantir-integration-rbac-permission-expression.md]
+    related_docs: [docs/topics/security-and-marking.md, docs/synthesis/palantir-integration-rbac-permission-expression.md]
     canonical: true
     created: 2026-06-25
     updated: 2026-06-25
