@@ -70,7 +70,8 @@ HTML 预览入口见 [deliverables/pages/book-library.html](../deliverables/page
 1. 先从 [Security and Marking 主题索引](topics/security-and-marking.md) 明确权限判定层次和待验证边界。
 2. 再读 [Palantir Dataset 权限体系与 Marking 机制沉淀](synthesis/dataset-permission-marking-architecture-summary.md)。
 3. 若目标是自研 Data Integration 权限控制面，继续读 [Data Integration 权限体系建设缺口与路线图](synthesis/data-integration-permission-system-roadmap.md)。
-4. 按需回查 Marking 机制、实现方案、进阶机制和本轮 Data Integration Story：`docs/raw/11`、`12`、`13`、`50` 到 `56`。
+4. 若要回答 Integration 对象、权限点定义和默认角色授权，读 [Palantir Integration 对象权限表达与 RBAC 授权矩阵](synthesis/palantir-integration-rbac-permission-expression.md)。
+5. 按需回查 Marking 机制、实现方案、进阶机制和本轮 Data Integration Story：`docs/raw/11`、`12`、`13`、`50` 到 `56`。
 
 ### Data Quality
 

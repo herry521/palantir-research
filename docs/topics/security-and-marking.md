@@ -5,7 +5,7 @@
 1. 【事实】Foundry Dataset 权限不是单一 RBAC，而是 Project/Resource Role、Organization、Marking、Classification、Lineage-derived data requirements、Restricted View、Ontology policy、SDS 与 Audit 的组合判定。
 2. 【事实】Marking 是强制访问控制要求，不是普通标签；用户即使有 Viewer/Owner 类资源角色，缺少必要 Marking 仍不能读取受保护数据。
 3. 【事实】Data Connection 的 source、sync、agent、webhook、external code connection 也是权限对象；source 上的 Marking/Organization 会传播到 sync output dataset。
-4. 【推断】自建平台不能只做 `dataset.markings` 字段，应拆成 resource requirement、transaction/view requirement、credential/service principal、lineage propagation、query-time PDP、export policy、approval 和 audit。
+4. 【事实+推断】Integration 侧 RBAC 的核心是 role/operation 授权，但 Source Editor、Webhook full history、export enable、secret exposure 等高危 operation 需要从默认角色中拆出单独治理。
 5. 【待验证】Palantir 未公开完整 Marking 内部表结构、传播引擎实现、Data Connection secret ACL 和 audit event schema；相关数据模型属于工程化推断。
 
 ## Canonical Documents
@@ -14,6 +14,7 @@
 | --- | --- |
 | [docs/synthesis/dataset-permission-marking-architecture-summary.md](../synthesis/dataset-permission-marking-architecture-summary.md) | Dataset 权限、Marking、传播和访问控制主结论。 |
 | [docs/synthesis/data-integration-permission-system-roadmap.md](../synthesis/data-integration-permission-system-roadmap.md) | Data Integration 全链路权限建设缺口、P0/P1/P2 路线和专家评审结论。 |
+| [docs/synthesis/palantir-integration-rbac-permission-expression.md](../synthesis/palantir-integration-rbac-permission-expression.md) | Integration 对象权限表达、RBAC 默认角色/operation 授权矩阵和自研拆分建议。 |
 
 ## Supporting Evidence
 
@@ -34,7 +35,7 @@
 
 ## Related Issues
 
-#19、#42、#43、#46、#49、#50、#51、#52、#53、#54、#55、#56、#57
+#19、#42、#43、#46、#49、#50、#51、#52、#53、#54、#55、#56、#57、#71
 
 ## Open Questions
 
