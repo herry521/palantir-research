@@ -522,17 +522,63 @@
         const stats = diOverallStats();
         const summary = document.getElementById("di-map-summary");
         summary.innerHTML = [
-          ["总完成率", `${stats.completion}%`, `${stats.coreDone}/${stats.coreTotal} 个核心能力已完成`],
-          ["已完成", stats.done, "全部二级能力统计"],
-          ["进行中", stats["in-progress"], "全部二级能力统计"],
-          ["风险", stats.risk, "全部二级能力统计"]
+          ["核心能力成熟度", `${stats.completion}%`, `${stats.coreDone}/${stats.coreTotal} 个核心能力已完成`, "neutral"],
+          ["对象域点亮", `${stats.litNodes}/${stats.reportNodeTotal}`, "Palantir 主链路对象域", "neutral"],
+          ["关键能力缺口", stats.criticalGaps, "核心能力未完成或进行中", "warning"],
+          ["需关注风险", stats.risk + stats.riskNodes, "风险能力与风险对象域", "risk"]
         ]
           .map(
-            ([label, value, note]) => `
-              <article class="di-map-stat">
+            ([label, value, note, tone]) => `
+              <article class="di-map-stat tone-${tone}">
                 <span>${label}</span>
                 <strong>${value}</strong>
                 <small>${note}</small>
+              </article>
+            `
+          )
+          .join("");
+      }
+
+      function diRenderReportHero() {
+        document.getElementById("di-report-title").textContent = DI_REPORT_CONTENT.title;
+        document.getElementById("di-report-subtitle").textContent = DI_REPORT_CONTENT.subtitle;
+      }
+
+      function diReportNodeHtml(node) {
+        const stats = diReportNodeStats(node);
+        const capabilityHtml = stats.capabilities
+          .slice(0, 5)
+          .map((entry) => `<li>${entry.capability.name}</li>`)
+          .join("");
+        return `
+          <article class="di-report-node status-${stats.status}">
+            <div class="di-report-node-topline"></div>
+            <div class="di-report-node-head">
+              <div>
+                <span class="di-report-node-kicker">${DI_STATUS_LABELS[stats.status]}</span>
+                <h3>${node.name}</h3>
+                <p>${node.zhName}</p>
+              </div>
+              <strong>${stats.progress}%</strong>
+            </div>
+            <p class="di-report-node-summary">${node.summary}</p>
+            <ul class="di-report-node-capabilities">${capabilityHtml}</ul>
+            <div class="di-map-progress-bar"><span style="width:${stats.progress}%"></span></div>
+          </article>
+        `;
+      }
+
+      function diRenderReportChain() {
+        document.getElementById("di-report-chain").innerHTML = DI_REPORT_NODES.map(diReportNodeHtml).join("");
+      }
+
+      function diRenderInsights() {
+        document.getElementById("di-report-insights").innerHTML = DI_REPORT_CONTENT.insights
+          .map(
+            (item) => `
+              <article class="di-report-insight tone-${item.tone}">
+                <span>${item.label}</span>
+                <p>${item.text}</p>
               </article>
             `
           )
@@ -584,7 +630,10 @@
       }
 
       function diRenderCapabilityMap() {
+        diRenderReportHero();
         diRenderSummary();
+        diRenderReportChain();
+        diRenderInsights();
         ["driver", "main", "support"].forEach((zone) => {
           const container = document.getElementById(`di-map-${zone}`);
           container.innerHTML = DI_MAP_MODULES.filter((module) => module.zone === zone).map(diModuleHtml).join("");
