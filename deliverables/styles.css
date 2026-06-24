@@ -3930,3 +3930,367 @@ html.is-embedded-root .section-card {
     scroll-behavior: auto !important;
   }
 }
+
+.di-map-page {
+  --di-done: #138a4d;
+  --di-progress: #2563eb;
+  --di-risk: #c2410c;
+  --di-muted: #6b7280;
+  --di-border: rgba(31, 41, 55, 0.14);
+  --di-surface: rgba(255, 255, 255, 0.92);
+}
+
+.di-map-header .intro-note {
+  max-width: 980px;
+}
+
+.di-map-control-section {
+  display: grid;
+  gap: 18px;
+}
+
+.di-map-summary-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.di-map-stat {
+  border: 1px solid var(--di-border);
+  border-radius: 8px;
+  background: var(--di-surface);
+  padding: 16px;
+}
+
+.di-map-stat span,
+.di-map-stat small {
+  display: block;
+  color: var(--di-muted);
+}
+
+.di-map-stat strong {
+  display: block;
+  margin: 6px 0;
+  color: #111827;
+  font-size: 28px;
+  line-height: 1;
+}
+
+.di-map-toolbar,
+.di-map-legend {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+}
+
+.di-map-action {
+  border: 1px solid rgba(37, 99, 235, 0.24);
+  border-radius: 8px;
+  background: #eff6ff;
+  color: #1d4ed8;
+  cursor: pointer;
+  font: inherit;
+  font-weight: 700;
+  padding: 9px 12px;
+}
+
+.di-map-action:hover {
+  background: #dbeafe;
+}
+
+.di-map-action.danger {
+  border-color: rgba(194, 65, 12, 0.25);
+  background: #fff7ed;
+  color: var(--di-risk);
+}
+
+.di-map-legend span {
+  display: inline-flex;
+  align-items: center;
+  color: #374151;
+  font-size: 13px;
+  gap: 6px;
+}
+
+.status-dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 999px;
+  display: inline-block;
+}
+
+.status-not-started {
+  background: #9ca3af;
+}
+
+.status-in-progress {
+  background: var(--di-progress);
+}
+
+.status-done {
+  background: var(--di-done);
+}
+
+.status-risk {
+  background: var(--di-risk);
+}
+
+.di-map-stage {
+  display: grid;
+  gap: 18px;
+}
+
+.di-map-zone {
+  border: 1px solid var(--di-border);
+  border-radius: 10px;
+  background: rgba(248, 250, 252, 0.78);
+  padding: 16px;
+}
+
+.di-map-zone-label {
+  color: #475569;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  margin-bottom: 12px;
+  text-transform: uppercase;
+}
+
+.di-map-flow {
+  align-items: stretch;
+  display: grid;
+  gap: 14px;
+  grid-template-columns: repeat(6, minmax(210px, 1fr));
+  overflow-x: auto;
+  padding-bottom: 4px;
+}
+
+.di-map-zone-grid {
+  display: grid;
+  gap: 14px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.di-map-module {
+  border: 1px solid var(--di-border);
+  border-radius: 10px;
+  background: #fff;
+  box-shadow: 0 12px 28px rgba(15, 23, 42, 0.06);
+  min-width: 0;
+  padding: 14px;
+  position: relative;
+}
+
+.di-map-module.is-complete {
+  border-color: rgba(19, 138, 77, 0.42);
+  box-shadow: 0 16px 34px rgba(19, 138, 77, 0.12);
+}
+
+.di-map-module.is-partial {
+  border-color: rgba(37, 99, 235, 0.32);
+}
+
+.di-map-module.has-risk {
+  border-color: rgba(194, 65, 12, 0.45);
+  box-shadow: 0 16px 34px rgba(194, 65, 12, 0.1);
+}
+
+.di-map-module.has-risk::after {
+  content: "风险";
+  position: absolute;
+  right: 12px;
+  top: 12px;
+  border-radius: 999px;
+  background: #fff7ed;
+  color: var(--di-risk);
+  font-size: 11px;
+  font-weight: 800;
+  padding: 3px 7px;
+}
+
+.di-map-module-head {
+  align-items: flex-start;
+  display: flex;
+  gap: 12px;
+  justify-content: space-between;
+}
+
+.di-map-module-kicker {
+  color: #64748b;
+  display: block;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.di-map-module h3 {
+  color: #111827;
+  font-size: 18px;
+  line-height: 1.2;
+  margin: 5px 0 4px;
+}
+
+.di-map-module-head p,
+.di-map-module-desc {
+  color: #4b5563;
+  margin: 0;
+}
+
+.di-map-module-desc {
+  font-size: 13px;
+  line-height: 1.5;
+  margin-top: 10px;
+}
+
+.di-map-progress-ring {
+  align-items: center;
+  border: 1px solid rgba(37, 99, 235, 0.2);
+  border-radius: 999px;
+  color: #1d4ed8;
+  display: flex;
+  flex: 0 0 auto;
+  font-size: 13px;
+  font-weight: 900;
+  height: 46px;
+  justify-content: center;
+  width: 46px;
+}
+
+.di-map-progress-bar {
+  background: #e5e7eb;
+  border-radius: 999px;
+  height: 7px;
+  margin: 12px 0;
+  overflow: hidden;
+}
+
+.di-map-progress-bar span {
+  background: linear-gradient(90deg, var(--di-progress), var(--di-done));
+  display: block;
+  height: 100%;
+}
+
+.di-map-capability-list {
+  display: grid;
+  gap: 8px;
+}
+
+.di-map-capability {
+  border: 1px solid rgba(148, 163, 184, 0.32);
+  border-radius: 8px;
+  padding: 9px;
+}
+
+.di-map-capability.status-done {
+  background: rgba(19, 138, 77, 0.08);
+  border-color: rgba(19, 138, 77, 0.28);
+}
+
+.di-map-capability.status-in-progress {
+  background: rgba(37, 99, 235, 0.08);
+  border-color: rgba(37, 99, 235, 0.26);
+}
+
+.di-map-capability.status-risk {
+  background: rgba(194, 65, 12, 0.08);
+  border-color: rgba(194, 65, 12, 0.28);
+}
+
+.di-map-capability-main {
+  align-items: center;
+  display: flex;
+  gap: 8px;
+  justify-content: space-between;
+}
+
+.di-map-capability strong,
+.di-map-capability span {
+  display: block;
+}
+
+.di-map-capability strong {
+  color: #111827;
+  font-size: 13px;
+}
+
+.di-map-capability span {
+  color: #64748b;
+  font-size: 12px;
+  margin-top: 2px;
+}
+
+.di-map-capability ul {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  list-style: none;
+  margin: 8px 0 0;
+  padding: 0;
+}
+
+.di-map-capability li {
+  border-radius: 999px;
+  background: rgba(15, 23, 42, 0.06);
+  color: #475569;
+  font-size: 11px;
+  line-height: 1.2;
+  padding: 4px 7px;
+}
+
+.di-map-status-button {
+  border: 1px solid transparent;
+  border-radius: 999px;
+  cursor: pointer;
+  flex: 0 0 auto;
+  font-size: 12px;
+  font-weight: 800;
+  padding: 5px 8px;
+}
+
+.di-map-status-button.status-not-started {
+  background: #f3f4f6;
+  color: #4b5563;
+}
+
+.di-map-status-button.status-in-progress {
+  background: #dbeafe;
+  color: #1d4ed8;
+}
+
+.di-map-status-button.status-done {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.di-map-status-button.status-risk {
+  background: #ffedd5;
+  color: var(--di-risk);
+}
+
+.di-map-presentation-mode .di-map-status-button {
+  display: none;
+}
+
+@media (max-width: 1180px) {
+  .di-map-flow {
+    grid-template-columns: repeat(3, minmax(240px, 1fr));
+  }
+}
+
+@media (max-width: 760px) {
+  .di-map-summary-grid,
+  .di-map-zone-grid,
+  .di-map-flow {
+    grid-template-columns: 1fr;
+  }
+
+  .di-map-flow {
+    overflow-x: visible;
+  }
+
+  .di-map-module-head {
+    align-items: flex-start;
+  }
+}
