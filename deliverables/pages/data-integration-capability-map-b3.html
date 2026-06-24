@@ -672,7 +672,7 @@
           .join("");
         return `
           <article class="di-report-node status-${stats.status}">
-            <div class="di-report-node-topline"></div>
+            <div class="di-card-progress-line" aria-hidden="true"><span style="width:${stats.progress}%"></span></div>
             <div class="di-report-node-head">
               <div>
                 <span class="di-report-node-kicker">${DI_STATUS_LABELS[stats.status]}</span>
@@ -683,7 +683,6 @@
             </div>
             <p class="di-report-node-summary">${diEscapeHtml(node.summary)}</p>
             <ul class="di-report-node-capabilities">${capabilityHtml}</ul>
-            <div class="di-map-progress-bar"><span style="width:${stats.progress}%"></span></div>
           </article>
         `;
       }
@@ -736,6 +735,7 @@
         const moduleZhName = diEscapeHtml(module.zhName);
         return `
           <article class="di-map-module ${intensityClass}" data-zone="${module.zone}">
+            <div class="di-card-progress-line" aria-hidden="true"><span style="width:${stats.progress}%"></span></div>
             <div class="di-map-module-head">
               <div>
                 <span class="di-map-module-kicker">${diEscapeHtml(module.zone)}</span>
@@ -745,7 +745,6 @@
               <div class="di-map-progress-ring" aria-label="${moduleZhName} 完成度 ${stats.progress}%">${stats.progress}%</div>
             </div>
             <p class="di-map-module-desc">${diEscapeHtml(module.description)}</p>
-            <div class="di-map-progress-bar"><span style="width:${stats.progress}%"></span></div>
             <div class="di-map-capability-list">
               ${module.capabilities.map((capability) => diCapabilityHtml(module, capability)).join("")}
             </div>

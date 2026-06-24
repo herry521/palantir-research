@@ -5075,31 +5075,36 @@ html.is-embedded-root .section-card {
   color: #5b6472;
 }
 
-.di-map-page-b3 .di-report-node > .di-map-progress-bar {
+.di-map-page-b3 .di-card-progress-line {
+  background: #ece7dc;
   border-radius: 10px 10px 0 0;
   height: 4px;
-  left: -1px;
-  margin: 0;
-  pointer-events: none;
-  position: absolute;
-  right: -1px;
-  top: -1px;
-  z-index: 2;
+  overflow: hidden;
 }
 
-.di-map-page-b3 .di-report-node.status-done > .di-map-progress-bar span {
+.di-map-page-b3 .di-card-progress-line span {
+  background: #94a3b8;
+  display: block;
+  height: 100%;
+}
+
+.di-map-page-b3 .di-report-node > .di-card-progress-line {
+  margin: -16px -12px 12px;
+}
+
+.di-map-page-b3 .di-report-node.status-done > .di-card-progress-line span {
   background: var(--di-done);
 }
 
-.di-map-page-b3 .di-report-node.status-in-progress > .di-map-progress-bar span {
+.di-map-page-b3 .di-report-node.status-in-progress > .di-card-progress-line span {
   background: var(--di-progress);
 }
 
-.di-map-page-b3 .di-report-node.status-risk > .di-map-progress-bar span {
+.di-map-page-b3 .di-report-node.status-risk > .di-card-progress-line span {
   background: var(--di-risk);
 }
 
-.di-map-page-b3 .di-report-node.status-not-started > .di-map-progress-bar span {
+.di-map-page-b3 .di-report-node.status-not-started > .di-card-progress-line span {
   background: #94a3b8;
 }
 
@@ -5177,32 +5182,24 @@ html.is-embedded-root .section-card {
   background: #ece7dc;
 }
 
-.di-map-page-b3 .di-map-module > .di-map-progress-bar {
-  border-radius: 10px 10px 0 0;
-  height: 4px;
-  left: -1px;
-  margin: 0;
-  pointer-events: none;
-  position: absolute;
-  right: -1px;
-  top: -1px;
-  z-index: 2;
+.di-map-page-b3 .di-map-module > .di-card-progress-line {
+  margin: -20px -16px 16px;
 }
 
-.di-map-page-b3 .di-map-module.is-complete > .di-map-progress-bar span {
+.di-map-page-b3 .di-map-module.is-complete > .di-card-progress-line span {
   background: var(--di-done);
 }
 
-.di-map-page-b3 .di-map-module.is-partial > .di-map-progress-bar span {
+.di-map-page-b3 .di-map-module.is-partial > .di-card-progress-line span {
   background: linear-gradient(90deg, var(--di-progress), var(--di-done));
 }
 
-.di-map-page-b3 .di-map-module.has-risk > .di-map-progress-bar span {
+.di-map-page-b3 .di-map-module.has-risk > .di-card-progress-line span {
   background: var(--di-risk);
 }
 
 .di-map-page-b3 .di-map-module > .di-map-capability-list {
-  margin-top: 12px;
+  margin-top: 14px;
 }
 
 .di-map-page-b3 .di-map-capability {
