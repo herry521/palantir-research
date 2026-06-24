@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Palantir Data Integration 能力地图</title>
+    <title>Palantir Data Integration 战情图</title>
     <link rel="stylesheet" href="../styles.css" />
     <script defer src="../app.js"></script>
   </head>
@@ -41,48 +41,69 @@
 
       <main>
         <section class="topic-header di-map-header">
-          <p class="eyebrow">Palantir Data Integration</p>
-          <h1>Data Integration 能力地图</h1>
+          <p class="eyebrow">Palantir Data Integration Readiness</p>
+          <h1>Data Integration 战情图</h1>
           <p class="intro-note">
-            严格对齐 Palantir 官方能力对象，按主链路、驱动观察层和支撑层组织。点击二级能力状态即可配置“已完成 / 进行中 / 未开始 / 风险”，用于进展汇报点亮。
+            面向领导汇报的 Data Integration 能力完备性视图：基于 Palantir 官方对象链路展示主链路成熟度、关键缺口、风险和下一步动作。
           </p>
           <div class="topic-meta">
-            <span class="tag">Palantir Aligned</span>
-            <span class="tag">Interactive Status</span>
-            <span class="tag">Local JSON Config</span>
+            <span class="tag">Executive War Room</span>
+            <span class="tag">Palantir Objects</span>
+            <span class="tag">Configurable Status</span>
           </div>
         </section>
 
-        <section class="page-section di-map-control-section" aria-label="能力地图控制台">
-          <div class="di-map-summary-grid" id="di-map-summary"></div>
-          <div class="di-map-toolbar" aria-label="能力地图操作">
+        <section class="page-section di-map-report" aria-label="Data Integration 战情图">
+          <div class="di-map-report-hero">
+            <div>
+              <p class="di-map-report-kicker">Palantir Data Integration Readiness</p>
+              <h2 id="di-report-title"></h2>
+              <p id="di-report-subtitle"></p>
+            </div>
+            <div class="di-map-summary-grid" id="di-map-summary"></div>
+          </div>
+
+          <div class="di-map-toolbar di-map-report-toolbar" aria-label="能力地图操作">
             <button class="di-map-action" type="button" id="di-toggle-presentation">演示模式</button>
             <button class="di-map-action" type="button" id="di-export-json">导出 JSON</button>
             <button class="di-map-action" type="button" id="di-import-json">导入 JSON</button>
             <button class="di-map-action danger" type="button" id="di-reset-status">重置</button>
           </div>
+
           <div class="di-map-legend" aria-label="状态图例">
             <span><i class="status-dot status-not-started"></i>未开始</span>
             <span><i class="status-dot status-in-progress"></i>进行中</span>
             <span><i class="status-dot status-done"></i>已完成</span>
             <span><i class="status-dot status-risk"></i>风险</span>
           </div>
+
+          <div class="di-report-chain" id="di-report-chain" aria-label="Palantir 官方对象主链路"></div>
+          <div class="di-report-insights" id="di-report-insights" aria-label="汇报洞察"></div>
         </section>
 
-        <section class="page-section di-map-stage" aria-label="Palantir Data Integration 能力地图">
-          <div class="di-map-zone di-map-zone-driver">
-            <div class="di-map-zone-label">驱动与观察</div>
-            <div class="di-map-zone-grid" id="di-map-driver"></div>
+        <section class="page-section di-map-appendix" aria-label="能力明细">
+          <div class="section-head">
+            <div>
+              <p class="section-kicker">Capability Appendix</p>
+              <h2>能力明细与状态配置</h2>
+            </div>
+            <p>完整二级能力保留在明细区，用于配置状态和核对 Palantir 对齐口径。</p>
           </div>
+          <div class="di-map-stage">
+            <div class="di-map-zone di-map-zone-driver">
+              <div class="di-map-zone-label">驱动与观察</div>
+              <div class="di-map-zone-grid" id="di-map-driver"></div>
+            </div>
 
-          <div class="di-map-zone di-map-zone-main">
-            <div class="di-map-zone-label">主链路</div>
-            <div class="di-map-flow" id="di-map-main"></div>
-          </div>
+            <div class="di-map-zone di-map-zone-main">
+              <div class="di-map-zone-label">主链路明细</div>
+              <div class="di-map-flow" id="di-map-main"></div>
+            </div>
 
-          <div class="di-map-zone di-map-zone-support">
-            <div class="di-map-zone-label">支撑层</div>
-            <div class="di-map-zone-grid" id="di-map-support"></div>
+            <div class="di-map-zone di-map-zone-support">
+              <div class="di-map-zone-label">支撑层</div>
+              <div class="di-map-zone-grid" id="di-map-support"></div>
+            </div>
           </div>
         </section>
 
