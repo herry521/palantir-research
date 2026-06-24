@@ -264,6 +264,162 @@
           ]
         }
       ];
+
+      const DI_STATUS_ORDER = ["not-started", "in-progress", "done", "risk"];
+      const DI_STATUS_LABELS = {
+        "not-started": "未开始",
+        "in-progress": "进行中",
+        done: "已完成",
+        risk: "风险"
+      };
+      const DI_STORAGE_KEY = "palantir-di-capability-map-statuses-v1";
+      let diMapStatuses = {};
+      let diPresentationMode = false;
+
+      function diStatusKey(moduleId, capabilityId) {
+        return `${moduleId}.${capabilityId}`;
+      }
+
+      function diLoadStatuses() {
+        try {
+          const parsed = JSON.parse(localStorage.getItem(DI_STORAGE_KEY) || "{}");
+          diMapStatuses = parsed && typeof parsed === "object" ? parsed : {};
+        } catch (_error) {
+          diMapStatuses = {};
+        }
+      }
+
+      function diSaveStatuses() {
+        localStorage.setItem(DI_STORAGE_KEY, JSON.stringify(diMapStatuses));
+      }
+
+      function diGetStatus(moduleId, capabilityId) {
+        return diMapStatuses[diStatusKey(moduleId, capabilityId)] || "not-started";
+      }
+
+      function diCycleStatus(moduleId, capabilityId) {
+        const key = diStatusKey(moduleId, capabilityId);
+        const current = diGetStatus(moduleId, capabilityId);
+        const nextIndex = (DI_STATUS_ORDER.indexOf(current) + 1) % DI_STATUS_ORDER.length;
+        diMapStatuses[key] = DI_STATUS_ORDER[nextIndex];
+        diSaveStatuses();
+        diRenderCapabilityMap();
+      }
+
+      function diModuleStats(module) {
+        const coreCapabilities = module.capabilities.filter((capability) => capability.core);
+        const allStatuses = module.capabilities.map((capability) => diGetStatus(module.id, capability.id));
+        const doneCore = coreCapabilities.filter((capability) => diGetStatus(module.id, capability.id) === "done").length;
+        const totalCore = coreCapabilities.length || 1;
+        return {
+          progress: Math.round((doneCore / totalCore) * 100),
+          doneCore,
+          totalCore,
+          hasRisk: coreCapabilities.some((capability) => diGetStatus(module.id, capability.id) === "risk"),
+          done: allStatuses.filter((status) => status === "done").length,
+          inProgress: allStatuses.filter((status) => status === "in-progress").length,
+          risk: allStatuses.filter((status) => status === "risk").length,
+          total: allStatuses.length
+        };
+      }
+
+      function diOverallStats() {
+        const capabilities = DI_MAP_MODULES.flatMap((module) => module.capabilities.map((capability) => ({ module, capability })));
+        const coreCapabilities = capabilities.filter((item) => item.capability.core);
+        const statusCounts = capabilities.reduce(
+          (acc, item) => {
+            const status = diGetStatus(item.module.id, item.capability.id);
+            acc[status] += 1;
+            return acc;
+          },
+          { "not-started": 0, "in-progress": 0, done: 0, risk: 0 }
+        );
+        const coreDone = coreCapabilities.filter((item) => diGetStatus(item.module.id, item.capability.id) === "done").length;
+        const completion = Math.round((coreDone / coreCapabilities.length) * 100);
+        return { ...statusCounts, completion, total: capabilities.length, coreTotal: coreCapabilities.length, coreDone };
+      }
+
+      function diRenderSummary() {
+        const stats = diOverallStats();
+        const summary = document.getElementById("di-map-summary");
+        summary.innerHTML = [
+          ["总完成率", `${stats.completion}%`, `${stats.coreDone}/${stats.coreTotal} 个核心能力已完成`],
+          ["已完成", stats.done, "全部二级能力统计"],
+          ["进行中", stats["in-progress"], "全部二级能力统计"],
+          ["风险", stats.risk, "全部二级能力统计"]
+        ]
+          .map(
+            ([label, value, note]) => `
+              <article class="di-map-stat">
+                <span>${label}</span>
+                <strong>${value}</strong>
+                <small>${note}</small>
+              </article>
+            `
+          )
+          .join("");
+      }
+
+      function diCapabilityHtml(module, capability) {
+        const status = diGetStatus(module.id, capability.id);
+        const childHtml =
+          capability.children && capability.children.length
+            ? `<ul>${capability.children.map((child) => `<li>${child}</li>`).join("")}</ul>`
+            : "";
+        return `
+          <div class="di-map-capability status-${status}">
+            <div class="di-map-capability-main">
+              <div>
+                <strong>${capability.name}</strong>
+                <span>${capability.zhName}</span>
+              </div>
+              <button class="di-map-status-button status-${status}" type="button" data-module-id="${module.id}" data-capability-id="${capability.id}" aria-label="切换 ${capability.zhName} 状态">
+                ${DI_STATUS_LABELS[status]}
+              </button>
+            </div>
+            ${childHtml}
+          </div>
+        `;
+      }
+
+      function diModuleHtml(module) {
+        const stats = diModuleStats(module);
+        const intensityClass = stats.hasRisk ? "has-risk" : stats.progress === 100 ? "is-complete" : stats.progress > 0 ? "is-partial" : "is-empty";
+        return `
+          <article class="di-map-module ${intensityClass}" data-zone="${module.zone}">
+            <div class="di-map-module-head">
+              <div>
+                <span class="di-map-module-kicker">${module.zone}</span>
+                <h3>${module.name}</h3>
+                <p>${module.zhName}</p>
+              </div>
+              <div class="di-map-progress-ring" aria-label="${module.zhName} 完成度 ${stats.progress}%">${stats.progress}%</div>
+            </div>
+            <p class="di-map-module-desc">${module.description}</p>
+            <div class="di-map-progress-bar"><span style="width:${stats.progress}%"></span></div>
+            <div class="di-map-capability-list">
+              ${module.capabilities.map((capability) => diCapabilityHtml(module, capability)).join("")}
+            </div>
+          </article>
+        `;
+      }
+
+      function diRenderCapabilityMap() {
+        diRenderSummary();
+        ["driver", "main", "support"].forEach((zone) => {
+          const container = document.getElementById(`di-map-${zone}`);
+          container.innerHTML = DI_MAP_MODULES.filter((module) => module.zone === zone).map(diModuleHtml).join("");
+        });
+        document.body.classList.toggle("di-map-presentation-mode", diPresentationMode);
+        document.querySelectorAll(".di-map-status-button").forEach((button) => {
+          button.addEventListener("click", () => diCycleStatus(button.dataset.moduleId, button.dataset.capabilityId));
+        });
+      }
+
+      document.addEventListener("DOMContentLoaded", () => {
+        diLoadStatuses();
+        diRenderCapabilityMap();
+      });
     </script>
   </body>
 </html>
