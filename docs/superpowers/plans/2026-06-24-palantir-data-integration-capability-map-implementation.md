@@ -1,0 +1,1182 @@
+# Palantir Data Integration Capability Map Implementation Plan
+
+> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
+
+**Goal:** Build a static interactive HTML report page that renders a Palantir-aligned Data Integration capability map with configurable completion status.
+
+**Architecture:** Add one standalone page under `deliverables/pages/` that embeds the Palantir-aligned capability data and page-specific JavaScript. Reuse the existing site shell, navigation style, `deliverables/app.js`, and add focused CSS to `deliverables/styles.css`. Persist user status choices in `localStorage`, with import/export/reset controls.
+
+**Tech Stack:** Static HTML, vanilla JavaScript, CSS, existing `deliverables/app.js`, browser `localStorage`, no build step.
+
+---
+
+## File Structure
+
+- Create: `deliverables/pages/data-integration-capability-map.html`
+  - Owns page markup, Palantir-aligned capability data, status interaction logic, import/export behavior, and page-specific initialization.
+- Modify: `deliverables/styles.css`
+  - Adds `.di-map-*` styles for the capability map layout, status colors, presentation mode, responsive behavior, and print/screenshot-friendly spacing.
+- Modify: `deliverables/pages/overview.html`
+  - Adds a link card to the new capability map from the overview page.
+- Optional manual verification only:
+  - No test framework exists for this static site. Validate by opening the HTML page, clicking statuses, refreshing, toggling presentation mode, and importing/exporting JSON.
+
+## Task 1: Create Capability Map Page Scaffold And Data
+
+**Files:**
+- Create: `deliverables/pages/data-integration-capability-map.html`
+
+- [ ] **Step 1: Create the page scaffold**
+
+Create `deliverables/pages/data-integration-capability-map.html` with the same shell pattern used by existing `deliverables/pages/*.html`.
+
+Use this complete initial file:
+
+```html
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Palantir Data Integration 能力地图</title>
+    <link rel="stylesheet" href="../styles.css" />
+    <script defer src="../app.js"></script>
+  </head>
+  <body class="detail-body di-map-page">
+    <div class="site-shell">
+      <svg class="icon-sprite" xmlns="http://www.w3.org/2000/svg">
+        <symbol id="i-home" viewBox="0 0 24 24">
+          <path d="M12 3l8 6v11a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V9l8-6Z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" />
+          <path d="M9 21v-8h6v8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" />
+        </symbol>
+        <symbol id="i-map" viewBox="0 0 24 24">
+          <path d="M9 4 3 6v14l6-2 6 2 6-2V4l-6 2-6-2Z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" />
+          <path d="M9 4v14M15 6v14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
+        </symbol>
+        <symbol id="i-file" viewBox="0 0 24 24">
+          <path d="M7 3h7l3 3v15a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1Z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" />
+          <path d="M14 3v4h4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" />
+        </symbol>
+      </svg>
+
+      <header class="site-nav">
+        <div class="nav-inner">
+          <a class="brand-mark" href="../index.html">
+            <span class="brand-dot"></span>
+            <span>Palantir Research Summary</span>
+          </a>
+          <nav class="nav-links">
+            <a data-nav href="../index.html"><svg class="icon sm" aria-hidden="true"><use href="#i-home"></use></svg><span>首页</span></a>
+            <a data-nav href="overview.html"><svg class="icon sm" aria-hidden="true"><use href="#i-map"></use></svg><span>总览</span></a>
+            <a data-nav href="data-integration-capability-map.html"><svg class="icon sm" aria-hidden="true"><use href="#i-map"></use></svg><span>能力地图</span></a>
+            <a data-nav href="data-integration-permission-system.html"><svg class="icon sm" aria-hidden="true"><use href="#i-file"></use></svg><span>集成权限</span></a>
+          </nav>
+        </div>
+      </header>
+
+      <main>
+        <section class="topic-header di-map-header">
+          <p class="eyebrow">Palantir Data Integration</p>
+          <h1>Data Integration 能力地图</h1>
+          <p class="intro-note">
+            严格对齐 Palantir 官方能力对象，按主链路、驱动观察层和支撑层组织。点击二级能力状态即可配置“已完成 / 进行中 / 未开始 / 风险”，用于进展汇报点亮。
+          </p>
+          <div class="topic-meta">
+            <span class="tag">Palantir Aligned</span>
+            <span class="tag">Interactive Status</span>
+            <span class="tag">Local JSON Config</span>
+          </div>
+        </section>
+
+        <section class="page-section di-map-control-section" aria-label="能力地图控制台">
+          <div class="di-map-summary-grid" id="di-map-summary"></div>
+          <div class="di-map-toolbar" aria-label="能力地图操作">
+            <button class="di-map-action" type="button" id="di-toggle-presentation">演示模式</button>
+            <button class="di-map-action" type="button" id="di-export-json">导出 JSON</button>
+            <button class="di-map-action" type="button" id="di-import-json">导入 JSON</button>
+            <button class="di-map-action danger" type="button" id="di-reset-status">重置</button>
+          </div>
+          <div class="di-map-legend" aria-label="状态图例">
+            <span><i class="status-dot status-not-started"></i>未开始</span>
+            <span><i class="status-dot status-in-progress"></i>进行中</span>
+            <span><i class="status-dot status-done"></i>已完成</span>
+            <span><i class="status-dot status-risk"></i>风险</span>
+          </div>
+        </section>
+
+        <section class="page-section di-map-stage" aria-label="Palantir Data Integration 能力地图">
+          <div class="di-map-zone di-map-zone-driver">
+            <div class="di-map-zone-label">驱动与观察</div>
+            <div class="di-map-zone-grid" id="di-map-driver"></div>
+          </div>
+
+          <div class="di-map-zone di-map-zone-main">
+            <div class="di-map-zone-label">主链路</div>
+            <div class="di-map-flow" id="di-map-main"></div>
+          </div>
+
+          <div class="di-map-zone di-map-zone-support">
+            <div class="di-map-zone-label">支撑层</div>
+            <div class="di-map-zone-grid" id="di-map-support"></div>
+          </div>
+        </section>
+
+        <section class="page-section">
+          <div class="section-head">
+            <div>
+              <p class="section-kicker">Source Documents</p>
+              <h2>来源与术语口径</h2>
+            </div>
+            <p>本页能力数据来自仓库内 Palantir 严格对齐能力地图和术语核对文档。</p>
+          </div>
+          <div class="entry-grid">
+            <a class="detail-card" href="../../docs/synthesis/data-integration-palantir-aligned-capability-map.md">
+              <h3>Palantir 严格对齐能力地图</h3>
+              <p class="muted">官方能力对象、主链路和二级能力清单。</p>
+            </a>
+            <a class="detail-card" href="../../docs/synthesis/data-integration-capability-panorama-term-alignment.md">
+              <h3>术语核对与中文解读</h3>
+              <p class="muted">识别自研抽象、术语偏差和中文解释口径。</p>
+            </a>
+          </div>
+        </section>
+      </main>
+    </div>
+  </body>
+</html>
+```
+
+- [ ] **Step 2: Add the Palantir-aligned data block**
+
+Before `</body>`, add this script tag after `</div>` closing `.site-shell`:
+
+```html
+<script>
+  const DI_MAP_MODULES = [
+    {
+      id: "schedules",
+      zone: "driver",
+      name: "Schedules",
+      zhName: "调度",
+      description: "让 Build 随时间、数据更新或逻辑更新持续运行的触发机制。",
+      capabilities: [
+        { id: "schedule", name: "Schedule", zhName: "调度对象", core: true, children: ["Create / view / modify schedules"] },
+        { id: "time-trigger", name: "Time trigger", zhName: "时间触发", core: true, children: ["cron", "calendar"] },
+        { id: "data-updated-trigger", name: "Data updated trigger", zhName: "数据更新触发", core: true, children: ["upstream dataset updated"] },
+        { id: "logic-updated-trigger", name: "Logic updated trigger", zhName: "逻辑更新触发", core: false, children: ["code or JobSpec changed"] },
+        { id: "trigger-composition", name: "AND / OR trigger composition", zhName: "组合触发", core: false, children: ["AND", "OR"] }
+      ]
+    },
+    {
+      id: "data-lineage",
+      zone: "driver",
+      name: "Data Lineage",
+      zhName: "数据血缘",
+      description: "理解 Dataset graph、发起 Build、查看 stale 状态、权限和影响范围的工作台。",
+      capabilities: [
+        { id: "lineage-graph", name: "Explore lineage graph", zhName: "血缘图探索", core: true, children: ["ancestors", "descendants"] },
+        { id: "build-from-lineage", name: "Build datasets from lineage graph", zhName: "从血缘图发起构建", core: true, children: ["all ancestors", "between selected datasets", "selected datasets"] },
+        { id: "build-timeline", name: "Build timeline", zhName: "构建时间线", core: true, children: ["job status", "runtime evidence"] },
+        { id: "manage-schedules", name: "Manage schedules", zhName: "管理调度", core: false, children: ["schedule editor"] },
+        { id: "stale-analysis", name: "Out-of-date / stale dataset analysis", zhName: "过期数据分析", core: true, children: ["staleness", "up-to-date"] },
+        { id: "permission-impact", name: "Permissions and Marking impact", zhName: "权限与标记影响", core: false, children: ["permission coloring", "marking changes"] }
+      ]
+    },
+    {
+      id: "data-connection",
+      zone: "main",
+      name: "Data Connection / Connectivity",
+      zhName: "数据连接与接入",
+      description: "连接外部系统、配置 source、执行 sync、接收 push stream，并可把 Foundry 数据 export 到外部系统。",
+      capabilities: [
+        { id: "agents", name: "Agents", zhName: "连接代理", core: true, children: ["network access", "on-prem access"] },
+        { id: "sources", name: "Sources", zhName: "数据源", core: true, children: ["source exploration"] },
+        { id: "batch-sync", name: "Batch sync", zhName: "批量同步", core: true, children: ["full sync", "file-based sync"] },
+        { id: "streaming-sync", name: "Streaming sync", zhName: "流式同步", core: true, children: ["push data into a stream"] },
+        { id: "incremental-sync", name: "Incremental sync / CDC-related ingestion", zhName: "增量同步 / CDC", core: false, children: ["watermark", "cursor", "change data capture"] },
+        { id: "exports", name: "Exports", zhName: "数据外发", core: false, children: ["dataset export", "stream export"] },
+        { id: "webhooks-listeners", name: "Webhooks / Listeners", zhName: "Webhook 与监听器", core: false, children: ["HTTPS", "WebSocket", "Email"] }
+      ]
+    },
+    {
+      id: "core-data-objects",
+      zone: "main",
+      name: "Core Data Objects",
+      zhName: "核心数据对象",
+      description: "承载数据状态、版本和存储形态的官方核心对象。",
+      capabilities: [
+        { id: "datasets", name: "Datasets", zhName: "数据集", core: true, children: ["files", "schema", "permissions"] },
+        { id: "transactions", name: "Transactions", zhName: "事务", core: true, children: ["SNAPSHOT", "APPEND", "UPDATE", "DELETE"] },
+        { id: "views", name: "Views", zhName: "视图", core: true, children: ["backing datasets"] },
+        { id: "branches", name: "Branches", zhName: "分支", core: true, children: ["branch-specific data state"] },
+        { id: "streams", name: "Streams", zhName: "流", core: true, children: ["stream data", "partitions"] },
+        { id: "media-sets", name: "Media sets", zhName: "媒体集", core: false, children: ["unstructured files"] },
+        { id: "virtual-tables", name: "Virtual tables", zhName: "虚拟表", core: false, children: ["external query source"] },
+        { id: "iceberg-tables", name: "Iceberg tables", zhName: "Iceberg 表", core: false, children: ["lakehouse table"] }
+      ]
+    },
+    {
+      id: "pipeline-authoring",
+      zone: "main",
+      name: "Pipeline Authoring",
+      zhName: "Pipeline 开发入口",
+      description: "定义数据转换逻辑的官方开发入口，包括低码 Pipeline Builder 与高码 Code Repositories。",
+      capabilities: [
+        { id: "pipeline-builder", name: "Pipeline Builder", zhName: "低码 Pipeline Builder", core: true, children: ["graph and form-based authoring", "transforms", "expressions", "outputs"] },
+        { id: "code-repositories", name: "Code Repositories", zhName: "高码 Code Repositories", core: true, children: ["Git", "pull requests", "preview", "debug"] },
+        { id: "python-transforms", name: "Python transforms", zhName: "Python 转换", core: true, children: ["PySpark", "lightweight Python"] },
+        { id: "sql-transforms", name: "SQL transforms", zhName: "SQL 转换", core: false, children: ["Spark SQL"] },
+        { id: "java-transforms", name: "Java transforms", zhName: "Java 转换", core: false, children: ["Java APIs", "UDF"] },
+        { id: "external-pipelines", name: "External pipelines", zhName: "外部 Pipeline", core: false, children: ["external runtime integration"] }
+      ]
+    },
+    {
+      id: "pipeline-types",
+      zone: "main",
+      name: "Pipeline Types",
+      zhName: "Pipeline 类型",
+      description: "Foundry 官方定义的 Batch、Incremental、Streaming 三类主型，Faster 是 Batch / Incremental 的变体。",
+      capabilities: [
+        { id: "batch-pipelines", name: "Batch pipelines", zhName: "批处理 Pipeline", core: true, children: ["fully recompute changed datasets"] },
+        { id: "incremental-pipelines", name: "Incremental pipelines", zhName: "增量 Pipeline", core: true, children: ["process data changed since last run"] },
+        { id: "streaming-pipelines", name: "Streaming pipelines", zhName: "流式 Pipeline", core: true, children: ["run continuously", "process new data as it arrives"] },
+        { id: "faster-pipelines", name: "Faster versions", zhName: "Faster 变体", core: false, children: ["faster batch", "faster incremental"] }
+      ]
+    },
+    {
+      id: "builds",
+      zone: "main",
+      name: "Builds",
+      zhName: "构建",
+      description: "计算 Dataset 新版本的官方机制，包含 Build resolution、job execution、staleness 和 build timeline。",
+      capabilities: [
+        { id: "build", name: "Build", zhName: "构建", core: true, children: ["compute new dataset versions"] },
+        { id: "jobs", name: "Jobs / JobSpec", zhName: "任务与任务规格", core: true, children: ["job execution", "logic definition"] },
+        { id: "build-resolution", name: "Build resolution", zhName: "构建解析", core: true, children: ["input checks", "output transaction"] },
+        { id: "staleness", name: "Staleness", zhName: "过期判断", core: true, children: ["fresh", "out-of-date"] },
+        { id: "build-locking", name: "Build locking", zhName: "构建锁", core: false, children: ["output locking"] },
+        { id: "force-build", name: "Force build", zhName: "强制构建", core: false, children: ["manual rebuild"] },
+        { id: "build-timeline", name: "Build timeline", zhName: "构建时间线", core: false, children: ["runtime evidence"] }
+      ]
+    },
+    {
+      id: "ontology-object-backend",
+      zone: "main",
+      name: "Ontology / Object Backend",
+      zhName: "Ontology 与对象后端",
+      description: "把 Dataset 等 Foundry datasources 映射为业务对象、对象集合、动作和应用可消费的对象查询能力。",
+      capabilities: [
+        { id: "ontology-metadata-service", name: "Ontology Metadata Service", zhName: "Ontology 元数据服务", core: false, children: ["OMS"] },
+        { id: "object-types", name: "Object types", zhName: "对象类型", core: true, children: ["properties", "primary key"] },
+        { id: "link-types", name: "Link types", zhName: "关系类型", core: false, children: ["object relationships"] },
+        { id: "object-sets", name: "Object sets", zhName: "对象集合", core: true, children: ["static", "dynamic", "temporary", "permanent"] },
+        { id: "actions", name: "Actions", zhName: "对象动作", core: true, children: ["user edits", "writeback"] },
+        { id: "object-data-funnel", name: "Object Data Funnel", zhName: "对象数据漏斗", core: true, children: ["datasources", "user edits", "object databases"] },
+        { id: "object-indexing", name: "Object indexing", zhName: "对象索引", core: true, children: ["indexing service", "freshness"] },
+        { id: "functions-on-objects", name: "Functions on Objects", zhName: "对象函数", core: false, children: ["computed logic"] }
+      ]
+    },
+    {
+      id: "health-quality",
+      zone: "support",
+      name: "Health / Quality",
+      zhName: "健康检查与数据质量",
+      description: "对 Dataset / Pipeline 产出进行质量、状态和健康判断。",
+      capabilities: [
+        { id: "health-checks", name: "Health checks", zhName: "健康检查", core: true, children: ["status", "freshness", "content"] },
+        { id: "pipeline-builder-health-checks", name: "Pipeline Builder health checks", zhName: "Pipeline Builder 健康检查", core: false, children: ["schema", "output"] },
+        { id: "data-expectations", name: "Data Expectations", zhName: "数据期望", core: true, children: ["FAIL", "WARN"] },
+        { id: "output-checks", name: "Output checks", zhName: "输出检查", core: true, children: ["row count", "primary key"] },
+        { id: "data-health", name: "Data Health", zhName: "数据健康", core: true, children: ["dashboard", "issue"] },
+        { id: "monitoring-views", name: "Monitoring views", zhName: "监控视图", core: false, children: ["alerts"] }
+      ]
+    },
+    {
+      id: "security-governance",
+      zone: "support",
+      name: "Security / Governance",
+      zhName: "安全与治理",
+      description: "围绕 Dataset、Pipeline、Ontology 对象和数据访问路径执行权限、标记、策略和审计。",
+      capabilities: [
+        { id: "roles-permissions", name: "Roles / resource permissions", zhName: "角色与资源权限", core: true, children: ["owner", "editor", "viewer"] },
+        { id: "organizations", name: "Organizations", zhName: "组织边界", core: true, children: ["organization membership"] },
+        { id: "markings", name: "Markings", zhName: "标记", core: true, children: ["requirements", "propagation"] },
+        { id: "pipeline-security", name: "Pipeline security", zhName: "Pipeline 安全", core: false, children: ["remove inherited markings", "guidance on removing markings"] },
+        { id: "object-security", name: "Object security policies", zhName: "对象安全策略", core: true, children: ["object visibility"] },
+        { id: "property-security", name: "Property security policies", zhName: "属性安全策略", core: true, children: ["property visibility"] },
+        { id: "audit", name: "Audit-related capabilities", zhName: "审计能力", core: false, children: ["access", "change"] }
+      ]
+    }
+  ];
+</script>
+```
+
+- [ ] **Step 3: Open the page and verify scaffold renders**
+
+Run:
+
+```bash
+open deliverables/pages/data-integration-capability-map.html
+```
+
+Expected: the browser opens the page with header, summary controls area, empty map zones, and source document cards. No JavaScript-driven cards appear yet because render logic is not implemented.
+
+- [ ] **Step 4: Commit scaffold and data**
+
+```bash
+git add deliverables/pages/data-integration-capability-map.html
+git commit -m "feat: add Palantir capability map page scaffold"
+```
+
+## Task 2: Implement Rendering And Status State Logic
+
+**Files:**
+- Modify: `deliverables/pages/data-integration-capability-map.html`
+
+- [ ] **Step 1: Add status helpers**
+
+Inside the same `<script>` block, after `DI_MAP_MODULES`, add:
+
+```javascript
+const DI_STATUS_ORDER = ["not-started", "in-progress", "done", "risk"];
+const DI_STATUS_LABELS = {
+  "not-started": "未开始",
+  "in-progress": "进行中",
+  done: "已完成",
+  risk: "风险"
+};
+const DI_STORAGE_KEY = "palantir-di-capability-map-statuses-v1";
+let diMapStatuses = {};
+let diPresentationMode = false;
+
+function diStatusKey(moduleId, capabilityId) {
+  return `${moduleId}.${capabilityId}`;
+}
+
+function diLoadStatuses() {
+  try {
+    const parsed = JSON.parse(localStorage.getItem(DI_STORAGE_KEY) || "{}");
+    diMapStatuses = parsed && typeof parsed === "object" ? parsed : {};
+  } catch (_error) {
+    diMapStatuses = {};
+  }
+}
+
+function diSaveStatuses() {
+  localStorage.setItem(DI_STORAGE_KEY, JSON.stringify(diMapStatuses));
+}
+
+function diGetStatus(moduleId, capabilityId) {
+  return diMapStatuses[diStatusKey(moduleId, capabilityId)] || "not-started";
+}
+
+function diCycleStatus(moduleId, capabilityId) {
+  const key = diStatusKey(moduleId, capabilityId);
+  const current = diGetStatus(moduleId, capabilityId);
+  const nextIndex = (DI_STATUS_ORDER.indexOf(current) + 1) % DI_STATUS_ORDER.length;
+  diMapStatuses[key] = DI_STATUS_ORDER[nextIndex];
+  diSaveStatuses();
+  diRenderCapabilityMap();
+}
+
+function diModuleStats(module) {
+  const coreCapabilities = module.capabilities.filter((capability) => capability.core);
+  const allStatuses = module.capabilities.map((capability) => diGetStatus(module.id, capability.id));
+  const doneCore = coreCapabilities.filter((capability) => diGetStatus(module.id, capability.id) === "done").length;
+  const totalCore = coreCapabilities.length || 1;
+  return {
+    progress: Math.round((doneCore / totalCore) * 100),
+    doneCore,
+    totalCore,
+    hasRisk: coreCapabilities.some((capability) => diGetStatus(module.id, capability.id) === "risk"),
+    done: allStatuses.filter((status) => status === "done").length,
+    inProgress: allStatuses.filter((status) => status === "in-progress").length,
+    risk: allStatuses.filter((status) => status === "risk").length,
+    total: allStatuses.length
+  };
+}
+
+function diOverallStats() {
+  const capabilities = DI_MAP_MODULES.flatMap((module) => module.capabilities.map((capability) => ({ module, capability })));
+  const coreCapabilities = capabilities.filter((item) => item.capability.core);
+  const statusCounts = capabilities.reduce(
+    (acc, item) => {
+      const status = diGetStatus(item.module.id, item.capability.id);
+      acc[status] += 1;
+      return acc;
+    },
+    { "not-started": 0, "in-progress": 0, done: 0, risk: 0 }
+  );
+  const coreDone = coreCapabilities.filter((item) => diGetStatus(item.module.id, item.capability.id) === "done").length;
+  const completion = Math.round((coreDone / coreCapabilities.length) * 100);
+  return { ...statusCounts, completion, total: capabilities.length, coreTotal: coreCapabilities.length, coreDone };
+}
+```
+
+- [ ] **Step 2: Add card rendering functions**
+
+After the helpers, add:
+
+```javascript
+function diRenderSummary() {
+  const stats = diOverallStats();
+  const summary = document.getElementById("di-map-summary");
+  summary.innerHTML = [
+    ["总完成率", `${stats.completion}%`, `${stats.coreDone}/${stats.coreTotal} 个核心能力已完成`],
+    ["已完成", stats.done, "全部二级能力统计"],
+    ["进行中", stats["in-progress"], "全部二级能力统计"],
+    ["风险", stats.risk, "全部二级能力统计"]
+  ]
+    .map(
+      ([label, value, note]) => `
+        <article class="di-map-stat">
+          <span>${label}</span>
+          <strong>${value}</strong>
+          <small>${note}</small>
+        </article>
+      `
+    )
+    .join("");
+}
+
+function diCapabilityHtml(module, capability) {
+  const status = diGetStatus(module.id, capability.id);
+  const childHtml = capability.children && capability.children.length
+    ? `<ul>${capability.children.map((child) => `<li>${child}</li>`).join("")}</ul>`
+    : "";
+  return `
+    <div class="di-map-capability status-${status}">
+      <div class="di-map-capability-main">
+        <div>
+          <strong>${capability.name}</strong>
+          <span>${capability.zhName}</span>
+        </div>
+        <button class="di-map-status-button status-${status}" type="button" data-module-id="${module.id}" data-capability-id="${capability.id}" aria-label="切换 ${capability.zhName} 状态">
+          ${DI_STATUS_LABELS[status]}
+        </button>
+      </div>
+      ${childHtml}
+    </div>
+  `;
+}
+
+function diModuleHtml(module) {
+  const stats = diModuleStats(module);
+  const intensityClass = stats.hasRisk ? "has-risk" : stats.progress === 100 ? "is-complete" : stats.progress > 0 ? "is-partial" : "is-empty";
+  return `
+    <article class="di-map-module ${intensityClass}" data-zone="${module.zone}">
+      <div class="di-map-module-head">
+        <div>
+          <span class="di-map-module-kicker">${module.zone}</span>
+          <h3>${module.name}</h3>
+          <p>${module.zhName}</p>
+        </div>
+        <div class="di-map-progress-ring" aria-label="${module.zhName} 完成度 ${stats.progress}%">${stats.progress}%</div>
+      </div>
+      <p class="di-map-module-desc">${module.description}</p>
+      <div class="di-map-progress-bar"><span style="width:${stats.progress}%"></span></div>
+      <div class="di-map-capability-list">
+        ${module.capabilities.map((capability) => diCapabilityHtml(module, capability)).join("")}
+      </div>
+    </article>
+  `;
+}
+
+function diRenderCapabilityMap() {
+  diRenderSummary();
+  ["driver", "main", "support"].forEach((zone) => {
+    const container = document.getElementById(`di-map-${zone}`);
+    container.innerHTML = DI_MAP_MODULES.filter((module) => module.zone === zone).map(diModuleHtml).join("");
+  });
+  document.body.classList.toggle("di-map-presentation-mode", diPresentationMode);
+  document.querySelectorAll(".di-map-status-button").forEach((button) => {
+    button.addEventListener("click", () => diCycleStatus(button.dataset.moduleId, button.dataset.capabilityId));
+  });
+}
+```
+
+- [ ] **Step 3: Add page initialization**
+
+After the rendering functions, add:
+
+```javascript
+document.addEventListener("DOMContentLoaded", () => {
+  diLoadStatuses();
+  diRenderCapabilityMap();
+});
+```
+
+- [ ] **Step 4: Verify rendering**
+
+Run:
+
+```bash
+open deliverables/pages/data-integration-capability-map.html
+```
+
+Expected:
+- The driver, main, and support zones render all 10 modules.
+- Each capability shows a status button.
+- Clicking a status button cycles from `未开始` to `进行中`.
+- Top summary values update immediately.
+
+- [ ] **Step 5: Commit rendering logic**
+
+```bash
+git add deliverables/pages/data-integration-capability-map.html
+git commit -m "feat: render interactive capability map"
+```
+
+## Task 3: Implement Import, Export, Reset, And Presentation Mode
+
+**Files:**
+- Modify: `deliverables/pages/data-integration-capability-map.html`
+
+- [ ] **Step 1: Add JSON and mode functions**
+
+Inside the script, before the `DOMContentLoaded` listener, add:
+
+```javascript
+function diExportJson() {
+  const payload = {
+    version: 1,
+    updatedAt: new Date().toISOString(),
+    statuses: diMapStatuses
+  };
+  const text = JSON.stringify(payload, null, 2);
+  navigator.clipboard
+    .writeText(text)
+    .then(() => alert("状态 JSON 已复制到剪贴板。"))
+    .catch(() => {
+      const blob = new Blob([text], { type: "application/json" });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = "palantir-data-integration-capability-status.json";
+      link.click();
+      URL.revokeObjectURL(url);
+    });
+}
+
+function diImportJson() {
+  const raw = prompt("粘贴导出的状态 JSON：");
+  if (!raw) return;
+  try {
+    const parsed = JSON.parse(raw);
+    if (!parsed || typeof parsed !== "object" || !parsed.statuses || typeof parsed.statuses !== "object") {
+      alert("JSON 格式无效：缺少 statuses 对象。");
+      return;
+    }
+    const allowed = new Set(DI_STATUS_ORDER);
+    const nextStatuses = {};
+    Object.entries(parsed.statuses).forEach(([key, value]) => {
+      if (allowed.has(value)) {
+        nextStatuses[key] = value;
+      }
+    });
+    diMapStatuses = nextStatuses;
+    diSaveStatuses();
+    diRenderCapabilityMap();
+  } catch (_error) {
+    alert("JSON 解析失败，请检查内容。");
+  }
+}
+
+function diResetStatuses() {
+  if (!confirm("确认重置全部状态为未开始？")) return;
+  diMapStatuses = {};
+  diSaveStatuses();
+  diRenderCapabilityMap();
+}
+
+function diTogglePresentationMode() {
+  diPresentationMode = !diPresentationMode;
+  document.getElementById("di-toggle-presentation").textContent = diPresentationMode ? "退出演示模式" : "演示模式";
+  diRenderCapabilityMap();
+}
+```
+
+- [ ] **Step 2: Wire toolbar events**
+
+In the existing `DOMContentLoaded` listener, replace it with:
+
+```javascript
+document.addEventListener("DOMContentLoaded", () => {
+  diLoadStatuses();
+  document.getElementById("di-toggle-presentation").addEventListener("click", diTogglePresentationMode);
+  document.getElementById("di-export-json").addEventListener("click", diExportJson);
+  document.getElementById("di-import-json").addEventListener("click", diImportJson);
+  document.getElementById("di-reset-status").addEventListener("click", diResetStatuses);
+  diRenderCapabilityMap();
+});
+```
+
+- [ ] **Step 3: Verify interactions**
+
+Run:
+
+```bash
+open deliverables/pages/data-integration-capability-map.html
+```
+
+Expected:
+- `演示模式` hides status controls after CSS is added in Task 4; before CSS it only changes the button label and body class.
+- `导出 JSON` copies or downloads a JSON payload with `version`, `updatedAt`, and `statuses`.
+- `导入 JSON` accepts a payload such as:
+
+```json
+{
+  "version": 1,
+  "updatedAt": "2026-06-24T00:00:00.000Z",
+  "statuses": {
+    "data-connection.batch-sync": "done",
+    "pipeline-types.streaming-pipelines": "in-progress",
+    "builds.staleness": "risk"
+  }
+}
+```
+
+- `重置` clears all configured statuses.
+
+- [ ] **Step 4: Commit toolbar behavior**
+
+```bash
+git add deliverables/pages/data-integration-capability-map.html
+git commit -m "feat: add capability map status controls"
+```
+
+## Task 4: Add Capability Map Styling
+
+**Files:**
+- Modify: `deliverables/styles.css`
+
+- [ ] **Step 1: Add base capability map styles**
+
+Append this CSS to the end of `deliverables/styles.css`:
+
+```css
+.di-map-page {
+  --di-done: #138a4d;
+  --di-progress: #2563eb;
+  --di-risk: #c2410c;
+  --di-muted: #6b7280;
+  --di-border: rgba(31, 41, 55, 0.14);
+  --di-surface: rgba(255, 255, 255, 0.92);
+}
+
+.di-map-header .intro-note {
+  max-width: 980px;
+}
+
+.di-map-control-section {
+  display: grid;
+  gap: 18px;
+}
+
+.di-map-summary-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.di-map-stat {
+  border: 1px solid var(--di-border);
+  border-radius: 8px;
+  background: var(--di-surface);
+  padding: 16px;
+}
+
+.di-map-stat span,
+.di-map-stat small {
+  display: block;
+  color: var(--di-muted);
+}
+
+.di-map-stat strong {
+  display: block;
+  margin: 6px 0;
+  color: #111827;
+  font-size: 28px;
+  line-height: 1;
+}
+
+.di-map-toolbar,
+.di-map-legend {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+}
+
+.di-map-action {
+  border: 1px solid rgba(37, 99, 235, 0.24);
+  border-radius: 8px;
+  background: #eff6ff;
+  color: #1d4ed8;
+  cursor: pointer;
+  font: inherit;
+  font-weight: 700;
+  padding: 9px 12px;
+}
+
+.di-map-action:hover {
+  background: #dbeafe;
+}
+
+.di-map-action.danger {
+  border-color: rgba(194, 65, 12, 0.25);
+  background: #fff7ed;
+  color: var(--di-risk);
+}
+
+.di-map-legend span {
+  display: inline-flex;
+  align-items: center;
+  color: #374151;
+  font-size: 13px;
+  gap: 6px;
+}
+
+.status-dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 999px;
+  display: inline-block;
+}
+
+.status-not-started {
+  background: #9ca3af;
+}
+
+.status-in-progress {
+  background: var(--di-progress);
+}
+
+.status-done {
+  background: var(--di-done);
+}
+
+.status-risk {
+  background: var(--di-risk);
+}
+```
+
+- [ ] **Step 2: Add map layout styles**
+
+Append:
+
+```css
+.di-map-stage {
+  display: grid;
+  gap: 18px;
+}
+
+.di-map-zone {
+  border: 1px solid var(--di-border);
+  border-radius: 10px;
+  background: rgba(248, 250, 252, 0.78);
+  padding: 16px;
+}
+
+.di-map-zone-label {
+  color: #475569;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  margin-bottom: 12px;
+  text-transform: uppercase;
+}
+
+.di-map-flow {
+  align-items: stretch;
+  display: grid;
+  gap: 14px;
+  grid-template-columns: repeat(6, minmax(210px, 1fr));
+  overflow-x: auto;
+  padding-bottom: 4px;
+}
+
+.di-map-zone-grid {
+  display: grid;
+  gap: 14px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.di-map-module {
+  border: 1px solid var(--di-border);
+  border-radius: 10px;
+  background: #fff;
+  box-shadow: 0 12px 28px rgba(15, 23, 42, 0.06);
+  min-width: 0;
+  padding: 14px;
+  position: relative;
+}
+
+.di-map-module.is-complete {
+  border-color: rgba(19, 138, 77, 0.42);
+  box-shadow: 0 16px 34px rgba(19, 138, 77, 0.12);
+}
+
+.di-map-module.is-partial {
+  border-color: rgba(37, 99, 235, 0.32);
+}
+
+.di-map-module.has-risk {
+  border-color: rgba(194, 65, 12, 0.45);
+  box-shadow: 0 16px 34px rgba(194, 65, 12, 0.1);
+}
+
+.di-map-module.has-risk::after {
+  content: "风险";
+  position: absolute;
+  right: 12px;
+  top: 12px;
+  border-radius: 999px;
+  background: #fff7ed;
+  color: var(--di-risk);
+  font-size: 11px;
+  font-weight: 800;
+  padding: 3px 7px;
+}
+
+.di-map-module-head {
+  align-items: flex-start;
+  display: flex;
+  gap: 12px;
+  justify-content: space-between;
+}
+
+.di-map-module-kicker {
+  color: #64748b;
+  display: block;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.di-map-module h3 {
+  color: #111827;
+  font-size: 18px;
+  line-height: 1.2;
+  margin: 5px 0 4px;
+}
+
+.di-map-module-head p,
+.di-map-module-desc {
+  color: #4b5563;
+  margin: 0;
+}
+
+.di-map-module-desc {
+  font-size: 13px;
+  line-height: 1.5;
+  margin-top: 10px;
+}
+
+.di-map-progress-ring {
+  align-items: center;
+  border: 1px solid rgba(37, 99, 235, 0.2);
+  border-radius: 999px;
+  color: #1d4ed8;
+  display: flex;
+  flex: 0 0 auto;
+  font-size: 13px;
+  font-weight: 900;
+  height: 46px;
+  justify-content: center;
+  width: 46px;
+}
+
+.di-map-progress-bar {
+  background: #e5e7eb;
+  border-radius: 999px;
+  height: 7px;
+  margin: 12px 0;
+  overflow: hidden;
+}
+
+.di-map-progress-bar span {
+  background: linear-gradient(90deg, var(--di-progress), var(--di-done));
+  display: block;
+  height: 100%;
+}
+```
+
+- [ ] **Step 3: Add capability and status styles**
+
+Append:
+
+```css
+.di-map-capability-list {
+  display: grid;
+  gap: 8px;
+}
+
+.di-map-capability {
+  border: 1px solid rgba(148, 163, 184, 0.32);
+  border-radius: 8px;
+  padding: 9px;
+}
+
+.di-map-capability.status-done {
+  background: rgba(19, 138, 77, 0.08);
+  border-color: rgba(19, 138, 77, 0.28);
+}
+
+.di-map-capability.status-in-progress {
+  background: rgba(37, 99, 235, 0.08);
+  border-color: rgba(37, 99, 235, 0.26);
+}
+
+.di-map-capability.status-risk {
+  background: rgba(194, 65, 12, 0.08);
+  border-color: rgba(194, 65, 12, 0.28);
+}
+
+.di-map-capability-main {
+  align-items: center;
+  display: flex;
+  gap: 8px;
+  justify-content: space-between;
+}
+
+.di-map-capability strong,
+.di-map-capability span {
+  display: block;
+}
+
+.di-map-capability strong {
+  color: #111827;
+  font-size: 13px;
+}
+
+.di-map-capability span {
+  color: #64748b;
+  font-size: 12px;
+  margin-top: 2px;
+}
+
+.di-map-capability ul {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  list-style: none;
+  margin: 8px 0 0;
+  padding: 0;
+}
+
+.di-map-capability li {
+  border-radius: 999px;
+  background: rgba(15, 23, 42, 0.06);
+  color: #475569;
+  font-size: 11px;
+  line-height: 1.2;
+  padding: 4px 7px;
+}
+
+.di-map-status-button {
+  border: 1px solid transparent;
+  border-radius: 999px;
+  cursor: pointer;
+  flex: 0 0 auto;
+  font-size: 12px;
+  font-weight: 800;
+  padding: 5px 8px;
+}
+
+.di-map-status-button.status-not-started {
+  background: #f3f4f6;
+  color: #4b5563;
+}
+
+.di-map-status-button.status-in-progress {
+  background: #dbeafe;
+  color: #1d4ed8;
+}
+
+.di-map-status-button.status-done {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.di-map-status-button.status-risk {
+  background: #ffedd5;
+  color: var(--di-risk);
+}
+
+.di-map-presentation-mode .di-map-status-button {
+  display: none;
+}
+```
+
+- [ ] **Step 4: Add responsive styles**
+
+Append:
+
+```css
+@media (max-width: 1180px) {
+  .di-map-flow {
+    grid-template-columns: repeat(3, minmax(240px, 1fr));
+  }
+}
+
+@media (max-width: 760px) {
+  .di-map-summary-grid,
+  .di-map-zone-grid,
+  .di-map-flow {
+    grid-template-columns: 1fr;
+  }
+
+  .di-map-flow {
+    overflow-x: visible;
+  }
+
+  .di-map-module-head {
+    align-items: flex-start;
+  }
+}
+```
+
+- [ ] **Step 5: Verify visual behavior**
+
+Run:
+
+```bash
+open deliverables/pages/data-integration-capability-map.html
+```
+
+Expected:
+- Main chain appears as horizontally arranged cards on desktop.
+- Driver and support zones appear as two-card grids.
+- Status colors apply to capabilities.
+- Presentation mode hides status buttons.
+- Text does not overlap at desktop width and remains readable on narrow width.
+
+- [ ] **Step 6: Commit styles**
+
+```bash
+git add deliverables/styles.css
+git commit -m "style: add capability map layout"
+```
+
+## Task 5: Link The Page From The Overview
+
+**Files:**
+- Modify: `deliverables/pages/overview.html`
+
+- [ ] **Step 1: Add an overview card**
+
+Find the section containing topic summary cards near existing Data Integration links. Add this card:
+
+```html
+<a class="topic-summary" href="data-integration-capability-map.html">
+  <span class="tag">Capability Map</span>
+  <h3>Data Integration 能力地图</h3>
+  <p class="muted">严格对齐 Palantir 官方对象，按主链路、驱动观察层和支撑层展示能力，并支持现场点亮完成状态。</p>
+</a>
+```
+
+If the nearby section uses `detail-card` instead of `topic-summary`, use the same markup shape as the surrounding cards:
+
+```html
+<a class="detail-card" href="data-integration-capability-map.html">
+  <h3>Data Integration 能力地图</h3>
+  <p class="muted">严格对齐 Palantir 官方对象，按主链路、驱动观察层和支撑层展示能力，并支持现场点亮完成状态。</p>
+</a>
+```
+
+- [ ] **Step 2: Verify navigation**
+
+Run:
+
+```bash
+open deliverables/pages/overview.html
+```
+
+Expected:
+- Overview page includes a visible link to `data-integration-capability-map.html`.
+- Clicking it opens the new page.
+
+- [ ] **Step 3: Commit overview link**
+
+```bash
+git add deliverables/pages/overview.html
+git commit -m "docs: link Data Integration capability map"
+```
+
+## Task 6: Final Verification
+
+**Files:**
+- Verify: `deliverables/pages/data-integration-capability-map.html`
+- Verify: `deliverables/styles.css`
+- Verify: `deliverables/pages/overview.html`
+
+- [ ] **Step 1: Run syntax checks**
+
+Run:
+
+```bash
+node --check deliverables/app.js
+```
+
+Expected:
+
+```text
+```
+
+No output and exit code 0.
+
+- [ ] **Step 2: Check new page references**
+
+Run:
+
+```bash
+rg -n "data-integration-capability-map|DI_MAP_MODULES|palantir-di-capability-map-statuses-v1" deliverables
+```
+
+Expected output includes:
+
+```text
+deliverables/pages/data-integration-capability-map.html
+deliverables/pages/overview.html
+```
+
+- [ ] **Step 3: Manually verify persistence**
+
+Run:
+
+```bash
+open deliverables/pages/data-integration-capability-map.html
+```
+
+Manual steps:
+
+1. Click `Batch sync` until it becomes `已完成`.
+2. Refresh the page.
+3. Confirm `Batch sync` remains `已完成`.
+4. Click `导出 JSON` and confirm a JSON payload is copied or downloaded.
+5. Click `重置` and confirm the page returns to all `未开始`.
+6. Click `导入 JSON` and paste the exported JSON.
+7. Confirm the previous status is restored.
+
+- [ ] **Step 4: Check git state**
+
+Run:
+
+```bash
+git status --short
+```
+
+Expected: only intended files are modified or the working tree is clean. Do not stage unrelated `.idea/` files.
+
+- [ ] **Step 5: Commit verification fixes if any**
+
+If verification required small fixes, commit them:
+
+```bash
+git add deliverables/pages/data-integration-capability-map.html deliverables/styles.css deliverables/pages/overview.html
+git commit -m "fix: polish capability map interactions"
+```
+
+If no fixes were required, skip this step.
