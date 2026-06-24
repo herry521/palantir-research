@@ -5025,11 +5025,12 @@ html.is-embedded-root .section-card {
   border-radius: 10px;
   background: #fffefa;
   box-shadow: var(--di-card-shadow);
+  padding: 16px 12px 12px;
+  position: relative;
 }
 
 .di-map-page-b3 .di-report-node-topline {
-  height: 0;
-  margin: 0 -12px 10px;
+  display: none;
 }
 
 .di-map-page-b3 .di-report-node {
@@ -5074,6 +5075,34 @@ html.is-embedded-root .section-card {
   color: #5b6472;
 }
 
+.di-map-page-b3 .di-report-node > .di-map-progress-bar {
+  border-radius: 10px 10px 0 0;
+  height: 4px;
+  left: -1px;
+  margin: 0;
+  pointer-events: none;
+  position: absolute;
+  right: -1px;
+  top: -1px;
+  z-index: 2;
+}
+
+.di-map-page-b3 .di-report-node.status-done > .di-map-progress-bar span {
+  background: var(--di-done);
+}
+
+.di-map-page-b3 .di-report-node.status-in-progress > .di-map-progress-bar span {
+  background: var(--di-progress);
+}
+
+.di-map-page-b3 .di-report-node.status-risk > .di-map-progress-bar span {
+  background: var(--di-risk);
+}
+
+.di-map-page-b3 .di-report-node.status-not-started > .di-map-progress-bar span {
+  background: #94a3b8;
+}
+
 .di-map-page-b3 .di-map-zone {
   border-radius: 12px;
   background: #fffefa;
@@ -5090,7 +5119,7 @@ html.is-embedded-root .section-card {
   border-radius: 10px;
   background: #fffefa;
   box-shadow: var(--di-card-shadow);
-  padding: 16px;
+  padding: 20px 16px 16px;
 }
 
 .di-map-page-b3 .di-map-module::before {
@@ -5146,6 +5175,34 @@ html.is-embedded-root .section-card {
 
 .di-map-page-b3 .di-map-progress-bar {
   background: #ece7dc;
+}
+
+.di-map-page-b3 .di-map-module > .di-map-progress-bar {
+  border-radius: 10px 10px 0 0;
+  height: 4px;
+  left: -1px;
+  margin: 0;
+  pointer-events: none;
+  position: absolute;
+  right: -1px;
+  top: -1px;
+  z-index: 2;
+}
+
+.di-map-page-b3 .di-map-module.is-complete > .di-map-progress-bar span {
+  background: var(--di-done);
+}
+
+.di-map-page-b3 .di-map-module.is-partial > .di-map-progress-bar span {
+  background: linear-gradient(90deg, var(--di-progress), var(--di-done));
+}
+
+.di-map-page-b3 .di-map-module.has-risk > .di-map-progress-bar span {
+  background: var(--di-risk);
+}
+
+.di-map-page-b3 .di-map-module > .di-map-capability-list {
+  margin-top: 12px;
 }
 
 .di-map-page-b3 .di-map-capability {
