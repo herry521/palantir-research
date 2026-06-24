@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Palantir Data Integration 能力地图</title>
+    <link rel="stylesheet" href="../styles.css" />
+    <script defer src="../app.js"></script>
+  </head>
+  <body class="detail-body di-map-page">
+    <div class="site-shell">
+      <svg class="icon-sprite" xmlns="http://www.w3.org/2000/svg">
+        <symbol id="i-home" viewBox="0 0 24 24">
+          <path d="M12 3l8 6v11a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V9l8-6Z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" />
+          <path d="M9 21v-8h6v8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" />
+        </symbol>
+        <symbol id="i-map" viewBox="0 0 24 24">
+          <path d="M9 4 3 6v14l6-2 6 2 6-2V4l-6 2-6-2Z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" />
+          <path d="M9 4v14M15 6v14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
+        </symbol>
+        <symbol id="i-file" viewBox="0 0 24 24">
+          <path d="M7 3h7l3 3v15a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1Z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" />
+          <path d="M14 3v4h4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" />
+        </symbol>
+      </svg>
+
+      <header class="site-nav">
+        <div class="nav-inner">
+          <a class="brand-mark" href="../index.html">
+            <span class="brand-dot"></span>
+            <span>Palantir Research Summary</span>
+          </a>
+          <nav class="nav-links">
+            <a data-nav href="../index.html"><svg class="icon sm" aria-hidden="true"><use href="#i-home"></use></svg><span>首页</span></a>
+            <a data-nav href="overview.html"><svg class="icon sm" aria-hidden="true"><use href="#i-map"></use></svg><span>总览</span></a>
+            <a data-nav href="data-integration-capability-map.html"><svg class="icon sm" aria-hidden="true"><use href="#i-map"></use></svg><span>能力地图</span></a>
+            <a data-nav href="data-integration-permission-system.html"><svg class="icon sm" aria-hidden="true"><use href="#i-file"></use></svg><span>集成权限</span></a>
+          </nav>
+        </div>
+      </header>
+
+      <main>
+        <section class="topic-header di-map-header">
+          <p class="eyebrow">Palantir Data Integration</p>
+          <h1>Data Integration 能力地图</h1>
+          <p class="intro-note">
+            严格对齐 Palantir 官方能力对象，按主链路、驱动观察层和支撑层组织。点击二级能力状态即可配置“已完成 / 进行中 / 未开始 / 风险”，用于进展汇报点亮。
+          </p>
+          <div class="topic-meta">
+            <span class="tag">Palantir Aligned</span>
+            <span class="tag">Interactive Status</span>
+            <span class="tag">Local JSON Config</span>
+          </div>
+        </section>
+
+        <section class="page-section di-map-control-section" aria-label="能力地图控制台">
+          <div class="di-map-summary-grid" id="di-map-summary"></div>
+          <div class="di-map-toolbar" aria-label="能力地图操作">
+            <button class="di-map-action" type="button" id="di-toggle-presentation">演示模式</button>
+            <button class="di-map-action" type="button" id="di-export-json">导出 JSON</button>
+            <button class="di-map-action" type="button" id="di-import-json">导入 JSON</button>
+            <button class="di-map-action danger" type="button" id="di-reset-status">重置</button>
+          </div>
+          <div class="di-map-legend" aria-label="状态图例">
+            <span><i class="status-dot status-not-started"></i>未开始</span>
+            <span><i class="status-dot status-in-progress"></i>进行中</span>
+            <span><i class="status-dot status-done"></i>已完成</span>
+            <span><i class="status-dot status-risk"></i>风险</span>
+          </div>
+        </section>
+
+        <section class="page-section di-map-stage" aria-label="Palantir Data Integration 能力地图">
+          <div class="di-map-zone di-map-zone-driver">
+            <div class="di-map-zone-label">驱动与观察</div>
+            <div class="di-map-zone-grid" id="di-map-driver"></div>
+          </div>
+
+          <div class="di-map-zone di-map-zone-main">
+            <div class="di-map-zone-label">主链路</div>
+            <div class="di-map-flow" id="di-map-main"></div>
+          </div>
+
+          <div class="di-map-zone di-map-zone-support">
+            <div class="di-map-zone-label">支撑层</div>
+            <div class="di-map-zone-grid" id="di-map-support"></div>
+          </div>
+        </section>
+
+        <section class="page-section">
+          <div class="section-head">
+            <div>
+              <p class="section-kicker">Source Documents</p>
+              <h2>来源与术语口径</h2>
+            </div>
+            <p>本页能力数据来自仓库内 Palantir 严格对齐能力地图和术语核对文档。</p>
+          </div>
+          <div class="entry-grid">
+            <a class="detail-card" href="../../docs/synthesis/data-integration-palantir-aligned-capability-map.md">
+              <h3>Palantir 严格对齐能力地图</h3>
+              <p class="muted">官方能力对象、主链路和二级能力清单。</p>
+            </a>
+            <a class="detail-card" href="../../docs/synthesis/data-integration-capability-panorama-term-alignment.md">
+              <h3>术语核对与中文解读</h3>
+              <p class="muted">识别自研抽象、术语偏差和中文解释口径。</p>
+            </a>
+          </div>
+        </section>
+      </main>
+    </div>
+    <script>
+      const DI_MAP_MODULES = [
+        {
+          id: "schedules",
+          zone: "driver",
+          name: "Schedules",
+          zhName: "调度",
+          description: "让 Build 随时间、数据更新或逻辑更新持续运行的触发机制。",
+          capabilities: [
+            { id: "schedule", name: "Schedule", zhName: "调度对象", core: true, children: ["Create / view / modify schedules"] },
+            { id: "time-trigger", name: "Time trigger", zhName: "时间触发", core: true, children: ["cron", "calendar"] },
+            { id: "data-updated-trigger", name: "Data updated trigger", zhName: "数据更新触发", core: true, children: ["upstream dataset updated"] },
+            { id: "logic-updated-trigger", name: "Logic updated trigger", zhName: "逻辑更新触发", core: false, children: ["code or JobSpec changed"] },
+            { id: "trigger-composition", name: "AND / OR trigger composition", zhName: "组合触发", core: false, children: ["AND", "OR"] }
+          ]
+        },
+        {
+          id: "data-lineage",
+          zone: "driver",
+          name: "Data Lineage",
+          zhName: "数据血缘",
+          description: "理解 Dataset graph、发起 Build、查看 stale 状态、权限和影响范围的工作台。",
+          capabilities: [
+            { id: "lineage-graph", name: "Explore lineage graph", zhName: "血缘图探索", core: true, children: ["ancestors", "descendants"] },
+            { id: "build-from-lineage", name: "Build datasets from lineage graph", zhName: "从血缘图发起构建", core: true, children: ["all ancestors", "between selected datasets", "selected datasets"] },
+            { id: "build-timeline", name: "Build timeline", zhName: "构建时间线", core: true, children: ["job status", "runtime evidence"] },
+            { id: "manage-schedules", name: "Manage schedules", zhName: "管理调度", core: false, children: ["schedule editor"] },
+            { id: "stale-analysis", name: "Out-of-date / stale dataset analysis", zhName: "过期数据分析", core: true, children: ["staleness", "up-to-date"] },
+            { id: "permission-impact", name: "Permissions and Marking impact", zhName: "权限与标记影响", core: false, children: ["permission coloring", "marking changes"] }
+          ]
+        },
+        {
+          id: "data-connection",
+          zone: "main",
+          name: "Data Connection / Connectivity",
+          zhName: "数据连接与接入",
+          description: "连接外部系统、配置 source、执行 sync、接收 push stream，并可把 Foundry 数据 export 到外部系统。",
+          capabilities: [
+            { id: "agents", name: "Agents", zhName: "连接代理", core: true, children: ["network access", "on-prem access"] },
+            { id: "sources", name: "Sources", zhName: "数据源", core: true, children: ["source exploration"] },
+            { id: "batch-sync", name: "Batch sync", zhName: "批量同步", core: true, children: ["full sync", "file-based sync"] },
+            { id: "streaming-sync", name: "Streaming sync", zhName: "流式同步", core: true, children: ["push data into a stream"] },
+            { id: "incremental-sync", name: "Incremental sync / CDC-related ingestion", zhName: "增量同步 / CDC", core: false, children: ["watermark", "cursor", "change data capture"] },
+            { id: "exports", name: "Exports", zhName: "数据外发", core: false, children: ["dataset export", "stream export"] },
+            { id: "webhooks-listeners", name: "Webhooks / Listeners", zhName: "Webhook 与监听器", core: false, children: ["HTTPS", "WebSocket", "Email"] }
+          ]
+        },
+        {
+          id: "core-data-objects",
+          zone: "main",
+          name: "Core Data Objects",
+          zhName: "核心数据对象",
+          description: "承载数据状态、版本和存储形态的官方核心对象。",
+          capabilities: [
+            { id: "datasets", name: "Datasets", zhName: "数据集", core: true, children: ["files", "schema", "permissions"] },
+            { id: "transactions", name: "Transactions", zhName: "事务", core: true, children: ["SNAPSHOT", "APPEND", "UPDATE", "DELETE"] },
+            { id: "views", name: "Views", zhName: "视图", core: true, children: ["backing datasets"] },
+            { id: "branches", name: "Branches", zhName: "分支", core: true, children: ["branch-specific data state"] },
+            { id: "streams", name: "Streams", zhName: "流", core: true, children: ["stream data", "partitions"] },
+            { id: "media-sets", name: "Media sets", zhName: "媒体集", core: false, children: ["unstructured files"] },
+            { id: "virtual-tables", name: "Virtual tables", zhName: "虚拟表", core: false, children: ["external query source"] },
+            { id: "iceberg-tables", name: "Iceberg tables", zhName: "Iceberg 表", core: false, children: ["lakehouse table"] }
+          ]
+        },
+        {
+          id: "pipeline-authoring",
+          zone: "main",
+          name: "Pipeline Authoring",
+          zhName: "Pipeline 开发入口",
+          description: "定义数据转换逻辑的官方开发入口，包括低码 Pipeline Builder 与高码 Code Repositories。",
+          capabilities: [
+            { id: "pipeline-builder", name: "Pipeline Builder", zhName: "低码 Pipeline Builder", core: true, children: ["graph and form-based authoring", "transforms", "expressions", "outputs"] },
+            { id: "code-repositories", name: "Code Repositories", zhName: "高码 Code Repositories", core: true, children: ["Git", "pull requests", "preview", "debug"] },
+            { id: "python-transforms", name: "Python transforms", zhName: "Python 转换", core: true, children: ["PySpark", "lightweight Python"] },
+            { id: "sql-transforms", name: "SQL transforms", zhName: "SQL 转换", core: false, children: ["Spark SQL"] },
+            { id: "java-transforms", name: "Java transforms", zhName: "Java 转换", core: false, children: ["Java APIs", "UDF"] },
+            { id: "external-pipelines", name: "External pipelines", zhName: "外部 Pipeline", core: false, children: ["external runtime integration"] }
+          ]
+        },
+        {
+          id: "pipeline-types",
+          zone: "main",
+          name: "Pipeline Types",
+          zhName: "Pipeline 类型",
+          description: "Foundry 官方定义的 Batch、Incremental、Streaming 三类主型，Faster 是 Batch / Incremental 的变体。",
+          capabilities: [
+            { id: "batch-pipelines", name: "Batch pipelines", zhName: "批处理 Pipeline", core: true, children: ["fully recompute changed datasets"] },
+            { id: "incremental-pipelines", name: "Incremental pipelines", zhName: "增量 Pipeline", core: true, children: ["process data changed since last run"] },
+            { id: "streaming-pipelines", name: "Streaming pipelines", zhName: "流式 Pipeline", core: true, children: ["run continuously", "process new data as it arrives"] },
+            { id: "faster-pipelines", name: "Faster versions", zhName: "Faster 变体", core: false, children: ["faster batch", "faster incremental"] }
+          ]
+        },
+        {
+          id: "builds",
+          zone: "main",
+          name: "Builds",
+          zhName: "构建",
+          description: "计算 Dataset 新版本的官方机制，包含 Build resolution、job execution、staleness 和 build timeline。",
+          capabilities: [
+            { id: "build", name: "Build", zhName: "构建", core: true, children: ["compute new dataset versions"] },
+            { id: "jobs", name: "Jobs / JobSpec", zhName: "任务与任务规格", core: true, children: ["job execution", "logic definition"] },
+            { id: "build-resolution", name: "Build resolution", zhName: "构建解析", core: true, children: ["input checks", "output transaction"] },
+            { id: "staleness", name: "Staleness", zhName: "过期判断", core: true, children: ["fresh", "out-of-date"] },
+            { id: "build-locking", name: "Build locking", zhName: "构建锁", core: false, children: ["output locking"] },
+            { id: "force-build", name: "Force build", zhName: "强制构建", core: false, children: ["manual rebuild"] },
+            { id: "build-timeline", name: "Build timeline", zhName: "构建时间线", core: false, children: ["runtime evidence"] }
+          ]
+        },
+        {
+          id: "ontology-object-backend",
+          zone: "main",
+          name: "Ontology / Object Backend",
+          zhName: "Ontology 与对象后端",
+          description: "把 Dataset 等 Foundry datasources 映射为业务对象、对象集合、动作和应用可消费的对象查询能力。",
+          capabilities: [
+            { id: "ontology-metadata-service", name: "Ontology Metadata Service", zhName: "Ontology 元数据服务", core: false, children: ["OMS"] },
+            { id: "object-types", name: "Object types", zhName: "对象类型", core: true, children: ["properties", "primary key"] },
+            { id: "link-types", name: "Link types", zhName: "关系类型", core: false, children: ["object relationships"] },
+            { id: "object-sets", name: "Object sets", zhName: "对象集合", core: true, children: ["static", "dynamic", "temporary", "permanent"] },
+            { id: "actions", name: "Actions", zhName: "对象动作", core: true, children: ["user edits", "writeback"] },
+            { id: "object-data-funnel", name: "Object Data Funnel", zhName: "对象数据漏斗", core: true, children: ["datasources", "user edits", "object databases"] },
+            { id: "object-indexing", name: "Object indexing", zhName: "对象索引", core: true, children: ["indexing service", "freshness"] },
+            { id: "functions-on-objects", name: "Functions on Objects", zhName: "对象函数", core: false, children: ["computed logic"] }
+          ]
+        },
+        {
+          id: "health-quality",
+          zone: "support",
+          name: "Health / Quality",
+          zhName: "健康检查与数据质量",
+          description: "对 Dataset / Pipeline 产出进行质量、状态和健康判断。",
+          capabilities: [
+            { id: "health-checks", name: "Health checks", zhName: "健康检查", core: true, children: ["status", "freshness", "content"] },
+            { id: "pipeline-builder-health-checks", name: "Pipeline Builder health checks", zhName: "Pipeline Builder 健康检查", core: false, children: ["schema", "output"] },
+            { id: "data-expectations", name: "Data Expectations", zhName: "数据期望", core: true, children: ["FAIL", "WARN"] },
+            { id: "output-checks", name: "Output checks", zhName: "输出检查", core: true, children: ["row count", "primary key"] },
+            { id: "data-health", name: "Data Health", zhName: "数据健康", core: true, children: ["dashboard", "issue"] },
+            { id: "monitoring-views", name: "Monitoring views", zhName: "监控视图", core: false, children: ["alerts"] }
+          ]
+        },
+        {
+          id: "security-governance",
+          zone: "support",
+          name: "Security / Governance",
+          zhName: "安全与治理",
+          description: "围绕 Dataset、Pipeline、Ontology 对象和数据访问路径执行权限、标记、策略和审计。",
+          capabilities: [
+            { id: "roles-permissions", name: "Roles / resource permissions", zhName: "角色与资源权限", core: true, children: ["owner", "editor", "viewer"] },
+            { id: "organizations", name: "Organizations", zhName: "组织边界", core: true, children: ["organization membership"] },
+            { id: "markings", name: "Markings", zhName: "标记", core: true, children: ["requirements", "propagation"] },
+            { id: "pipeline-security", name: "Pipeline security", zhName: "Pipeline 安全", core: false, children: ["remove inherited markings", "guidance on removing markings"] },
+            { id: "object-security", name: "Object security policies", zhName: "对象安全策略", core: true, children: ["object visibility"] },
+            { id: "property-security", name: "Property security policies", zhName: "属性安全策略", core: true, children: ["property visibility"] },
+            { id: "audit", name: "Audit-related capabilities", zhName: "审计能力", core: false, children: ["access", "change"] }
+          ]
+        }
+      ];
+    </script>
+  </body>
+</html>
