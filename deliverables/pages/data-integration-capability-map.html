@@ -286,6 +286,112 @@
         }
       ];
 
+      const DI_REPORT_CONTENT = {
+        title: "主链路已形成端到端闭环，下一阶段聚焦实时链路与对象服务补强",
+        subtitle:
+          "基于 Palantir 官方能力对象组织，从 Connectivity、Datasets、Pipeline、Builds 到 Lineage / Schedules 与 Ontology，展示能力完备性、风险和下一步动作。",
+        insights: [
+          {
+            id: "progress",
+            label: "关键进展",
+            tone: "done",
+            text: "Connectivity、Datasets、Builds 支撑核心链路闭环，具备从接入到构建的基础完备性。"
+          },
+          {
+            id: "gap",
+            label: "主要缺口",
+            tone: "risk",
+            text: "Streaming Pipeline、Schedules 编排、Ontology serving freshness 是规模化落地风险集中区。"
+          },
+          {
+            id: "next",
+            label: "下一步动作",
+            tone: "in-progress",
+            text: "按主链路补齐实时处理、调度治理和对象新鲜度验证，形成可复制的业务接入模板。"
+          }
+        ]
+      };
+
+      const DI_REPORT_NODES = [
+        {
+          id: "connectivity",
+          name: "Connectivity",
+          zhName: "数据连接与同步",
+          summary: "外部系统连接、数据源探索、批量/流式同步与数据外发。",
+          capabilityRefs: [
+            "data-connection.agents",
+            "data-connection.sources",
+            "data-connection.batch-sync",
+            "data-connection.streaming-sync",
+            "data-connection.exports"
+          ]
+        },
+        {
+          id: "datasets",
+          name: "Datasets",
+          zhName: "数据集与事务版本",
+          summary: "承载数据状态、事务、分支和流式数据的核心对象层。",
+          capabilityRefs: [
+            "core-data-objects.datasets",
+            "core-data-objects.transactions",
+            "core-data-objects.branches",
+            "core-data-objects.streams"
+          ]
+        },
+        {
+          id: "pipeline",
+          name: "Pipeline",
+          zhName: "数据加工开发",
+          summary: "Pipeline Builder、Code Repositories 与批/增/流加工形态。",
+          capabilityRefs: [
+            "pipeline-authoring.pipeline-builder",
+            "pipeline-authoring.code-repositories",
+            "pipeline-types.batch-pipelines",
+            "pipeline-types.incremental-pipelines",
+            "pipeline-types.streaming-pipelines"
+          ]
+        },
+        {
+          id: "builds",
+          name: "Builds",
+          zhName: "构建执行与新鲜度",
+          summary: "通过 Build、Jobs、Build resolution 和 Staleness 计算数据集新版本。",
+          capabilityRefs: [
+            "builds.build",
+            "builds.jobs",
+            "builds.build-resolution",
+            "builds.staleness"
+          ]
+        },
+        {
+          id: "lineage-schedules",
+          name: "Lineage & Schedules",
+          zhName: "血缘观测与调度",
+          summary: "血缘图、构建时间线、过期分析和调度触发机制。",
+          capabilityRefs: [
+            "data-lineage.lineage-graph",
+            "data-lineage.build-timeline",
+            "data-lineage.stale-analysis",
+            "schedules.schedule",
+            "schedules.time-trigger",
+            "schedules.data-updated-trigger"
+          ]
+        },
+        {
+          id: "ontology",
+          name: "Ontology",
+          zhName: "对象服务",
+          summary: "将 Foundry 数据源映射为业务对象、对象集合、动作和对象索引。",
+          capabilityRefs: [
+            "ontology-object-backend.object-types",
+            "ontology-object-backend.object-sets",
+            "ontology-object-backend.actions",
+            "ontology-object-backend.object-data-funnel",
+            "ontology-object-backend.object-indexing"
+          ]
+        }
+      ];
+
       const DI_STATUS_ORDER = ["not-started", "in-progress", "done", "risk"];
       const DI_STATUS_LABELS = {
         "not-started": "未开始",
@@ -318,6 +424,22 @@
         return diMapStatuses[diStatusKey(moduleId, capabilityId)] || "not-started";
       }
 
+      function diFindCapability(ref) {
+        const [moduleId, capabilityId] = ref.split(".");
+        const module = DI_MAP_MODULES.find((item) => item.id === moduleId);
+        if (!module) return null;
+        const capability = module.capabilities.find((item) => item.id === capabilityId);
+        if (!capability) return null;
+        return { module, capability };
+      }
+
+      function diStatusFromProgress(progress, hasRisk, hasInProgress) {
+        if (hasRisk) return "risk";
+        if (progress === 100) return "done";
+        if (progress > 0 || hasInProgress) return "in-progress";
+        return "not-started";
+      }
+
       function diCycleStatus(moduleId, capabilityId) {
         const key = diStatusKey(moduleId, capabilityId);
         const current = diGetStatus(moduleId, capabilityId);
@@ -344,6 +466,25 @@
         };
       }
 
+      function diReportNodeStats(node) {
+        const entries = node.capabilityRefs.map(diFindCapability).filter(Boolean);
+        const statuses = entries.map((entry) => diGetStatus(entry.module.id, entry.capability.id));
+        const total = statuses.length || 1;
+        const done = statuses.filter((status) => status === "done").length;
+        const inProgress = statuses.filter((status) => status === "in-progress").length;
+        const risk = statuses.filter((status) => status === "risk").length;
+        const progress = Math.round((done / total) * 100);
+        return {
+          total,
+          done,
+          inProgress,
+          risk,
+          progress,
+          status: diStatusFromProgress(progress, risk > 0, inProgress > 0),
+          capabilities: entries
+        };
+      }
+
       function diOverallStats() {
         const capabilities = DI_MAP_MODULES.flatMap((module) => module.capabilities.map((capability) => ({ module, capability })));
         const coreCapabilities = capabilities.filter((item) => item.capability.core);
@@ -356,8 +497,25 @@
           { "not-started": 0, "in-progress": 0, done: 0, risk: 0 }
         );
         const coreDone = coreCapabilities.filter((item) => diGetStatus(item.module.id, item.capability.id) === "done").length;
-        const completion = Math.round((coreDone / coreCapabilities.length) * 100);
-        return { ...statusCounts, completion, total: capabilities.length, coreTotal: coreCapabilities.length, coreDone };
+        const coreTotal = coreCapabilities.length || 1;
+        const reportNodeStats = DI_REPORT_NODES.map((node) => ({ node, stats: diReportNodeStats(node) }));
+        const litNodes = reportNodeStats.filter((item) => item.stats.status === "done" || item.stats.status === "in-progress").length;
+        const riskNodes = reportNodeStats.filter((item) => item.stats.status === "risk").length;
+        const criticalGaps = coreCapabilities.filter((item) => {
+          const status = diGetStatus(item.module.id, item.capability.id);
+          return status === "not-started" || status === "in-progress";
+        }).length;
+        return {
+          ...statusCounts,
+          completion: Math.round((coreDone / coreTotal) * 100),
+          total: capabilities.length,
+          coreTotal,
+          coreDone,
+          litNodes,
+          reportNodeTotal: DI_REPORT_NODES.length,
+          riskNodes,
+          criticalGaps
+        };
       }
 
       function diRenderSummary() {
