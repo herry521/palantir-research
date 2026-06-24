@@ -3973,7 +3973,7 @@ html.is-embedded-root .section-card {
 
 .di-map-report h2 {
   color: #0f172a;
-  font-size: clamp(32px, 4vw, 54px);
+  font-size: clamp(32px, 3.4vw, 44px);
   line-height: 1.06;
   margin: 0;
   max-width: 980px;
@@ -3996,6 +3996,10 @@ html.is-embedded-root .section-card {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 12px;
+}
+
+.di-map-report .di-map-summary-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 
 .di-map-stat {
