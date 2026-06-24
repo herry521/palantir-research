@@ -65,8 +65,11 @@
 
           <div class="di-map-toolbar di-map-report-toolbar" aria-label="能力地图操作">
             <button class="di-map-action" type="button" id="di-toggle-presentation">演示模式</button>
-            <button class="di-map-action" type="button" id="di-export-json">导出 JSON</button>
-            <button class="di-map-action" type="button" id="di-import-json">导入 JSON</button>
+            <button class="di-map-action" type="button" id="di-export-json">导出状态 JSON</button>
+            <button class="di-map-action" type="button" id="di-import-json">导入状态 JSON</button>
+            <button class="di-map-action" type="button" id="di-export-config-json">导出能力 JSON</button>
+            <button class="di-map-action" type="button" id="di-import-config-json">导入能力 JSON</button>
+            <button class="di-map-action" type="button" id="di-reset-config">恢复默认能力</button>
             <button class="di-map-action danger" type="button" id="di-reset-status">重置</button>
           </div>
 
@@ -129,7 +132,7 @@
       </main>
     </div>
     <script>
-      const DI_MAP_MODULES = [
+      let DI_MAP_MODULES = [
         {
           id: "schedules",
           zone: "driver",
@@ -400,8 +403,64 @@
         risk: "风险"
       };
       const DI_STORAGE_KEY = "palantir-di-capability-map-statuses-v1";
+      const DI_CONFIG_STORAGE_KEY = "palantir-di-capability-map-config-v1";
+      const DI_DEFAULT_MAP_MODULES = JSON.parse(JSON.stringify(DI_MAP_MODULES));
       let diMapStatuses = {};
       let diPresentationMode = false;
+
+      function diEscapeHtml(value) {
+        return String(value)
+          .replace(/&/g, "&amp;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;")
+          .replace(/"/g, "&quot;")
+          .replace(/'/g, "&#39;");
+      }
+
+      function diNormalizeString(value, fallback = "") {
+        return typeof value === "string" && value.trim() ? value.trim() : fallback;
+      }
+
+      function diNormalizeCapability(capability) {
+        if (!capability || typeof capability !== "object") return null;
+        const id = diNormalizeString(capability.id);
+        const name = diNormalizeString(capability.name);
+        if (!id || !name) return null;
+        const children = Array.isArray(capability.children)
+          ? capability.children.map((child) => diNormalizeString(child)).filter(Boolean)
+          : [];
+        return {
+          id,
+          name,
+          zhName: diNormalizeString(capability.zhName, name),
+          core: Boolean(capability.core),
+          children
+        };
+      }
+
+      function diNormalizeModule(module) {
+        if (!module || typeof module !== "object") return null;
+        const id = diNormalizeString(module.id);
+        const name = diNormalizeString(module.name);
+        const zone = ["driver", "main", "support"].includes(module.zone) ? module.zone : "";
+        if (!id || !name || !zone || !Array.isArray(module.capabilities)) return null;
+        const capabilities = module.capabilities.map(diNormalizeCapability).filter(Boolean);
+        if (!capabilities.length) return null;
+        return {
+          id,
+          zone,
+          name,
+          zhName: diNormalizeString(module.zhName, name),
+          description: diNormalizeString(module.description),
+          capabilities
+        };
+      }
+
+      function diNormalizeModules(modules) {
+        if (!Array.isArray(modules)) return null;
+        const normalized = modules.map(diNormalizeModule).filter(Boolean);
+        return normalized.length ? normalized : null;
+      }
 
       function diStatusKey(moduleId, capabilityId) {
         return `${moduleId}.${capabilityId}`;
@@ -414,6 +473,21 @@
         } catch (_error) {
           diMapStatuses = {};
         }
+      }
+
+      function diLoadConfig() {
+        try {
+          const parsed = JSON.parse(localStorage.getItem(DI_CONFIG_STORAGE_KEY) || "null");
+          const modules = parsed && typeof parsed === "object" && "modules" in parsed ? parsed.modules : parsed;
+          const normalized = diNormalizeModules(modules);
+          DI_MAP_MODULES = normalized || JSON.parse(JSON.stringify(DI_DEFAULT_MAP_MODULES));
+        } catch (_error) {
+          DI_MAP_MODULES = JSON.parse(JSON.stringify(DI_DEFAULT_MAP_MODULES));
+        }
+      }
+
+      function diSaveConfig() {
+        localStorage.setItem(DI_CONFIG_STORAGE_KEY, JSON.stringify({ version: 1, modules: DI_MAP_MODULES }));
       }
 
       function diSaveStatuses() {
@@ -548,7 +622,7 @@
         const stats = diReportNodeStats(node);
         const capabilityHtml = stats.capabilities
           .slice(0, 5)
-          .map((entry) => `<li>${entry.capability.name}</li>`)
+          .map((entry) => `<li>${diEscapeHtml(entry.capability.name)}</li>`)
           .join("");
         return `
           <article class="di-report-node status-${stats.status}">
@@ -556,12 +630,12 @@
             <div class="di-report-node-head">
               <div>
                 <span class="di-report-node-kicker">${DI_STATUS_LABELS[stats.status]}</span>
-                <h3>${node.name}</h3>
-                <p>${node.zhName}</p>
+                <h3>${diEscapeHtml(node.name)}</h3>
+                <p>${diEscapeHtml(node.zhName)}</p>
               </div>
               <strong>${stats.progress}%</strong>
             </div>
-            <p class="di-report-node-summary">${node.summary}</p>
+            <p class="di-report-node-summary">${diEscapeHtml(node.summary)}</p>
             <ul class="di-report-node-capabilities">${capabilityHtml}</ul>
             <div class="di-map-progress-bar"><span style="width:${stats.progress}%"></span></div>
           </article>
@@ -577,8 +651,8 @@
           .map(
             (item) => `
               <article class="di-report-insight tone-${item.tone}">
-                <span>${item.label}</span>
-                <p>${item.text}</p>
+                <span>${diEscapeHtml(item.label)}</span>
+                <p>${diEscapeHtml(item.text)}</p>
               </article>
             `
           )
@@ -587,18 +661,21 @@
 
       function diCapabilityHtml(module, capability) {
         const status = diGetStatus(module.id, capability.id);
+        const moduleId = diEscapeHtml(module.id);
+        const capabilityId = diEscapeHtml(capability.id);
+        const capabilityZhName = diEscapeHtml(capability.zhName);
         const childHtml =
           capability.children && capability.children.length
-            ? `<ul>${capability.children.map((child) => `<li>${child}</li>`).join("")}</ul>`
+            ? `<ul>${capability.children.map((child) => `<li>${diEscapeHtml(child)}</li>`).join("")}</ul>`
             : "";
         return `
           <div class="di-map-capability status-${status}">
             <div class="di-map-capability-main">
               <div>
-                <strong>${capability.name}</strong>
-                <span>${capability.zhName}</span>
+                <strong>${diEscapeHtml(capability.name)}</strong>
+                <span>${capabilityZhName}</span>
               </div>
-              <button class="di-map-status-button status-${status}" type="button" data-module-id="${module.id}" data-capability-id="${capability.id}" aria-label="切换 ${capability.zhName} 状态">
+              <button class="di-map-status-button status-${status}" type="button" data-module-id="${moduleId}" data-capability-id="${capabilityId}" aria-label="切换 ${capabilityZhName} 状态">
                 ${DI_STATUS_LABELS[status]}
               </button>
             </div>
@@ -610,17 +687,18 @@
       function diModuleHtml(module) {
         const stats = diModuleStats(module);
         const intensityClass = stats.hasRisk ? "has-risk" : stats.progress === 100 ? "is-complete" : stats.progress > 0 ? "is-partial" : "is-empty";
+        const moduleZhName = diEscapeHtml(module.zhName);
         return `
           <article class="di-map-module ${intensityClass}" data-zone="${module.zone}">
             <div class="di-map-module-head">
               <div>
-                <span class="di-map-module-kicker">${module.zone}</span>
-                <h3>${module.name}</h3>
-                <p>${module.zhName}</p>
+                <span class="di-map-module-kicker">${diEscapeHtml(module.zone)}</span>
+                <h3>${diEscapeHtml(module.name)}</h3>
+                <p>${moduleZhName}</p>
               </div>
-              <div class="di-map-progress-ring" aria-label="${module.zhName} 完成度 ${stats.progress}%">${stats.progress}%</div>
+              <div class="di-map-progress-ring" aria-label="${moduleZhName} 完成度 ${stats.progress}%">${stats.progress}%</div>
             </div>
-            <p class="di-map-module-desc">${module.description}</p>
+            <p class="di-map-module-desc">${diEscapeHtml(module.description)}</p>
             <div class="di-map-progress-bar"><span style="width:${stats.progress}%"></span></div>
             <div class="di-map-capability-list">
               ${module.capabilities.map((capability) => diCapabilityHtml(module, capability)).join("")}
@@ -665,6 +743,27 @@
           });
       }
 
+      function diExportConfigJson() {
+        const payload = {
+          version: 1,
+          updatedAt: new Date().toISOString(),
+          modules: DI_MAP_MODULES
+        };
+        const text = JSON.stringify(payload, null, 2);
+        navigator.clipboard
+          .writeText(text)
+          .then(() => alert("能力配置 JSON 已复制到剪贴板。"))
+          .catch(() => {
+            const blob = new Blob([text], { type: "application/json" });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement("a");
+            link.href = url;
+            link.download = "palantir-data-integration-capability-config.json";
+            link.click();
+            URL.revokeObjectURL(url);
+          });
+      }
+
       function diImportJson() {
         const raw = prompt("粘贴导出的状态 JSON：");
         if (!raw) return;
@@ -689,10 +788,36 @@
         }
       }
 
+      function diImportConfigJson() {
+        const raw = prompt("粘贴导出的能力配置 JSON：");
+        if (!raw) return;
+        try {
+          const parsed = JSON.parse(raw);
+          const modules = parsed && typeof parsed === "object" && "modules" in parsed ? parsed.modules : parsed;
+          const normalized = diNormalizeModules(modules);
+          if (!normalized) {
+            alert("JSON 格式无效：需要 modules 数组，且每个模块需包含 id / zone / name / capabilities。");
+            return;
+          }
+          DI_MAP_MODULES = normalized;
+          diSaveConfig();
+          diRenderCapabilityMap();
+        } catch (_error) {
+          alert("JSON 解析失败，请检查内容。");
+        }
+      }
+
       function diResetStatuses() {
         if (!confirm("确认重置全部状态为未开始？")) return;
         diMapStatuses = {};
         diSaveStatuses();
+        diRenderCapabilityMap();
+      }
+
+      function diResetConfig() {
+        if (!confirm("确认恢复默认能力模块配置？当前自定义能力模块配置会被清除。")) return;
+        localStorage.removeItem(DI_CONFIG_STORAGE_KEY);
+        DI_MAP_MODULES = JSON.parse(JSON.stringify(DI_DEFAULT_MAP_MODULES));
         diRenderCapabilityMap();
       }
 
@@ -703,10 +828,14 @@
       }
 
       document.addEventListener("DOMContentLoaded", () => {
+        diLoadConfig();
         diLoadStatuses();
         document.getElementById("di-toggle-presentation").addEventListener("click", diTogglePresentationMode);
         document.getElementById("di-export-json").addEventListener("click", diExportJson);
         document.getElementById("di-import-json").addEventListener("click", diImportJson);
+        document.getElementById("di-export-config-json").addEventListener("click", diExportConfigJson);
+        document.getElementById("di-import-config-json").addEventListener("click", diImportConfigJson);
+        document.getElementById("di-reset-config").addEventListener("click", diResetConfig);
         document.getElementById("di-reset-status").addEventListener("click", diResetStatuses);
         diRenderCapabilityMap();
       });
