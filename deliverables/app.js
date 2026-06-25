@@ -273,8 +273,10 @@ function renderMarkdownPreview() {
   if (titleNode) titleNode.textContent = doc.title;
   if (pathNode) pathNode.textContent = doc.path;
   if (rawLink) {
-    rawLink.href = `../../${doc.path}`;
-    rawLink.textContent = "打开原始 Markdown";
+    rawLink.href = `https://gitlabee.chehejia.com/huyongqiang/palantir-research/-/blob/main/${doc.path}`;
+    rawLink.target = "_blank";
+    rawLink.rel = "noopener noreferrer";
+    rawLink.textContent = "在 GitLab EE 打开原始 Markdown";
   }
   target.innerHTML = renderMarkdown(doc.content, doc.path);
 }
