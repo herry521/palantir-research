@@ -2,6 +2,12 @@
 
 These instructions apply to the entire `palantir-research` repository.
 
+## Code Management Defaults
+
+- Use GitLab EE as the default code management remote for this repository.
+- Treat `origin` as the default remote and keep it pointed at GitLab EE.
+- Only interact with GitHub when explicitly requested, and specify the `github` remote or GitHub repository target directly.
+
 ## Research Output Rules
 
 - All research outputs must include 3 to 5 summary points or insights.
