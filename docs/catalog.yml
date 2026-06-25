@@ -247,7 +247,7 @@ documents:
     topics: [pipeline, execution-runtime, operator-platform]
     source_layer: topic
     issue_refs: [2, 3, 9, 11, 12, 14, 40, 46, 63, 64]
-    source_refs: [docs/synthesis/palantir-incremental-batch-chain-deep-dive.md, docs/synthesis/palantir-pipeline-deep-dive.md, docs/synthesis/operator-platform-design.md, docs/synthesis/palantir-pro-code-capability-research.md, docs/raw/01-pipeline-expression-dsl.md, docs/raw/02-execution-engine-spark.md, docs/raw/03-streaming-batch-architecture.md, docs/raw/06-incremental-pipeline.md, docs/raw/14-transform-operator-library.md, docs/raw/25-transform-contract-dag.md, docs/raw/27-incremental-scheduling-transaction.md, docs/raw/28-pipeline-builder-pro-code-interop.md, docs/raw/45-data-expectations-build-gates.md, docs/raw/57-pipeline-target-dataset-schema-primary-key.md, docs/raw/58-pipeline-schema-compatibility-breaking-change.md]
+    source_refs: [docs/synthesis/palantir-incremental-batch-chain-deep-dive.md, docs/synthesis/palantir-pipeline-deep-dive.md, docs/synthesis/operator-platform-design.md, docs/synthesis/palantir-pro-code-capability-research.md, docs/raw/01-pipeline-expression-dsl.md, docs/raw/02-execution-engine-spark.md, docs/raw/03-streaming-batch-architecture.md, docs/raw/06-incremental-pipeline.md, docs/raw/14-transform-operator-library.md, docs/raw/pipeline-builder-operators/README.md, docs/raw/25-transform-contract-dag.md, docs/raw/27-incremental-scheduling-transaction.md, docs/raw/28-pipeline-builder-pro-code-interop.md, docs/raw/45-data-expectations-build-gates.md, docs/raw/57-pipeline-target-dataset-schema-primary-key.md, docs/raw/58-pipeline-schema-compatibility-breaking-change.md]
     related_docs: [docs/topics/pro-code.md, docs/topics/scheduling.md, docs/topics/data-quality.md]
     canonical: false
     created: 2026-05-31
@@ -1438,6 +1438,184 @@ documents:
     created: 2026-06-18
     updated: 2026-06-18
     last_reviewed: 2026-06-18
+    confidence: medium
+    evidence_strength: strong
+    owner: codex
+    reviewers: [codex]
+  - id: raw-64-batch-stream-pro-code-boundary
+    path: docs/raw/64-batch-stream-pro-code-boundary.md
+    title: "Batch 与 Streaming Pipeline 的高码能力边界"
+    type: raw
+    status: reviewed
+    topics: [pipeline, pro-code, execution-runtime]
+    source_layer: evidence
+    issue_refs: [72]
+    source_refs: [docs/raw/28-pipeline-builder-pro-code-interop.md, docs/synthesis/palantir-pro-code-capability-research.md]
+    related_docs: [docs/topics/pipeline.md, docs/topics/pro-code.md]
+    canonical: false
+    created: 2026-06-23
+    updated: 2026-06-23
+    last_reviewed: 2026-06-25
+    confidence: medium
+    evidence_strength: strong
+    owner: codex
+    reviewers: [codex]
+  - id: spec-pipeline-relationship-overview-diagram-design
+    path: docs/superpowers/specs/2026-06-23-pipeline-relationship-overview-diagram-design.md
+    title: "Pipeline Relationship Overview Diagram Design"
+    type: spec
+    status: reviewed
+    topics: [pipeline, library]
+    source_layer: planning
+    issue_refs: [72]
+    related_docs: [docs/topics/pipeline.md]
+    canonical: false
+    created: 2026-06-23
+    updated: 2026-06-23
+    last_reviewed: 2026-06-25
+    confidence: medium
+    evidence_strength: medium
+    owner: codex
+    reviewers: [codex]
+  - id: spec-palantir-data-integration-capability-map-design
+    path: docs/superpowers/specs/2026-06-24-palantir-data-integration-capability-map-design.md
+    title: "Palantir Data Integration 能力地图汇报页设计"
+    type: spec
+    status: reviewed
+    topics: [data-integration, self-build-roadmap, library]
+    source_layer: planning
+    issue_refs: [72]
+    source_refs: [docs/synthesis/data-integration-palantir-aligned-capability-map.md, docs/synthesis/data-integration-capability-panorama-term-alignment.md]
+    related_docs: [docs/topics/self-build-roadmap.md]
+    canonical: false
+    created: 2026-06-24
+    updated: 2026-06-24
+    last_reviewed: 2026-06-25
+    confidence: medium
+    evidence_strength: medium
+    owner: codex
+    reviewers: [codex]
+  - id: spec-data-integration-executive-war-room-design
+    path: docs/superpowers/specs/2026-06-25-data-integration-executive-war-room-design.md
+    title: "Data Integration Executive War Room 汇报页设计"
+    type: spec
+    status: reviewed
+    topics: [data-integration, self-build-roadmap, library]
+    source_layer: planning
+    issue_refs: [72]
+    source_refs: [docs/synthesis/data-integration-palantir-aligned-capability-map.md]
+    related_docs: [docs/topics/self-build-roadmap.md]
+    canonical: false
+    created: 2026-06-25
+    updated: 2026-06-25
+    last_reviewed: 2026-06-25
+    confidence: medium
+    evidence_strength: medium
+    owner: codex
+    reviewers: [codex]
+  - id: plan-palantir-data-integration-capability-map-implementation
+    path: docs/superpowers/plans/2026-06-24-palantir-data-integration-capability-map-implementation.md
+    title: "Palantir Data Integration Capability Map Implementation Plan"
+    type: plan
+    status: reviewed
+    topics: [data-integration, self-build-roadmap, library]
+    source_layer: planning
+    issue_refs: [72]
+    source_refs: [docs/superpowers/specs/2026-06-24-palantir-data-integration-capability-map-design.md]
+    related_docs: [docs/synthesis/data-integration-palantir-aligned-capability-map.md]
+    canonical: false
+    created: 2026-06-24
+    updated: 2026-06-24
+    last_reviewed: 2026-06-25
+    confidence: medium
+    evidence_strength: medium
+    owner: codex
+    reviewers: [codex]
+  - id: plan-data-integration-executive-war-room-implementation
+    path: docs/superpowers/plans/2026-06-25-data-integration-executive-war-room-implementation.md
+    title: "Data Integration Executive War Room Implementation Plan"
+    type: plan
+    status: reviewed
+    topics: [data-integration, self-build-roadmap, library]
+    source_layer: planning
+    issue_refs: [72]
+    source_refs: [docs/superpowers/specs/2026-06-25-data-integration-executive-war-room-design.md]
+    related_docs: [docs/synthesis/data-integration-palantir-aligned-capability-map.md]
+    canonical: false
+    created: 2026-06-25
+    updated: 2026-06-25
+    last_reviewed: 2026-06-25
+    confidence: medium
+    evidence_strength: medium
+    owner: codex
+    reviewers: [codex]
+  - id: synthesis-data-integration-capability-panorama-term-alignment
+    path: docs/synthesis/data-integration-capability-panorama-term-alignment.md
+    title: "Data Integration 功能全景术语核对与中文解读"
+    type: synthesis
+    status: reviewed
+    topics: [data-integration, self-build-roadmap]
+    source_layer: conclusion
+    issue_refs: [72]
+    related_docs: [docs/synthesis/data-integration-palantir-aligned-capability-map.md, docs/topics/self-build-roadmap.md]
+    canonical: false
+    created: 2026-06-24
+    updated: 2026-06-24
+    last_reviewed: 2026-06-25
+    confidence: medium
+    evidence_strength: strong
+    owner: codex
+    reviewers: [codex]
+  - id: synthesis-data-integration-palantir-aligned-capability-map
+    path: docs/synthesis/data-integration-palantir-aligned-capability-map.md
+    title: "Data Integration 功能全景：Palantir 严格对齐版"
+    type: synthesis
+    status: reviewed
+    topics: [data-integration, pipeline, dataset, ontology, scheduling, self-build-roadmap]
+    source_layer: conclusion
+    issue_refs: [72]
+    source_refs: [docs/synthesis/data-integration-capability-panorama-term-alignment.md]
+    related_docs: [docs/topics/pipeline.md, docs/topics/dataset.md, docs/topics/ontology.md, docs/topics/scheduling.md, docs/topics/self-build-roadmap.md]
+    canonical: false
+    created: 2026-06-24
+    updated: 2026-06-24
+    last_reviewed: 2026-06-25
+    confidence: medium
+    evidence_strength: strong
+    owner: codex
+    reviewers: [codex]
+  - id: synthesis-data-integration-capability-map-reporting-improvements
+    path: docs/synthesis/data-integration-capability-map-reporting-improvements.md
+    title: "Data Integration 能力地图汇报页改进建议"
+    type: synthesis
+    status: reviewed
+    topics: [data-integration, self-build-roadmap, library]
+    source_layer: conclusion
+    issue_refs: [72]
+    source_refs: [docs/synthesis/data-integration-palantir-aligned-capability-map.md, docs/synthesis/data-integration-capability-panorama-term-alignment.md]
+    related_docs: [docs/topics/self-build-roadmap.md]
+    canonical: false
+    created: 2026-06-25
+    updated: 2026-06-25
+    last_reviewed: 2026-06-25
+    confidence: medium
+    evidence_strength: medium
+    owner: codex
+    reviewers: [codex]
+  - id: raw-pipeline-builder-operators
+    path: docs/raw/pipeline-builder-operators/README.md
+    title: "Pipeline Builder 算子调研迁移入口"
+    type: raw
+    status: reviewed
+    topics: [pipeline, operator-platform, execution-runtime]
+    source_layer: evidence
+    issue_refs: [72]
+    source_refs: [docs/raw/14-transform-operator-library.md, docs/synthesis/palantir-pipeline-deep-dive.md, docs/synthesis/operator-platform-design.md]
+    related_docs: [docs/topics/pipeline.md, docs/synthesis/palantir-pipeline-deep-dive.md, docs/synthesis/operator-platform-design.md]
+    canonical: false
+    created: 2026-06-25
+    updated: 2026-06-25
+    last_reviewed: 2026-06-25
     confidence: medium
     evidence_strength: strong
     owner: codex

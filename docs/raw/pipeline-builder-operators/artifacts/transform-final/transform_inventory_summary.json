@@ -1,0 +1,40 @@
+{
+  "summary_version": 1,
+  "inventory_count": 89,
+  "unique_slug_count": 89,
+  "duplicate_slugs": [],
+  "empty_slug_count": 0,
+  "evidence_type_counts": {
+    "事实": 89
+  },
+  "method_counts": {
+    "cached+heading": 7,
+    "rendered": 51,
+    "rendered+heading": 31
+  },
+  "category_counts": {
+    "Aggregate": 10,
+    "Array": 1,
+    "Data preparation": 4,
+    "Datetime": 1,
+    "File": 16,
+    "Geospatial": 11,
+    "Join": 27,
+    "Media": 1,
+    "Numeric": 1,
+    "Other": 21,
+    "Popular": 12,
+    "String": 2,
+    "Struct": 3
+  },
+  "supported_in_counts": {
+    "Batch": 73,
+    "Faster": 41,
+    "Streaming": 35
+  },
+  "issue_commented_count": 89,
+  "empty_declared_arguments_count": 0,
+  "source_file": "docs/raw/pipeline-builder-operators/artifacts/transform-final/transform_inventory.jsonl",
+  "source_boundary": "仅反映 transform_inventory.jsonl 的本地统计，不直接替代 docs/pipeline-builder-transform-functions.md 的人工叙述。",
+  "anomaly_detected": false
+}

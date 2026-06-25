@@ -22,7 +22,7 @@
 
 ### 0.1 与 Pipeline Builder 算子调研的关系
 
-`/Users/huyongqiang/code/li/pipeline-transform-research` 已把 Pipeline Builder 可见能力收口为两套正式入口：89 条 transform final bundle 和 335 条 expression final bundle。【事实】
+`docs/raw/pipeline-builder-operators/` 已迁入 Pipeline Builder 可见能力的两套正式入口：89 条 transform final bundle 和 335 条 expression final bundle。【事实】
 
 本文的设计建议应以这两套 final bundle 作为能力基线：
 - transform 清单进入 `OperatorRegistry`，成为低代码节点、Schema 推导、执行适配和治理采集的目录来源。
@@ -987,10 +987,10 @@ Phase 3（第 7-12 个月）：P2 算子 + 扩展生态
 
 ## 9. 参考资料
 
-- `/Users/huyongqiang/code/li/pipeline-transform-research/docs/pipeline-builder-operators-research-summary.md` — Pipeline Builder transform / expression 算子调研总结
-- `/Users/huyongqiang/code/li/pipeline-transform-research/docs/pipeline-builder-operators-overview.html` — Pipeline Builder 算子 HTML 总览页
-- `/Users/huyongqiang/code/li/pipeline-transform-research/artifacts/transform-final/README.md` — transform final bundle 入口
-- `/Users/huyongqiang/code/li/pipeline-transform-research/artifacts/pb-expression-final/README.md` — expression final bundle 入口
+- `docs/raw/pipeline-builder-operators/pipeline-builder-operators-research-summary.md` — Pipeline Builder transform / expression 算子调研总结
+- `deliverables/pages/pipeline-builder-operators-overview.html` — Pipeline Builder 算子 HTML 总览页
+- `docs/raw/pipeline-builder-operators/artifacts/transform-final/README.md` — transform final bundle 入口
+- `docs/raw/pipeline-builder-operators/artifacts/pb-expression-final/README.md` — expression final bundle 入口
 - `docs/raw/14-transform-operator-library.md` — Palantir 算子库现状分析
 - Apache Beam PTransform 设计：Spec/Executor 分离的标准参考
 - Spark Catalyst：类型系统与编译期优化的工程实践
