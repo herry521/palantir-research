@@ -35,7 +35,7 @@ check_contains() {
 
 check_contains "$ROOT/index.html" "Palantir"
 check_contains "$ROOT/index.html" "三个管理判断"
-check_contains "$ROOT/index.html" "文档手册预览 + 一页纸 + 技术总览 + 建设蓝图 + 算子总览 + 十个专题页"
+check_contains "$ROOT/index.html" "文档手册预览 + 一页纸 + 技术总览 + 建设蓝图 + 算子总览 + 十一个专题页"
 check_contains "$ROOT/index.html" "Book 式文档体系预览"
 check_contains "$ROOT/index.html" "Foundry Schedule 运行模式"
 check_contains "$ROOT/index.html" "Data Integration 权限控制面"
@@ -165,13 +165,13 @@ for file in "${required_files[@]}"; do
   fi
 
   nav_count="$(grep -o 'data-nav href=' "$file" | wc -l | tr -d ' ')"
-  [[ "$nav_count" == "13" ]] || {
-    echo "Expected 13 primary nav links in $file, found $nav_count"
+  [[ "$nav_count" == "14" ]] || {
+    echo "Expected 14 primary nav links in $file, found $nav_count"
     exit 1
   }
 
   check_contains "$file" "Palantir Foundry / Pipeline 调研材料库"
-  check_contains "$file" "统一入口：首页 / 总览 / 蓝图 / 算子总览 / 十个专题页"
+  check_contains "$file" "统一入口：首页 / 总览 / 蓝图 / 算子总览 / 十一个专题页"
 done
 
 grep -q 'href="pages/overview.html"' "$ROOT/index.html" || {

@@ -26,6 +26,7 @@
 | [docs/raw/03-streaming-batch-architecture.md](../raw/03-streaming-batch-architecture.md) | 流批架构和 Pipeline Builder 技术形态。 |
 | [docs/raw/06-incremental-pipeline.md](../raw/06-incremental-pipeline.md) | 增量 transform、transaction history、fallback 与流批差异的既有证据整理。 |
 | [docs/raw/14-transform-operator-library.md](../raw/14-transform-operator-library.md) | Pipeline Builder 算子与 Code Repository SDK 算子库整理。 |
+| [docs/raw/pipeline-builder-operators/README.md](../raw/pipeline-builder-operators/README.md) | 从 `pipeline-transform-research` 迁入的 Pipeline Builder transform / expression 正式文档与 final bundle 入口。 |
 | [docs/raw/25-transform-contract-dag.md](../raw/25-transform-contract-dag.md) | Transform Contract、DAG 推导和调度解析。 |
 | [docs/raw/27-incremental-scheduling-transaction.md](../raw/27-incremental-scheduling-transaction.md) | 增量、调度、Dataset transaction 三者的耦合证据。 |
 | [docs/raw/28-pipeline-builder-pro-code-interop.md](../raw/28-pipeline-builder-pro-code-interop.md) | 低码/高码互操作、导出、IR/Contract 风险。 |

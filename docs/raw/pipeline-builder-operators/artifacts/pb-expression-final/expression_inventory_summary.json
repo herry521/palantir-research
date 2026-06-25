@@ -1,0 +1,39 @@
+{
+  "summary_version": 3,
+  "inventory_count": 335,
+  "unique_slug_count": 335,
+  "expected_count": 335,
+  "duplicate_slugs": [],
+  "missing_against_expected_count": 0,
+  "mismatches_count": 0,
+  "empty_slug_count": 0,
+  "anomaly_detected": false,
+  "anomaly_scope": "仅覆盖 inventory 数量、slug 唯一性/空值，以及 palantir_h1_compare.json 的 expected_count 与 mismatches_count；不覆盖 category、supported_in、arguments、return_type、notes 等字段级质量问题。",
+  "slug_sample_for_manual_check": [],
+  "inventory_metrics": {
+    "source_file": "docs/raw/pipeline-builder-operators/artifacts/pb-expression-final/expression_inventory.json",
+    "source_boundary": "仅反映当前 expression_inventory.json 的本地统计，不直接代表外部 compare 基线结论。",
+    "inventory_count": 335,
+    "unique_slug_count": 335,
+    "duplicate_slugs": [],
+    "missing_against_expected_count": 0,
+    "empty_slug_count": 0
+  },
+  "compare_baseline": {
+    "source_file": "源仓库覆盖核对产物 palantir_h1_compare.json",
+    "source_boundary": "仅反映 palantir_h1_compare.json 的外部覆盖基线结果，不替代 inventory 本地条目统计。",
+    "parsed_objects": 335,
+    "expected_count": 335,
+    "mismatches_count": 0
+  },
+  "quality_metrics": {
+    "source_boundary": "仅反映 expression_inventory.json 的字段级完整度信号；这些计数不参与 anomaly_detected 判定，也不等于人工逐条复核结论。",
+    "category_null_count": 3,
+    "supported_in_null_count": 1,
+    "return_type_null_count": 0,
+    "empty_arguments_count": 6,
+    "notes_nonempty_count": 331,
+    "partial_argument_record_count": 1,
+    "partial_argument_entry_count": 1
+  }
+}
