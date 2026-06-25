@@ -11,6 +11,7 @@ required_files=(
   "$ROOT/pages/md-preview.html"
   "$ROOT/pages/overview.html"
   "$ROOT/pages/data-engineering-platform-map.html"
+  "$ROOT/pages/pipeline-builder-operators-overview.html"
   "$ROOT/pages/pro-code-capability.html"
   "$ROOT/pages/expression-and-operators.html"
   "$ROOT/pages/execution-and-incremental.html"
@@ -19,6 +20,7 @@ required_files=(
   "$ROOT/pages/lineage-ontology-governance.html"
   "$ROOT/pages/dataset-permission-marking.html"
   "$ROOT/pages/data-quality.html"
+  "$ROOT/pages/data-integration-capability-map.html"
   "$ROOT/pages/data-integration-permission-system.html"
   "$ROOT/pages/engineering-and-ecosystem.html"
 )
@@ -35,13 +37,16 @@ check_contains() {
 
 check_contains "$ROOT/index.html" "Palantir"
 check_contains "$ROOT/index.html" "三个管理判断"
-check_contains "$ROOT/index.html" "文档手册预览 + 一页纸 + 技术总览 + 建设蓝图 + 算子总览 + 十个专题页"
-check_contains "$ROOT/index.html" "Book 式文档体系预览"
+check_contains "$ROOT/index.html" "分层阅读入口"
+check_contains "$ROOT/index.html" "专题下钻目录"
+check_contains "$ROOT/index.html" "Book 式文档库"
 check_contains "$ROOT/index.html" "Foundry Schedule 运行模式"
+check_contains "$ROOT/index.html" "Data Integration 战情图"
 check_contains "$ROOT/index.html" "Data Integration 权限控制面"
 check_contains "$ROOT/index.html" "Data Quality 质量控制面"
 check_contains "$ROOT/app.js" "rewriteMarkdownLinks"
 check_contains "$ROOT/app.js" "md-preview.html?doc="
+check_contains "$ROOT/app.js" "https://gitlabee.chehejia.com/huyongqiang/palantir-research/-/blob/main/"
 check_contains "$ROOT/md-docs.js" "window.PALANTIR_MD_DOCS"
 check_contains "$ROOT/pages/book-library.html" "Book 式文档体系预览"
 check_contains "$ROOT/pages/book-library.html" "结论预览"
@@ -54,6 +59,7 @@ check_contains "$ROOT/pages/book-library.html" "docs/synthesis/data-integration-
 check_contains "$ROOT/pages/md-preview.html" "Markdown 文档预览"
 check_contains "$ROOT/pages/md-preview.html" "data-md-preview-doc"
 check_contains "$ROOT/pages/md-preview.html" "../md-docs.js"
+check_contains "$ROOT/pages/md-preview.html" "在 GitLab EE 打开原始 Markdown"
 check_contains "$ROOT/pages/overview.html" "技术总览"
 check_contains "$ROOT/pages/overview.html" "map-layers"
 check_contains "$ROOT/pages/overview.html" "Book 式文档体系预览"
@@ -76,6 +82,8 @@ check_contains "$ROOT/pages/data-engineering-platform-map.html" "Engine Router"
 check_contains "$ROOT/pages/data-engineering-platform-map.html" "Spark fallback"
 check_contains "$ROOT/pages/data-engineering-platform-map.html" "DataFusion"
 check_contains "$ROOT/pages/data-engineering-platform-map.html" "Media Set 资产模型"
+check_contains "$ROOT/pages/pipeline-builder-operators-overview.html" "Pipeline Builder 算子总览"
+check_contains "$ROOT/pages/pipeline-builder-operators-overview.html" "两条主线"
 check_contains "$ROOT/pages/pro-code-capability.html" "高码能力研究"
 check_contains "$ROOT/pages/pro-code-capability.html" "【事实 <a class=\"confidence-ref\""
 check_contains "$ROOT/pages/pro-code-capability.html" "href=\"https://www.palantir.com/docs/foundry/code-repositories/overview/index.html\""
@@ -126,6 +134,8 @@ check_contains "$ROOT/pages/data-quality.html" "BuildCheckResult"
 check_contains "$ROOT/pages/data-quality.html" "ExternalRoutePolicy"
 check_contains "$ROOT/pages/data-quality.html" "docs/synthesis/palantir-data-quality-module-research.md"
 check_contains "$ROOT/pages/data-quality.html" "docs/raw/49-data-quality-external-notification-security.md"
+check_contains "$ROOT/pages/data-integration-capability-map.html" "Data Integration 战情图"
+check_contains "$ROOT/pages/data-integration-capability-map.html" "di-capability-map"
 check_contains "$ROOT/pages/data-integration-permission-system.html" "Data Integration 权限控制面"
 check_contains "$ROOT/pages/data-integration-permission-system.html" "权限控制面覆盖链路"
 check_contains "$ROOT/pages/data-integration-permission-system.html" "P0 / P1 / P2 建设路线"
@@ -164,14 +174,20 @@ for file in "${required_files[@]}"; do
     continue
   fi
 
+  if [[ "$file" == "$ROOT/pages/pipeline-builder-operators-overview.html" ]]; then
+    continue
+  fi
+
   nav_count="$(grep -o 'data-nav href=' "$file" | wc -l | tr -d ' ')"
-  [[ "$nav_count" == "13" ]] || {
-    echo "Expected 13 primary nav links in $file, found $nav_count"
+  [[ "$nav_count" == "5" ]] || {
+    echo "Expected 5 primary nav links in $file, found $nav_count"
     exit 1
   }
 
-  check_contains "$file" "Palantir Foundry / Pipeline 调研材料库"
-  check_contains "$file" "统一入口：首页 / 总览 / 蓝图 / 算子总览 / 十个专题页"
+  if [[ "$file" != "$ROOT/pages/data-integration-capability-map.html" ]]; then
+    check_contains "$file" "Palantir Foundry / Pipeline 调研材料库"
+    check_contains "$file" "统一入口：首页 / 总览 / 蓝图 / 手册 / 文档"
+  fi
 done
 
 grep -q 'href="pages/overview.html"' "$ROOT/index.html" || {
@@ -194,6 +210,11 @@ grep -q 'href="pages/data-engineering-platform-map.html"' "$ROOT/index.html" || 
   exit 1
 }
 
+grep -q 'href="pages/pipeline-builder-operators-overview.html"' "$ROOT/index.html" || {
+  echo "Homepage must link to Pipeline Builder operators overview page"
+  exit 1
+}
+
 grep -q 'href="pages/pro-code-capability.html"' "$ROOT/index.html" || {
   echo "Homepage must link to pro-code capability page"
   exit 1
@@ -211,6 +232,11 @@ grep -q 'href="pages/foundry-schedule-module.html"' "$ROOT/index.html" || {
 
 grep -q 'href="pages/data-integration-permission-system.html"' "$ROOT/index.html" || {
   echo "Homepage must link to Data Integration permission page"
+  exit 1
+}
+
+grep -q 'href="pages/data-integration-capability-map.html"' "$ROOT/index.html" || {
+  echo "Homepage must link to Data Integration capability map page"
   exit 1
 }
 

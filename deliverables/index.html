@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Palantir 调研总结一页纸</title>
     <link rel="stylesheet" href="styles.css" />
-    <script defer src="app.js"></script>
+    <script defer src="app.js?v=entry-links-20260625"></script>
   </head>
   <body class="home-body">
     <div class="site-shell">
@@ -75,18 +75,9 @@
           <nav class="nav-links">
             <a data-nav href="index.html"><svg class="icon sm" aria-hidden="true"><use href="#i-home"></use></svg><span>首页</span></a>
             <a data-nav href="pages/overview.html"><svg class="icon sm" aria-hidden="true"><use href="#i-map"></use></svg><span>总览</span></a>
-            <a data-nav href="pages/pro-code-capability.html"><svg class="icon sm" aria-hidden="true"><use href="#i-brackets"></use></svg><span>高码</span></a>
             <a data-nav href="pages/data-engineering-platform-map.html"><svg class="icon sm" aria-hidden="true"><use href="#i-layers"></use></svg><span>蓝图</span></a>
-            <a data-nav href="pages/expression-and-operators.html"><svg class="icon sm" aria-hidden="true"><use href="#i-brackets"></use></svg><span>表达</span></a>
-            <a data-nav href="pages/execution-and-incremental.html"><svg class="icon sm" aria-hidden="true"><use href="#i-cpu"></use></svg><span>执行</span></a>
-            <a data-nav href="pages/foundry-schedule-module.html"><svg class="icon sm" aria-hidden="true"><use href="#i-nodes"></use></svg><span>调度</span></a>
-            <a data-nav href="pages/branch-collaboration.html"><svg class="icon sm" aria-hidden="true"><use href="#i-nodes"></use></svg><span>分支</span></a>
-            <a data-nav href="pages/streaming-architecture.html"><svg class="icon sm" aria-hidden="true"><use href="#i-wave"></use></svg><span>流式</span></a>
-            <a data-nav href="pages/lineage-ontology-governance.html"><svg class="icon sm" aria-hidden="true"><use href="#i-nodes"></use></svg><span>治理</span></a>
-            <a data-nav href="pages/dataset-permission-marking.html"><svg class="icon sm" aria-hidden="true"><use href="#i-file"></use></svg><span>权限</span></a>
-            <a data-nav href="pages/data-quality.html"><svg class="icon sm" aria-hidden="true"><use href="#i-file"></use></svg><span>质量</span></a>
-            <a data-nav href="pages/data-integration-permission-system.html"><svg class="icon sm" aria-hidden="true"><use href="#i-file"></use></svg><span>集成权限</span></a>
-            <a data-nav href="pages/engineering-and-ecosystem.html"><svg class="icon sm" aria-hidden="true"><use href="#i-wrench"></use></svg><span>工程</span></a>
+            <a data-nav href="pages/book-library.html"><svg class="icon sm" aria-hidden="true"><use href="#i-file"></use></svg><span>手册</span></a>
+            <a data-nav href="pages/md-preview.html"><svg class="icon sm" aria-hidden="true"><use href="#i-file"></use></svg><span>文档</span></a>
           </nav>
         </div>
       </header>
@@ -117,7 +108,7 @@
                 </div>
                 <div class="stat-block">
                   <strong>16 页</strong>
-                  <span>文档手册预览 + 一页纸 + 技术总览 + 建设蓝图 + 算子总览 + 十一个专题页</span>
+                  <span>一页纸、技术总览、建设蓝图、专题目录、文档手册与专题页统一收口</span>
                 </div>
               </div>
             </aside>
@@ -242,92 +233,105 @@
           </div>
         </section>
 
-        <section class="page-section">
+        <section class="page-section" id="reading-paths">
           <div class="section-head">
             <div>
-              <p class="section-kicker">Dive Deeper</p>
+              <p class="section-kicker">Reading Paths</p>
               <h2>
-                <span class="title-row"><svg class="icon lg" aria-hidden="true"><use href="#i-map"></use></svg><span>进入技术详情</span></span>
+                <span class="title-row"><svg class="icon lg" aria-hidden="true"><use href="#i-map"></use></svg><span>分层阅读入口</span></span>
               </h2>
             </div>
-            <p>一页纸在这里收束，研发团队可以沿着下面的技术入口继续下钻。</p>
+            <p>首页先回答“应该从哪里开始”，再把专题页收进清晰的下钻路径，避免所有页面在同一层级平铺。</p>
           </div>
-          <div class="entry-grid">
-            <a class="detail-card" href="pages/book-library.html">
-              <span class="tag">手册</span>
-              <h3>Book 式文档体系预览</h3>
-              <p class="muted">按章节预览核心结论，并列出 topic、synthesis、raw 等相关调研文档入口。</p>
+
+          <div class="path-grid">
+            <a class="path-card path-card-primary" href="pages/overview.html">
+              <span class="path-index">01</span>
+              <span class="tag">先读</span>
+              <h3>技术总览</h3>
+              <p class="muted">先建立平台心智：表达、执行、治理、Ontology 和工程体系如何构成闭环。</p>
             </a>
-            <a class="detail-card" href="pages/overview.html">
-              <span class="tag">总览</span>
-              <h3>研发技术总览</h3>
-              <p class="muted">从平台能力地图进入算子总览和技术专题，快速建立整体心智。</p>
-            </a>
-            <a class="detail-card" href="pages/data-engineering-platform-map.html">
-              <span class="tag">蓝图</span>
-              <h3>能力建设关注点</h3>
+            <a class="path-card" href="pages/data-engineering-platform-map.html">
+              <span class="path-index">02</span>
+              <span class="tag">再读</span>
+              <h3>建设蓝图</h3>
               <p class="muted">把能力模块落成建设关注点、平台分层和三阶段优先级。</p>
             </a>
-            <a class="detail-card" href="pages/pipeline-builder-operators-overview.html">
-              <span class="tag">算子总览</span>
-              <h3>Pipeline Builder 算子总览</h3>
+            <a class="path-card" href="pages/pipeline-builder-operators-overview.html">
+              <span class="path-index">03</span>
+              <span class="tag">下钻</span>
+              <h3>算子总览</h3>
               <p class="muted">把 transform / expression 两条主线、final bundle 和证据边界放进同一张阅读图。</p>
             </a>
-            <a class="detail-card" href="pages/pro-code-capability.html">
-              <span class="tag">专题 00</span>
-              <h3>高码能力研究</h3>
-              <p class="muted">回答高码能力强在哪里、怎么实现，以及我们应该怎样借鉴。</p>
+            <a class="path-card" href="pages/book-library.html">
+              <span class="path-index">04</span>
+              <span class="tag">查证</span>
+              <h3>Book 式文档库</h3>
+              <p class="muted">按章节回查 topic、synthesis、raw 和 Markdown 原文。</p>
             </a>
-            <a class="detail-card" href="pages/expression-and-operators.html">
-              <span class="tag">专题 01</span>
-              <h3>表达层与算子平台</h3>
-              <p class="muted">为什么 DSL 和算子抽象会直接影响平台化效率。</p>
-            </a>
-            <a class="detail-card" href="pages/execution-and-incremental.html">
-              <span class="tag">专题 02</span>
-              <h3>执行引擎与增量链路</h3>
-              <p class="muted">Spark、Faster、Transaction 和增量批处理怎样形成中间层优势。</p>
-            </a>
-            <a class="detail-card" href="pages/foundry-schedule-module.html">
-              <span class="tag">专题 03</span>
-              <h3>Foundry Schedule 运行模式</h3>
-              <p class="muted">把 trigger、staleness、build resolution 与业务周期调度边界拆开讲清楚。</p>
-            </a>
-            <a class="detail-card" href="pages/branch-collaboration.html">
-              <span class="tag">专题 04</span>
-              <h3>分支协作与 Fallback 逻辑</h3>
-              <p class="muted">把 Sync、Pipeline、Dataset branch、fallback 和 OSet branch view 的边界讲清楚。</p>
-            </a>
-            <a class="detail-card" href="pages/streaming-architecture.html">
-              <span class="tag">专题 05</span>
-              <h3>流式架构</h3>
-              <p class="muted">Flink、Window、State 与实时能力边界如何被产品化承载。</p>
-            </a>
-            <a class="detail-card" href="pages/lineage-ontology-governance.html">
-              <span class="tag">专题 06</span>
-              <h3>血缘、Ontology 与治理</h3>
-              <p class="muted">从数据版本化走向业务语义平台的关键差异在哪里。</p>
-            </a>
-            <a class="detail-card" href="pages/engineering-and-ecosystem.html">
-              <span class="tag">专题 07</span>
-              <h3>工程化与生态边界</h3>
-              <p class="muted">测试、监控、安全、Media Set、AIP 与开放性短板如何一起决定平台上限。</p>
-            </a>
-            <a class="detail-card" href="pages/dataset-permission-marking.html">
-              <span class="tag">专题 08</span>
-              <h3>Dataset 权限与 Marking 架构</h3>
-              <p class="muted">把资源角色、组织边界、敏感 Marking、血缘传播和审批审计放进同一个访问控制闭环。</p>
-            </a>
-            <a class="detail-card" href="pages/data-integration-permission-system.html">
-              <span class="tag">专题 09</span>
-              <h3>Data Integration 权限控制面</h3>
-              <p class="muted">把 source、credential、sync、transform、dataset/stream、API/export、approval 和 audit 纳入统一权限路线图。</p>
-            </a>
-            <a class="detail-card" href="pages/data-quality.html">
-              <span class="tag">专题 10</span>
-              <h3>Data Quality 质量控制面</h3>
-              <p class="muted">把 Data Expectations、Health Checks、Monitoring Views、告警 issue 和规则治理合成同一个质量闭环。</p>
-            </a>
+          </div>
+        </section>
+
+        <section class="page-section" id="topic-paths">
+          <div class="section-head">
+            <div>
+              <p class="section-kicker">Topic Directory</p>
+              <h2>
+                <span class="title-row"><svg class="icon lg" aria-hidden="true"><use href="#i-layers"></use></svg><span>专题下钻目录</span></span>
+              </h2>
+            </div>
+            <p>专题页按能力域归组。需要查具体机制时，从对应能力域进入，而不是在顶部导航里横向寻找。</p>
+          </div>
+
+          <div class="topic-directory">
+            <article class="topic-group">
+              <div class="topic-group-head">
+                <span class="tag">Pipeline</span>
+                <h3>表达、执行与调度</h3>
+              </div>
+              <div class="topic-link-list">
+                <a href="pages/expression-and-operators.html"><span>表达层与算子平台</span><small>DSL、transform、expression</small></a>
+                <a href="pages/execution-and-incremental.html"><span>执行引擎与增量链路</span><small>Spark、Faster、transaction</small></a>
+                <a href="pages/foundry-schedule-module.html"><span>Foundry Schedule 运行模式</span><small>trigger、staleness、build resolution</small></a>
+                <a href="pages/branch-collaboration.html"><span>分支协作与 Fallback 逻辑</span><small>branch、fallback、OSet view</small></a>
+                <a href="pages/streaming-architecture.html"><span>流式架构</span><small>Flink、window、state</small></a>
+              </div>
+            </article>
+
+            <article class="topic-group">
+              <div class="topic-group-head">
+                <span class="tag">Governance</span>
+                <h3>治理、权限与质量</h3>
+              </div>
+              <div class="topic-link-list">
+                <a href="pages/lineage-ontology-governance.html"><span>血缘、Ontology 与治理</span><small>语义层、业务对象、治理闭环</small></a>
+                <a href="pages/dataset-permission-marking.html"><span>Dataset 权限与 Marking 架构</span><small>资源角色、Marking、审批审计</small></a>
+                <a href="pages/data-quality.html"><span>Data Quality 质量控制面</span><small>expectations、health checks、monitoring</small></a>
+              </div>
+            </article>
+
+            <article class="topic-group">
+              <div class="topic-group-head">
+                <span class="tag">Integration</span>
+                <h3>集成与权限控制面</h3>
+              </div>
+              <div class="topic-link-list">
+                <a href="pages/data-integration-capability-map.html"><span>Data Integration 战情图</span><small>官方对象链路、状态点亮、汇报视图</small></a>
+                <a href="pages/data-integration-permission-system.html"><span>Data Integration 权限控制面</span><small>source、credential、sync、export、audit</small></a>
+              </div>
+            </article>
+
+            <article class="topic-group">
+              <div class="topic-group-head">
+                <span class="tag">Engineering</span>
+                <h3>工程化与文档查证</h3>
+              </div>
+              <div class="topic-link-list">
+                <a href="pages/pro-code-capability.html"><span>高码能力研究</span><small>Code Repositories、工程治理、AI FDE</small></a>
+                <a href="pages/engineering-and-ecosystem.html"><span>工程化与生态边界</span><small>测试、监控、安全、Media Set、AIP</small></a>
+                <a href="pages/md-preview.html"><span>Markdown 文档预览</span><small>直接打开 canonical Markdown 证据</small></a>
+              </div>
+            </article>
           </div>
         </section>
       </main>
@@ -335,7 +339,7 @@
       <footer class="site-footer">
         <div class="page-footer">
           <div>Palantir Foundry / Pipeline 调研材料库</div>
-          <div class="footer-note">统一入口：首页 / 总览 / 蓝图 / 算子总览 / 十一个专题页</div>
+          <div class="footer-note">统一入口：首页 / 总览 / 蓝图 / 手册 / 文档</div>
         </div>
       </footer>
     </div>
