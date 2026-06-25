@@ -4302,6 +4302,10 @@ html.is-embedded-root .section-card {
   grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 
+.di-map-zone-support .di-map-zone-grid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
 .di-map-module {
   border: 1px solid var(--di-border);
   border-radius: 10px;
@@ -5309,6 +5313,10 @@ html.is-embedded-root .section-card {
 
   .di-map-flow {
     overflow-x: visible;
+  }
+
+  .di-map-zone-support .di-map-zone-grid {
+    grid-template-columns: 1fr;
   }
 
   .di-report-chain,
