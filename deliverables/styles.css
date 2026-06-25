@@ -4915,6 +4915,7 @@ html.is-embedded-root .section-card {
 }
 
 .di-map-page-b3 {
+  --content-width: 1560px;
   --di-done: #166534;
   --di-progress: #1d4ed8;
   --di-risk: #b45309;
