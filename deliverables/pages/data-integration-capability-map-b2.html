@@ -572,16 +572,20 @@
       function diModuleStats(module) {
         const coreCapabilities = module.capabilities.filter((capability) => capability.core);
         const allStatuses = module.capabilities.map((capability) => diGetStatus(module.id, capability.id));
+        const done = allStatuses.filter((status) => status === "done").length;
+        const inProgress = allStatuses.filter((status) => status === "in-progress").length;
+        const risk = allStatuses.filter((status) => status === "risk").length;
+        const total = allStatuses.length || 1;
         const doneCore = coreCapabilities.filter((capability) => diGetStatus(module.id, capability.id) === "done").length;
         const totalCore = coreCapabilities.length || 1;
         return {
-          progress: Math.round((doneCore / totalCore) * 100),
+          progress: Math.round((done / total) * 100),
           doneCore,
           totalCore,
-          hasRisk: coreCapabilities.some((capability) => diGetStatus(module.id, capability.id) === "risk"),
-          done: allStatuses.filter((status) => status === "done").length,
-          inProgress: allStatuses.filter((status) => status === "in-progress").length,
-          risk: allStatuses.filter((status) => status === "risk").length,
+          hasRisk: risk > 0,
+          done,
+          inProgress,
+          risk,
           total: allStatuses.length
         };
       }
